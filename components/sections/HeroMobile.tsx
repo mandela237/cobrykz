@@ -266,7 +266,7 @@ export default function HeroMobile() {
           {/* Secondary */}
           <a
             href="#our-standard"
-            className="text-white/35 hover:text-white/68 text-[12px] font-medium transition-colors duration-150 group inline-flex items-center gap-1"
+            className="text-white/35 hover:text-white/70 text-[12px] font-medium transition-colors duration-150 group inline-flex items-center gap-1"
           >
             Our work
             <span
