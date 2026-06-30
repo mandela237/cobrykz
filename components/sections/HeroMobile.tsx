@@ -100,7 +100,7 @@ export default function HeroMobile() {
         initial={{ opacity: 0, x: 16, scale: 0.88 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
         transition={{ duration: 0.55, delay: 0.9, ease }}
-        className="absolute z-20 right-4 top-[35%]"
+        className="absolute z-20 right-4 top-[18%]"
       >
         <motion.div
           animate={{ y: [0, -7, 0] }}
@@ -134,7 +134,7 @@ export default function HeroMobile() {
         initial={{ opacity: 0, x: -16, scale: 0.88 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
         transition={{ duration: 0.55, delay: 1.05, ease }}
-        className="absolute z-20 left-4 top-[45%]"
+        className="absolute z-20 left-4 top-[26%]"
       >
         <motion.div
           animate={{ y: [0, -7, 0] }}
@@ -156,24 +156,6 @@ export default function HeroMobile() {
             ))}
           </div>
         </motion.div>
-      </motion.div>
-
-      {/* ── Name badge — lower-left, identifies Mandela ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.45, delay: 1.2 }}
-        className="absolute z-20 left-4 top-[68%]"
-      >
-        <div
-          className="bg-black/55 backdrop-blur-md rounded-xl px-3 py-2 border border-white/[0.08]"
-          style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.07)" }}
-        >
-          <p className="text-[11px] font-bold text-white leading-tight">Mandela Atud</p>
-          <p className="text-[8px] text-white/40 tracking-[0.07em] uppercase mt-0.5">
-            Founder & CEO · COBRYKZ
-          </p>
-        </div>
       </motion.div>
 
       {/* ── Text — anchored to bottom of viewport ── */}
