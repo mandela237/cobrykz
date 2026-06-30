@@ -18,11 +18,17 @@ export default function HeroMobile() {
       <motion.div
         className="absolute inset-0 z-0"
         initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          rotateY: [-0.6, 0.6, -0.6],
+        }}
         transition={{
           opacity: { duration: 0.85, ease },
           scale: { duration: 0.85, ease },
+          rotateY: { duration: 12, repeat: Infinity, ease: "easeInOut", delay: 0.85 },
         }}
+        style={{ transformOrigin: "50% 50%" }}
       >
         <div className="absolute inset-0 overflow-hidden">
           <Image
