@@ -1,26 +1,136 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* COBRYKZ Brand Colors */
+  --color-navy: #0F172A;
+  --color-blue: #2563EB;
+  --color-blue-dark: #1D4ED8;
+  --color-white: #FFFFFF;
+  --color-gray-light: #F8FAFC;
+  --color-gray-100: #F1F5F9;
+  --color-slate: #64748B;
+  --color-slate-light: #94A3B8;
+  --color-border: #E2E8F0;
+  --color-charcoal: #111827;
+  --color-footer-bg: #0A0F1C;
+  --color-blue-tint: #EFF6FF;
+  --color-navy-subtle: #1E293B;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Typography */
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden; /* prevent horizontal scroll from chips extending outside portrait */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: #0F172A;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #ffffff;
+    color: #0F172A;
+  }
+}
+
+/* Smooth scroll for anchor links */
+* {
+  scroll-margin-top: 80px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0F172A; }
+::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(37, 99, 235, 0.55); }
+
+/* ── Button shimmer (primary CTAs) ── */
+@keyframes btn-shimmer {
+  0%   { transform: translateX(-150%) skewX(-15deg); }
+  100% { transform: translateX(220%)  skewX(-15deg); }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 100%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  pointer-events: none;
+}
+.shimmer:hover::after {
+  animation: btn-shimmer 0.55s ease-out forwards;
+}
+
+/* ── Nav link underline ── */
+.nav-underline {
+  position: relative;
+}
+.nav-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  right: 50%;
+  height: 1px;
+  background: #2563EB;
+  transition: left 0.2s ease, right 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+}
+.nav-underline:hover::after {
+  left: 12px;
+  right: 12px;
+  opacity: 1;
+}
+
+/* ── Dot-grid texture for dark sections ── */
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Selection ── */
+::selection {
+  background: rgba(37, 99, 235, 0.25);
+  color: #ffffff;
+}
+
+/* ── Focus rings — premium feel ── */
+:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.7);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
