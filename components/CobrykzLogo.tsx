@@ -16,7 +16,7 @@ const fills: Record<LogoVariant, { squares: string; blue: string }> = {
 
 const wordmarkSizes = { sm: "text-sm", md: "text-xl", lg: "text-2xl" };
 const wordmarkColors: Record<LogoVariant, string> = {
-  default: "text-[#0F172A]",
+  default: "text-navy",
   reversed: "text-[#F8FAFC]",
   cover: "text-[#F8FAFC]",
 };

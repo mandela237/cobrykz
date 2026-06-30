@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-30T00:00:00Z",
+  "title": "Design System: COBRYKZ",
+  "extensions": {
+    "colorMeta": {
+      "conviction-blue": {
+        "role": "primary",
+        "displayName": "Conviction Blue",
+        "canonical": "#2563EB",
+        "tonalRamp": ["#0D1B3E", "#122766", "#1A3BAA", "#2052D0", "#2563EB", "#3B82F6", "#93C5FD", "#DBEAFE"]
+      },
+      "conviction-blue-dark": {
+        "role": "primary",
+        "displayName": "Conviction Blue Dark",
+        "canonical": "#1D4ED8",
+        "tonalRamp": ["#0D1B3E", "#12266A", "#1A3BAA", "#1D4ED8", "#2563EB", "#3B82F6", "#93C5FD", "#DBEAFE"]
+      },
+      "display-accent": {
+        "role": "primary",
+        "displayName": "Display Accent",
+        "canonical": "#3B82F6",
+        "tonalRamp": ["#1E3A8A", "#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE", "#DBEAFE"]
+      },
+      "midnight-foundation": {
+        "role": "neutral",
+        "displayName": "Midnight Foundation",
+        "canonical": "#0F172A",
+        "tonalRamp": ["#060912", "#0A1120", "#0F172A", "#1E293B", "#334155", "#64748B", "#94A3B8", "#F1F5F9"]
+      },
+      "footer-void": {
+        "role": "neutral",
+        "displayName": "Footer Void",
+        "canonical": "#0A0F1C",
+        "tonalRamp": ["#040710", "#070D1A", "#0A0F1C", "#111827", "#1F2937", "#374151", "#6B7280", "#D1D5DB"]
+      },
+      "deep-dark": {
+        "role": "neutral",
+        "displayName": "Deep Dark",
+        "canonical": "#060C1A",
+        "tonalRamp": ["#020508", "#040810", "#060C1A", "#0F172A", "#1E293B", "#334155", "#64748B", "#94A3B8"]
+      },
+      "pitch-dark": {
+        "role": "neutral",
+        "displayName": "Pitch Dark",
+        "canonical": "#080E1C",
+        "tonalRamp": ["#030610", "#060A18", "#080E1C", "#111827", "#1E293B", "#334155", "#64748B", "#94A3B8"]
+      },
+      "ink-surface": {
+        "role": "neutral",
+        "displayName": "Ink Surface",
+        "canonical": "#1E293B",
+        "tonalRamp": ["#0F172A", "#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0"]
+      },
+      "muted-ink": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#64748B",
+        "tonalRamp": ["#1E293B", "#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F8FAFC"]
+      },
+      "ghost-ink": {
+        "role": "neutral",
+        "displayName": "Ghost Ink",
+        "canonical": "#94A3B8",
+        "tonalRamp": ["#334155", "#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F1F5F9", "#F8FAFC"]
+      },
+      "clean-surface": {
+        "role": "neutral",
+        "displayName": "Clean Surface",
+        "canonical": "#F8FAFC",
+        "tonalRamp": ["#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F1F5F9", "#F8FAFC", "#FAFCFE", "#FFFFFF"]
+      },
+      "subtle-surface": {
+        "role": "neutral",
+        "displayName": "Subtle Surface",
+        "canonical": "#F1F5F9",
+        "tonalRamp": ["#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F1F5F9", "#F4F7FA", "#F8FAFC", "#FFFFFF"]
+      },
+      "trust-tint": {
+        "role": "tertiary",
+        "displayName": "Trust Tint",
+        "canonical": "#EFF6FF",
+        "tonalRamp": ["#1E3A8A", "#2563EB", "#3B82F6", "#93C5FD", "#BFDBFE", "#DBEAFE", "#EFF6FF", "#F0F9FF"]
+      },
+      "day-border": {
+        "role": "neutral",
+        "displayName": "Day Border",
+        "canonical": "#E2E8F0",
+        "tonalRamp": ["#475569", "#64748B", "#94A3B8", "#CBD5E1", "#E2E8F0", "#F1F5F9", "#F8FAFC", "#FFFFFF"]
+      },
+      "pure-white": {
+        "role": "neutral",
+        "displayName": "Pure White",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#94A3B8", "#CBD5E1", "#E2E8F0", "#F1F5F9", "#F4F7FA", "#F8FAFC", "#FAFCFE", "#FFFFFF"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero display word only. One use per page — currently 'COMPETE'. Applied with text-shadow depth stack for three-dimensional presence."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section h2 headings. Always uses text-wrap: balance. Tracking -0.04em makes copy feel dense and edited."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, step headings (h3 level). Bridge between headline authority and body legibility."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraph copy. Max container ~420px on desktop (~65–70ch). Line-height 1.65–1.75 on dark; 1.75–1.85 on light."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Ordered sequence anchors: Founder act labels, Process step metadata. Uppercase, 11px fixed, +0.12em tracking. Not used as an eyebrow on every section."
+      }
+    },
+    "shadows": [
+      {
+        "name": "cta-glow",
+        "value": "0 4px 20px rgba(37, 99, 235, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
+        "purpose": "Primary CTA buttons. Conviction Blue outer glow creates a light source beneath the button face; inset highlight simulates a curved front face. Makes buttons feel tactile and decisive."
+      },
+      {
+        "name": "floating-card",
+        "value": "0 8px 24px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.12)",
+        "purpose": "Floating hero ambient cards. Grounds elements that are visually elevated above the portrait plane."
+      },
+      {
+        "name": "step-card",
+        "value": "0 0 0 1px rgba(255, 255, 255, 0.03), 0 8px 32px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06)",
+        "purpose": "Process step cards and form outer containers. Outer pixel stroke + inset top highlight — depth without any blur."
+      },
+      {
+        "name": "form-container",
+        "value": "0 0 0 1px rgba(255, 255, 255, 0.05), 0 12px 34px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
+        "purpose": "Contact form container in FinalCTA. Slightly deeper than step-card to match the section's foreground hierarchy."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.0, 0.0, 0.2, 1.0)",
+        "purpose": "Default easing for all entrance animations. Decelerates to rest — content arrives without bounce or overshoot."
+      },
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Interactive state transitions: button hover/active color, nav link color shift, input border-color."
+      },
+      {
+        "name": "duration-enter",
+        "value": "400ms–650ms",
+        "purpose": "Scroll-triggered entrance animations. 400ms for list items and chips; 650ms for centerpiece reveals like hero headline word."
+      },
+      {
+        "name": "stagger-children",
+        "value": "0.04s–0.10s per child",
+        "purpose": "Inter-child delay for tag clouds (0.04s), card grids (0.1s), and hero elements (0.1s with 0.2s initial delay)."
+      },
+      {
+        "name": "float-oscillation",
+        "value": "y: [0, -9, 0] | easeInOut | 3.8–4.4s | Infinity | staggered delays",
+        "purpose": "Ambient float for hero glass cards. Each card has a unique period and delay so they never move in unison — organic, living depth."
+      },
+      {
+        "name": "btn-shimmer",
+        "value": "translateX(-150%) skewX(-15deg) → translateX(220%) skewX(-15deg) | 0.55s ease-out | on hover",
+        "purpose": "Primary CTA shimmer sweep. White-to-transparent diagonal band crosses the button face on hover at 14% opacity."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA used across all sections. Shimmer sweep on hover; presses on active. Tactile and decisive.",
+      "html": "<button class=\"ds-btn-primary\">Book a Discovery Call</button>",
+      "css": "@keyframes ds-shimmer { 0% { transform: translateX(-150%) skewX(-15deg); } 100% { transform: translateX(220%) skewX(-15deg); } } .ds-btn-primary { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 8px; background: #2563EB; color: #FFFFFF; font-size: 14px; font-weight: 600; padding: 14px 28px; border: none; border-radius: 12px; cursor: pointer; font-family: inherit; transition: background 150ms ease, transform 100ms ease; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.06); } .ds-btn-primary::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.14) 50%, transparent 100%); transform: translateX(-150%) skewX(-15deg); pointer-events: none; } .ds-btn-primary:hover { background: #1D4ED8; } .ds-btn-primary:hover::after { animation: ds-shimmer 0.55s ease-out forwards; } .ds-btn-primary:active { transform: scale(0.98) translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid rgba(37, 99, 235, 0.7); outline-offset: 3px; border-radius: 12px; }"
+    },
+    {
+      "name": "Ghost Link",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary CTA used beside a primary button. Arrow shifts right on hover. Never stands alone without a primary CTA nearby.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#our-standard\">See Our Standard <span class=\"ds-btn-ghost-arrow\">&#8594;</span></a>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 4px; color: rgba(255, 255, 255, 0.70); font-size: 14px; font-weight: 500; text-decoration: none; transition: color 150ms ease; } .ds-btn-ghost:hover { color: #FFFFFF; } .ds-btn-ghost:hover .ds-btn-ghost-arrow { transform: translateX(2px); } .ds-btn-ghost-arrow { display: inline-block; transition: transform 150ms ease; } .ds-btn-ghost:focus-visible { outline: 2px solid rgba(37, 99, 235, 0.7); outline-offset: 3px; border-radius: 4px; }"
+    },
+    {
+      "name": "Industry Tag",
+      "kind": "chip",
+      "refersTo": "industry-tag",
+      "description": "Pill chip used in the Industries tag cloud. Full-pill shape contrasts with rectangular buttons to signal 'browse' vs 'act'.",
+      "html": "<div class=\"ds-tag\"><span class=\"ds-tag-dot\"></span><span>Restaurants</span></div>",
+      "css": ".ds-tag { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 9999px; background: rgba(11, 20, 38, 0.90); border: 1px solid rgba(255, 255, 255, 0.14); cursor: default; transition: background 200ms ease, border-color 200ms ease; } .ds-tag:hover { background: #0E1A30; border-color: rgba(255, 255, 255, 0.22); } .ds-tag-dot { width: 6px; height: 6px; border-radius: 9999px; background: #2563EB; flex-shrink: 0; } .ds-tag span:last-child { font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.75); letter-spacing: 0.01em; white-space: nowrap; }"
+    },
+    {
+      "name": "Form Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Stroke-style input on dark form background. Focus state uses border + ring for legibility on any monitor calibration.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-ex-input\">Your Name <span class=\"ds-field-required\" aria-hidden=\"true\">*</span></label><input class=\"ds-input\" id=\"ds-ex-input\" type=\"text\" placeholder=\"Mandela Atud\" /></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; } .ds-field-label { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.75); font-family: inherit; } .ds-field-required { color: #DC2626; } .ds-input { width: 100%; font-size: 14px; font-weight: 400; padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.16); background: #08111F; color: #FFFFFF; font-family: inherit; outline: none; transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease; box-sizing: border-box; } .ds-input::placeholder { color: rgba(255, 255, 255, 0.50); } .ds-input:focus { border-color: rgba(59, 130, 246, 0.70); background: #060D19; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.20); }"
+    },
+    {
+      "name": "Floating Glass Card",
+      "kind": "custom",
+      "description": "Ambient data card overlaid on the hero portrait. Oscillates independently on a y-axis loop. Reads in under one second.",
+      "html": "<div class=\"ds-glass-card\"><div class=\"ds-glass-header\"><span class=\"ds-glass-dot\"></span><span class=\"ds-glass-label\">Performance</span></div><div class=\"ds-glass-value\"><span class=\"ds-glass-number\">100</span><span class=\"ds-glass-unit\">/100</span></div><div class=\"ds-glass-bars\"><span class=\"ds-glass-bar\"></span><span class=\"ds-glass-bar\"></span><span class=\"ds-glass-bar\"></span><span class=\"ds-glass-bar\"></span><span class=\"ds-glass-bar\"></span></div></div>",
+      "css": ".ds-glass-card { background: rgba(8, 17, 31, 0.95); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.12); padding: 12px 16px; min-width: 120px; } .ds-glass-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .ds-glass-dot { width: 6px; height: 6px; border-radius: 9999px; background: #34D399; flex-shrink: 0; } .ds-glass-label { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.70); font-family: inherit; } .ds-glass-value { display: flex; align-items: baseline; gap: 2px; margin-bottom: 8px; } .ds-glass-number { font-size: 26px; font-weight: 900; color: #FFFFFF; line-height: 1; font-family: inherit; } .ds-glass-unit { font-size: 11px; color: rgba(255, 255, 255, 0.50); } .ds-glass-bars { display: flex; gap: 2px; } .ds-glass-bar { flex: 1; height: 3px; border-radius: 9999px; background: rgba(52, 211, 153, 0.65); }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "description": "Desktop navigation link with expanding underline on hover. Underline grows from center-out using left/right transition.",
+      "html": "<a class=\"ds-nav-link\" href=\"#services\">Services</a>",
+      "css": ".ds-nav-link { position: relative; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, 0.80); text-decoration: none; padding: 4px 12px; transition: color 150ms ease; font-family: inherit; } .ds-nav-link::after { content: ''; position: absolute; bottom: 2px; left: 50%; right: 50%; height: 1px; background: #2563EB; transition: left 200ms ease, right 200ms ease, opacity 200ms ease; opacity: 0; } .ds-nav-link:hover { color: #FFFFFF; } .ds-nav-link:hover::after { left: 12px; right: 12px; opacity: 1; } .ds-nav-link:focus-visible { outline: 2px solid rgba(37, 99, 235, 0.7); outline-offset: 3px; border-radius: 4px; }"
+    },
+    {
+      "name": "Process Step Card",
+      "kind": "card",
+      "description": "One of four step cards in the Process section. Hover reveals a top-edge blue gradient stripe and lightens the surface.",
+      "html": "<div class=\"ds-step-card\"><div class=\"ds-step-card-edge\"></div><div class=\"ds-step-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#FFFFFF\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/></svg></div><div class=\"ds-step-content\"><h3 class=\"ds-step-title\">Discovery Call</h3><p class=\"ds-step-desc\">A focused conversation about your business, your goals, and whether we are the right fit.</p></div><span class=\"ds-step-badge\">30 min</span><div class=\"ds-step-bg-number\" aria-hidden=\"true\">30</div></div>",
+      "css": ".ds-step-card { position: relative; border-radius: 16px; padding: 16px 20px; display: flex; flex-direction: column; gap: 16px; overflow: hidden; background: rgba(11, 20, 38, 0.90); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03), 0 8px 32px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.06); transition: background 300ms ease, border-color 300ms ease; } .ds-step-card:hover { background: #0E1A30; border-color: rgba(255, 255, 255, 0.20); } .ds-step-card-edge { position: absolute; top: 0; left: 24px; right: 24px; height: 1px; opacity: 0; transition: opacity 300ms ease; background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.7), transparent); pointer-events: none; } .ds-step-card:hover .ds-step-card-edge { opacity: 1; } .ds-step-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%); box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15); position: relative; z-index: 1; } .ds-step-content { display: flex; flex-direction: column; gap: 6px; flex: 1; position: relative; z-index: 1; } .ds-step-title { font-size: 15px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em; margin: 0; font-family: inherit; } .ds-step-desc { font-size: 12px; color: rgba(255, 255, 255, 0.65); line-height: 1.65; margin: 0; font-family: inherit; } .ds-step-badge { position: relative; z-index: 1; display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; color: #60A5FA; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.20); padding: 4px 10px; border-radius: 9999px; width: fit-content; font-family: inherit; } .ds-step-bg-number { position: absolute; bottom: 4px; right: 8px; font-size: 80px; font-weight: 900; line-height: 1; color: rgba(255, 255, 255, 0.028); user-select: none; pointer-events: none; font-family: inherit; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Contender's Pitch",
+    "overview": "COBRYKZ is a one-person agency that builds websites for local businesses who feel outmatched by their competition. The design reflects that reality: this is not a brand that whispers; it is a brand that walks into a dark room and commands it. Every section is a round in a bout — the visitor arrives skeptical, and leaves convinced. Not because of claims, but because the site itself is the proof.\n\nThe palette is deep-night dark for approximately 70% of the page, cut through by a single electric blue that appears only where something demands attention. Density is calibrated: light sections give the eye a moment of air; dark sections build authority. The founder's portrait is not an asset — it is the hero. The site frames Mandela, not a brand character.\n\nThis system explicitly rejects three aesthetics: big-agency corporate sites (stock photos, vague mission statements, impersonal polish); generic SaaS/startup templates (cream body backgrounds, hero-metric dashboards, eyebrows on every section — the saturated AI scaffold); and over-animated portfolio showpieces (motion that competes with content, style that overshadows the founder's message).",
+    "keyCharacteristics": [
+      "Dark-dominant: ~70% of sections are deep-navy or near-black",
+      "Single accent color (Conviction Blue) applied with severe restraint — less than 10% of any surface",
+      "Portrait-anchored: the founder's face appears in hero (both breakpoints) and Founder section",
+      "Proof-first: every bold claim has visible evidence directly beneath it",
+      "One typeface (Geist Sans), zero decorative flourish",
+      "Film-grain texture across all surfaces for premium material feel without glassmorphism"
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "Conviction Blue is prohibited on more than 10% of any visible surface. Its function is to mark what demands action. Dilute it and the entire system loses its authority — it becomes decoration instead of command.",
+        "section": "colors"
+      },
+      {
+        "name": "The Warm-Less Rule",
+        "body": "There are no warm-tinted neutrals in this system. Every neutral leans cool or stays at zero chroma. Warmth is communicated through the founder's photography and voice, not through background color. Never use a cream, sand, or warm-paper bg tone.",
+        "section": "colors"
+      },
+      {
+        "name": "The Single Voice Rule",
+        "body": "One typeface, no ornament. Geist Sans from the smallest 11px label to the largest 112px display headline. No display serif, no script accent, no mono overlay. Weight and size are the only variables.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight Ceiling Rule",
+        "body": "Display weight (900 / black) is used for exactly one element: the hero display word. Section headlines are 800 (extrabold), not 900. Exceeding this would collapse the hierarchy — the display word loses its primacy when everything else is also black.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest. Box shadows appear only on elements that are physically above the surface (floating cards, elevated CTAs). A card sitting on a dark section background never gets a shadow — the tonal contrast between card and background provides all separation needed.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Conviction Blue on less than 10% of any dark section surface.",
+      "Do frame the founder's portrait as the primary hero element — Mandela's face, name, and direct voice are first-class design decisions.",
+      "Do back every bold claim with immediate, visible evidence directly beneath it.",
+      "Do use the dual-color aurora system (rgba(37,99,235,...) + rgba(99,102,241,...)) on every dark section.",
+      "Do apply text-wrap: balance to all h2 headlines across the site.",
+      "Do include the CTA Glow box-shadow on every primary button.",
+      "Do keep motion to ease [0.0, 0.0, 0.2, 1.0] and entrance durations 0.4–0.65s.",
+      "Do include the body::after film-grain overlay (SVG fractalNoise at opacity 0.042, mix-blend-mode overlay).",
+      "Do respect prefers-reduced-motion — all animations collapse to 0.01ms duration."
+    ],
+    "donts": [
+      "Don't use cream, warm-tinted, or sand-toned backgrounds — the generic SaaS/startup template anti-reference by name.",
+      "Don't use stock photography of handshakes, office teams, or abstract hero illustrations — the big-agency corporate anti-reference.",
+      "Don't add eyebrow kickers above every section heading — the saturated AI scaffold.",
+      "Don't add animation that competes with content — the over-animated portfolio anti-reference.",
+      "Don't use gradient text (background-clip: text with gradient fill). Use solid color with text-shadow depth stack instead.",
+      "Don't use glassmorphism decoratively. Only the navbar blur is structurally justified.",
+      "Don't use border-left or border-right > 1px as a colored accent stripe.",
+      "Don't build identical card grids. Every section in this system uses a distinct layout pattern.",
+      "Don't add sections that don't move the visitor closer to booking a discovery call."
+    ]
+  }
+}

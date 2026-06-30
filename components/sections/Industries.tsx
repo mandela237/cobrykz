@@ -43,7 +43,7 @@ export default function Industries() {
   return (
     <section
       id="industries"
-      className="py-24 lg:py-32 bg-[#0F172A] overflow-hidden"
+      className="relative py-14 sm:py-20 lg:py-32 bg-navy overflow-hidden"
       aria-label="Industries we serve"
     >
       {/* Background glow */}
@@ -51,8 +51,10 @@ export default function Industries() {
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
         style={{
-          background:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37,99,235,0.06) 0%, transparent 70%)",
+          background: [
+            "radial-gradient(ellipse 72% 65% at 50% 50%, rgba(37,99,235,0.11) 0%, transparent 68%)",
+            "radial-gradient(ellipse 40% 45% at 90% 10%, rgba(99,102,241,0.09) 0%, transparent 52%)",
+          ].join(", "),
         }}
       />
 
@@ -65,15 +67,15 @@ export default function Industries() {
           transition={{ duration: 0.5, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
           className="text-center max-w-2xl mx-auto mb-14"
         >
-          <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#2563EB] mb-4">
-            Industries Served
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-[-0.03em] text-white leading-[1.15] mb-5">
+          <h2
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] text-white leading-[1.12] mb-5"
+            style={{ textWrap: "balance" } as React.CSSProperties}
+          >
             We build for businesses
             <br />
-            like yours.
+            <span className="font-serif italic font-normal tracking-normal">like yours.</span>
           </h2>
-          <p className="text-[16px] text-white/50 leading-[1.75]">
+          <p className="text-[14px] sm:text-[16px] text-white/70 leading-[1.75]">
             Every industry has its own language, its own clients, and its own
             standards. We speak yours — and we build websites that make your
             visitors feel at home from the first second.
@@ -92,9 +94,9 @@ export default function Industries() {
             <motion.div
               key={industry}
               variants={tag}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/05 border border-white/10 hover:bg-white/08 hover:border-white/18 transition-all duration-200 cursor-default"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#0B1426]/90 border border-white/[0.14] hover:bg-[#0E1A30] hover:border-white/[0.22] transition-all duration-200 cursor-default"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue flex-shrink-0" />
               <span className="text-[13px] font-medium text-white/75 tracking-[0.01em]">
                 {industry}
               </span>
@@ -110,12 +112,12 @@ export default function Industries() {
           transition={{ duration: 0.5, delay: 0.3, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
           className="text-center mt-12"
         >
-          <p className="text-[14px] text-white/35 mb-4">
+          <p className="text-[14px] text-white/60 mb-4">
             Don&apos;t see your industry listed?
           </p>
           <a
             href="#contact"
-            className="text-[14px] font-semibold text-[#2563EB] hover:text-[#3b82f6] transition-colors"
+            className="text-[14px] font-semibold text-blue hover:text-[#3b82f6] transition-colors"
           >
             We work with any business — reach out &rarr;
           </a>

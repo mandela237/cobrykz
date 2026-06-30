@@ -1,46 +1,38 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageSquare, Lightbulb, Hammer, Rocket } from "lucide-react";
+import { MessageCircle, Compass, Code2, Rocket } from "lucide-react";
 
 const ease = [0.0, 0.0, 0.2, 1.0] as [number, number, number, number];
 
 const steps = [
   {
-    number: "01",
-    icon: MessageSquare,
+    icon: MessageCircle,
     title: "Discovery Call",
-    duration: "30 minutes",
-    description:
-      "We start with a conversation, not a pitch. We listen to your goals, your challenges, and what success looks like for your business. You leave with clarity — not a proposal.",
-    outcome: "You understand exactly what's possible and how we work.",
+    duration: "30 min",
+    description: "A focused conversation about your business, your goals, and whether we are the right fit.",
+    bg: "30",
   },
   {
-    number: "02",
-    icon: Lightbulb,
+    icon: Compass,
     title: "Strategy & Design",
-    duration: "1–2 weeks",
-    description:
-      "We design the structure, visual language, and user experience of your website before a single line of code is written. You review and approve everything before we build.",
-    outcome: "A complete visual blueprint of your new website.",
+    duration: "2–3 days",
+    description: "A complete visual blueprint — layout, content, and brand direction — before a line of code.",
+    bg: "60",
   },
   {
-    number: "03",
-    icon: Hammer,
+    icon: Code2,
     title: "Build & Review",
-    duration: "2–4 weeks",
-    description:
-      "We build your website using modern technology — fast, accessible, and built to rank on Google. You review the working site and we refine until it is exactly right.",
-    outcome: "A live staging site, ready for your final sign-off.",
+    duration: "4–7 days",
+    description: "Your site is built in code and staged for review. You sign off before anything goes live.",
+    bg: "90",
   },
   {
-    number: "04",
     icon: Rocket,
     title: "Launch & Support",
     duration: "Ongoing",
-    description:
-      "We handle the technical launch, including domain setup, analytics, and performance checks. After launch, we remain available for updates, questions, and growth.",
-    outcome: "Your website is live, optimized, and supported.",
+    description: "We go live, monitor performance, and stay available for updates and improvements.",
+    bg: "∞",
   },
 ];
 
@@ -48,102 +40,111 @@ export default function Process() {
   return (
     <section
       id="process"
-      className="py-24 lg:py-32 bg-white"
+      className="relative py-14 sm:py-20 lg:py-32 bg-[#080E1C] dot-grid overflow-hidden"
       aria-label="Our process"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
+      {/* Ambient glow */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background: [
+            "radial-gradient(ellipse 75% 55% at 50% -5%, rgba(99,102,241,0.25) 0%, transparent 65%)",
+            "radial-gradient(ellipse 45% 45% at 5% 95%, rgba(37,99,235,0.12) 0%, transparent 60%)",
+            "radial-gradient(ellipse 35% 35% at 95% 50%, rgba(37,99,235,0.08) 0%, transparent 50%)",
+          ].join(", "),
+        }}
+      />
 
-        {/* Header — no eyebrow; the h2 stands alone */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 relative">
+
+        {/* Header — no eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, ease }}
-          className="max-w-xl mb-16 lg:mb-20"
+          className="max-w-xl mb-12 lg:mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-[-0.04em] text-[#0F172A] leading-[1.1] mb-5">
-            A clear process.
+          <h2
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.04em] text-white leading-[1.1] mb-4"
+            style={{ textWrap: "balance" } as React.CSSProperties}
+          >
+            Done in 1–2 weeks.
             <br />
-            No surprises.
+            <span className="font-serif italic font-normal tracking-normal">No surprises.</span>
           </h2>
-          <p className="text-[16px] text-[#64748B] leading-[1.8]">
-            Most projects fail because of poor communication, not poor talent.
-            Our process is built to keep you informed, involved, and confident
-            at every stage.
+          <p className="text-[14px] sm:text-[16px] text-white/65 leading-[1.8]">
+            Most agencies quote 6–12 weeks. We deliver complete, high-quality
+            websites in 1–2 weeks — without cutting corners on quality or
+            communication.
           </p>
         </motion.div>
 
-        {/* Steps */}
-        <div className="relative">
-          {/* Vertical connector line */}
-          <div
-            className="hidden lg:block absolute left-[31px] top-14 bottom-24 w-px"
-            style={{
-              background:
-                "linear-gradient(to bottom, #2563EB 0%, #E2E8F0 40%, #E2E8F0 100%)",
-            }}
-            aria-hidden="true"
-          />
+        {/* Step cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-12">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, delay: i * 0.1, ease }}
+                className="group relative rounded-2xl p-4 sm:p-5 flex flex-col gap-4 overflow-hidden
+                  bg-[#0B1426]/90 border border-white/[0.12]
+                  hover:bg-[#0E1A30] hover:border-white/[0.2]
+                  transition-all duration-300"
+                style={{
+                  boxShadow: "0 0 0 1px rgba(255,255,255,0.03), 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
+                }}
+              >
+                {/* Top edge glow on hover */}
+                <div
+                  className="absolute inset-x-6 top-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  style={{ background: "linear-gradient(90deg, transparent, rgba(37,99,235,0.7), transparent)" }}
+                  aria-hidden="true"
+                />
 
-          <div className="flex flex-col gap-12">
-            {steps.map((step, i) => {
-              const Icon = step.icon;
-              return (
-                <motion.div
-                  key={step.number}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.55, delay: i * 0.1, ease }}
-                  className="flex gap-7 lg:gap-12"
+                {/* Large decorative number — background texture */}
+                <div
+                  className="absolute bottom-1 right-2 text-[80px] sm:text-[96px] font-black leading-none select-none pointer-events-none"
+                  aria-hidden="true"
+                  style={{ color: "rgba(255,255,255,0.028)" }}
                 >
-                  {/* Step indicator */}
-                  <div className="flex-shrink-0 flex flex-col items-center pt-1 relative">
-                    {/* Ghost number — decorative, behind icon */}
-                    <span
-                      className="absolute -top-3 -left-1 text-[52px] font-black text-[#F1F5F9] leading-none select-none pointer-events-none"
-                      aria-hidden="true"
-                    >
-                      {step.number}
-                    </span>
-                    {/* Icon circle — sits over ghost number */}
-                    <div className="relative z-10 w-[62px] h-[62px] rounded-2xl bg-[#0F172A] flex flex-col items-center justify-center gap-1 shadow-[0_0_0_5px_#ffffff]">
-                      <Icon size={20} className="text-[#2563EB]" strokeWidth={1.5} />
-                    </div>
-                  </div>
+                  {step.bg}
+                </div>
 
-                  {/* Content */}
-                  <div className="flex-1 pb-2">
-                    <div className="flex flex-wrap items-center gap-3 mb-3">
-                      <h3 className="text-[20px] sm:text-[22px] font-extrabold tracking-[-0.025em] text-[#0F172A]">
-                        {step.title}
-                      </h3>
-                      <span className="text-[11px] font-semibold text-[#64748B] bg-[#F1F5F9] px-2.5 py-1 rounded-full">
-                        {step.duration}
-                      </span>
-                    </div>
-                    <p className="text-[15px] text-[#64748B] leading-[1.75] mb-4 max-w-2xl">
-                      {step.description}
-                    </p>
-                    <div className="flex items-start gap-2.5">
-                      <svg
-                        width="14" height="14" viewBox="0 0 24 24"
-                        fill="none" stroke="#16A34A" strokeWidth="2.5"
-                        strokeLinecap="round" strokeLinejoin="round"
-                        className="flex-shrink-0 mt-0.5"
-                        aria-hidden="true"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <p className="text-[13px] font-semibold text-[#0F172A]">
-                        {step.outcome}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                {/* Icon */}
+                <div
+                  className="w-[42px] h-[42px] sm:w-11 sm:h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105 relative z-10"
+                  style={{
+                    background: "linear-gradient(135deg, #2563EB 0%, #1E40AF 100%)",
+                    boxShadow: "0 4px 16px rgba(37,99,235,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
+                  }}
+                  aria-hidden="true"
+                >
+                  <Icon size={18} className="text-white" strokeWidth={1.75} />
+                </div>
+
+                {/* Content */}
+                <div className="flex flex-col gap-1.5 flex-1 relative z-10">
+                  <h3 className="text-[13px] sm:text-[15px] font-extrabold text-white tracking-[-0.02em] leading-snug">
+                    {step.title}
+                  </h3>
+                  <p className="text-[11px] sm:text-[12px] text-white/65 leading-[1.65]">
+                    {step.description}
+                  </p>
+                </div>
+
+                {/* Duration badge */}
+                <span className="relative z-10 inline-flex items-center text-[10px] font-semibold text-[#60A5FA] bg-blue/[0.12] border border-[#2563EB]/[0.2] px-2.5 py-1 rounded-full w-fit">
+                  {step.duration}
+                </span>
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Bottom CTA */}
@@ -151,23 +152,33 @@ export default function Process() {
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-20 bg-[#0F172A] rounded-3xl p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+          transition={{ duration: 0.5, delay: 0.2, ease }}
+          className="relative rounded-3xl p-5 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6
+            bg-[#0B1426]/90 border border-white/[0.12]"
+          style={{
+            boxShadow: "0 0 0 1px rgba(255,255,255,0.03), 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
+          }}
         >
+          <div
+            className="absolute inset-x-0 top-0 h-px rounded-t-3xl pointer-events-none"
+            style={{ background: "linear-gradient(90deg, transparent 0%, rgba(37,99,235,0.5) 50%, transparent 100%)" }}
+            aria-hidden="true"
+          />
           <div>
-            <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#2563EB] mb-2">
-              Step One is free
+            <p className="text-[11px] font-bold tracking-[0.12em] uppercase text-blue mb-2">
+              Step one is free
             </p>
-            <h3 className="text-[20px] sm:text-[22px] font-extrabold text-white tracking-[-0.02em] mb-1">
+            <h3 className="text-[18px] sm:text-[20px] lg:text-[22px] font-extrabold text-white tracking-[-0.02em] mb-1">
               Ready to start the conversation?
             </h3>
-            <p className="text-[14px] text-white/50">
+            <p className="text-[13px] text-white/55">
               A 30-minute call is all it takes to find out if we are the right fit.
             </p>
           </div>
           <a
             href="#contact"
-            className="shimmer flex-shrink-0 inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[14px] font-semibold px-6 py-3 rounded-xl transition-colors duration-150 active:scale-[0.98]"
+            className="shimmer flex-shrink-0 inline-flex items-center gap-2 bg-blue hover:bg-blue-dark text-white text-[14px] font-semibold px-6 py-3 rounded-xl transition-colors duration-150 active:scale-[0.98]"
+            style={{ boxShadow: "0 4px 20px rgba(37,99,235,0.4)" }}
           >
             Book a Discovery Call
           </a>

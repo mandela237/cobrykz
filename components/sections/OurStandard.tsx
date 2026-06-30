@@ -85,7 +85,7 @@ function LighthouseRing({
           {count}
         </span>
       </div>
-      <span className="text-[13px] font-semibold text-[#0F172A]">{label}</span>
+      <span className="text-[13px] font-semibold text-navy">{label}</span>
     </div>
   );
 }
@@ -94,7 +94,7 @@ export default function OurStandard() {
   return (
     <section
       id="our-standard"
-      className="py-24 lg:py-32 bg-[#F8FAFC]"
+      className="py-14 sm:py-20 lg:py-32 bg-gray-light"
       aria-label="Our standard of work"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
@@ -106,15 +106,15 @@ export default function OurStandard() {
           transition={{ duration: 0.5, ease }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#2563EB] mb-4">
-            Built the COBRYKZ Way
-          </p>
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-[-0.03em] text-[#0F172A] leading-[1.15] mb-5">
+          <h2
+            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] text-navy leading-[1.12] mb-5"
+            style={{ textWrap: "balance" } as React.CSSProperties}
+          >
             This website is
             <br />
-            our portfolio.
+            <span className="font-serif italic font-normal tracking-normal">our portfolio.</span>
           </h2>
-          <p className="text-[16px] text-[#64748B] leading-[1.75]">
+          <p className="text-[14px] sm:text-[16px] text-slate leading-[1.75]">
             We do not have a portfolio of fake client work to show you. Instead,
             we invite you to evaluate the quality of what you are currently
             experiencing. Every decision made on this website represents the
@@ -128,10 +128,10 @@ export default function OurStandard() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.55, ease }}
-          className="bg-white border border-[#E2E8F0] rounded-3xl p-8 lg:p-12 mb-8"
+          className="bg-white border border-border rounded-3xl p-5 sm:p-8 lg:p-12 mb-8"
         >
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-blue-tint flex items-center justify-center">
               <svg
                 width="16" height="16" viewBox="0 0 24 24"
                 fill="none" stroke="#2563EB" strokeWidth="1.5"
@@ -142,8 +142,8 @@ export default function OurStandard() {
               </svg>
             </div>
             <div>
-              <p className="text-[13px] font-bold text-[#0F172A]">Lighthouse Audit</p>
-              <p className="text-[11px] text-[#64748B]">Google Chrome DevTools · Production build</p>
+              <p className="text-[13px] font-bold text-navy">Lighthouse Audit</p>
+              <p className="text-[11px] text-slate">Google Chrome DevTools · Production build</p>
             </div>
           </div>
 
@@ -159,16 +159,16 @@ export default function OurStandard() {
             ))}
           </div>
 
-          <div className="border-t border-[#E2E8F0] pt-8 grid lg:grid-cols-2 gap-8">
+          <div className="border-t border-border pt-8 grid lg:grid-cols-2 gap-8">
             <div>
-              <p className="text-[11px] font-bold tracking-[0.1em] uppercase text-[#64748B] mb-3">
+              <p className="text-[11px] font-bold tracking-[0.1em] uppercase text-slate mb-3">
                 Tech Stack
               </p>
               <div className="flex flex-wrap gap-2">
                 {techStack.map((tech) => (
                   <span
                     key={tech}
-                    className="text-[11px] font-semibold text-[#2563EB] bg-[#EFF6FF] px-2.5 py-1 rounded-full"
+                    className="text-[11px] font-semibold text-blue bg-blue-tint px-2.5 py-1 rounded-full"
                   >
                     {tech}
                   </span>
@@ -176,14 +176,14 @@ export default function OurStandard() {
               </div>
             </div>
             <div>
-              <p className="text-[11px] font-bold tracking-[0.1em] uppercase text-[#64748B] mb-3">
+              <p className="text-[11px] font-bold tracking-[0.1em] uppercase text-slate mb-3">
                 Design Principles
               </p>
               <div className="flex flex-wrap gap-2">
                 {designPrinciples.map((principle) => (
                   <span
                     key={principle}
-                    className="text-[11px] font-semibold text-[#64748B] bg-[#F1F5F9] px-2.5 py-1 rounded-full"
+                    className="text-[11px] font-semibold text-slate bg-gray-100 px-2.5 py-1 rounded-full"
                   >
                     {principle}
                   </span>
@@ -199,7 +199,7 @@ export default function OurStandard() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center text-[14px] text-[#64748B] max-w-xl mx-auto leading-[1.7]"
+          className="text-center text-[14px] text-slate max-w-xl mx-auto leading-[1.7]"
         >
           As real client projects are completed, case studies will be added here.
           The COBRYKZ website will always remain the baseline standard.

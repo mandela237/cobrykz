@@ -7,11 +7,11 @@ import { Plus, Minus } from "lucide-react";
 const faqs = [
   {
     q: "What does a premium website cost?",
-    a: "Pricing depends on the scope and complexity of the project. Most business websites fall between $1,500 and $5,000. Custom web applications are priced separately. We do not believe in one-size-fits-all pricing — your quote is built around what your business actually needs. Book a discovery call and we will give you a clear, honest number within 24 hours.",
+    a: "Pricing depends on the scope and complexity of the project. Projects generally start from $500, and most business websites fall between $1,500 and $5,000. Custom web applications are priced separately. We do not believe in one-size-fits-all pricing — your quote is built around what your business actually needs. Book a discovery call and we will give you a clear, honest number within 24 hours.",
   },
   {
     q: "How long does a project take?",
-    a: "A standard business website takes 3–6 weeks from kickoff to launch. This includes design, development, revisions, and final quality checks. More complex projects — booking systems, custom applications — take longer. We will always give you a timeline before we start, and we honor it.",
+    a: "Most business websites are live within 1–2 weeks from kickoff. This includes design, development, revisions, and final quality checks. More complex projects — booking systems, custom applications — may take a little longer. We will always give you a timeline before we start, and we honor it.",
   },
   {
     q: "What do I need to get started?",
@@ -43,20 +43,20 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-[#E2E8F0] last:border-0">
+    <div className="border-b border-border last:border-0">
       <button
         className="w-full flex items-center justify-between gap-4 py-5 text-left group"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
-        <span className="text-[15px] font-semibold text-[#0F172A] group-hover:text-[#2563EB] transition-colors duration-150 leading-snug">
+        <span className="text-[15px] font-semibold text-navy group-hover:text-blue transition-colors duration-150 leading-snug">
           {question}
         </span>
-        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#F1F5F9] group-hover:bg-[#EFF6FF] flex items-center justify-center transition-colors duration-150">
+        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 group-hover:bg-blue-tint flex items-center justify-center transition-colors duration-150">
           {open ? (
-            <Minus size={14} className="text-[#2563EB]" strokeWidth={2} />
+            <Minus size={14} className="text-blue" strokeWidth={2} />
           ) : (
-            <Plus size={14} className="text-[#64748B]" strokeWidth={2} />
+            <Plus size={14} className="text-slate" strokeWidth={2} />
           )}
         </span>
       </button>
@@ -71,7 +71,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             transition={{ duration: 0.25, ease: [0.4, 0.0, 0.2, 1.0] }}
             className="overflow-hidden"
           >
-            <p className="pb-6 text-[14px] text-[#64748B] leading-[1.75] max-w-2xl">
+            <p className="pb-6 text-[14px] text-slate leading-[1.75] max-w-2xl">
               {answer}
             </p>
           </motion.div>
@@ -85,11 +85,11 @@ export default function FAQ() {
   return (
     <section
       id="faq"
-      className="py-24 lg:py-32 bg-white"
+      className="py-14 sm:py-20 lg:py-32 bg-white"
       aria-label="Frequently asked questions"
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="grid lg:grid-cols-[1fr_2fr] gap-16 items-start">
+        <div className="grid lg:grid-cols-[1fr_2fr] gap-8 lg:gap-16 items-start">
           {/* Left */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -98,21 +98,21 @@ export default function FAQ() {
             transition={{ duration: 0.5, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
             className="lg:sticky lg:top-28"
           >
-            <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#2563EB] mb-4">
-              FAQ
-            </p>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-[-0.03em] text-[#0F172A] leading-[1.15] mb-5">
+            <h2
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] text-navy leading-[1.12] mb-5"
+              style={{ textWrap: "balance" } as React.CSSProperties}
+            >
               Questions we
               <br />
-              get asked.
+              <span className="font-serif italic font-normal tracking-normal">get asked.</span>
             </h2>
-            <p className="text-[15px] text-[#64748B] leading-[1.7] mb-8">
+            <p className="text-[13px] sm:text-[15px] text-slate leading-[1.7] mb-8">
               Honest answers to the questions businesses ask before hiring a
               web development company.
             </p>
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#2563EB] hover:text-[#1D4ED8] transition-colors"
+              className="inline-flex items-center gap-2 text-[14px] font-semibold text-blue hover:text-blue-dark transition-colors"
             >
               Have a different question? &rarr;
             </a>
