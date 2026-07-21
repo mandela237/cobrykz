@@ -4,7 +4,7 @@ import { ArrowDown, ArrowUpRight, ShieldCheck } from "lucide-react";
 
 const mobileHeroSans = Manrope({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
@@ -51,7 +51,7 @@ export default function MobileHero() {
         <div data-mobile-hero-copy className="max-w-[330px]">
           <p
             data-mobile-glass-chip
-            className={`${mobileHeroSans.className} inline-flex min-h-8 items-center gap-2 rounded-full border border-white/75 bg-white/58 px-3 text-[10px] font-medium text-navy shadow-[0_8px_24px_rgba(11,23,40,0.08)] backdrop-blur-xl`}
+            className={`${mobileHeroSans.className} inline-flex min-h-8 items-center gap-2 rounded-full border border-white bg-white/90 px-3 text-[11px] font-semibold text-navy shadow-[0_8px_20px_rgba(11,23,40,0.07)]`}
           >
             <span
               className="h-1.5 w-1.5 rounded-full bg-evergreen"
@@ -62,7 +62,7 @@ export default function MobileHero() {
 
           <h1
             data-mobile-hero-sans="manrope"
-            className={`${mobileHeroSans.className} mt-4 max-w-[310px] text-[30px] font-light leading-[1.08] tracking-normal text-navy min-[375px]:text-[33px]`}
+            className={`${mobileHeroSans.className} mt-4 max-w-[310px] text-[30px] font-normal leading-[1.08] tracking-[-0.015em] text-navy min-[375px]:text-[33px]`}
           >
             A website that
             <span
@@ -74,7 +74,7 @@ export default function MobileHero() {
           </h1>
 
           <p
-            className={`${mobileHeroSans.className} mt-3 max-w-[292px] text-[13px] font-normal leading-[1.65] text-navy/68`}
+            className={`${mobileHeroSans.className} mt-3 max-w-[292px] text-[14px] font-medium leading-[1.6] text-navy/80`}
           >
             Premium websites for local businesses, built directly with Mandela.
           </p>
@@ -90,14 +90,14 @@ export default function MobileHero() {
             <a
               href="#m-services"
               aria-label="Explore services"
-              className="flex min-h-12 min-w-12 items-center justify-center rounded-full border border-white/75 bg-white/45 text-navy shadow-[0_8px_24px_rgba(11,23,40,0.06)] backdrop-blur-xl"
+              className="flex min-h-12 min-w-12 items-center justify-center rounded-full border border-white bg-white/90 text-navy shadow-[0_8px_20px_rgba(11,23,40,0.07)]"
             >
               <ArrowDown size={18} strokeWidth={1.7} aria-hidden="true" />
             </a>
           </div>
 
           <div
-            className={`${mobileHeroSans.className} mt-5 flex items-center gap-2 text-[10px] font-normal text-navy/62`}
+            className={`${mobileHeroSans.className} mt-5 flex items-center gap-2 text-[11px] font-medium text-navy/75`}
           >
             <ShieldCheck
               size={14}

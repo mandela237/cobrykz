@@ -34,7 +34,7 @@ export default function MobileActionBar() {
   return (
     <nav
       aria-label="Quick mobile actions"
-      className={`fixed inset-x-3 bottom-3 z-40 grid grid-cols-[56px_56px_1fr] gap-1 rounded-lg border border-border bg-white/95 p-1.5 shadow-[0_16px_44px_rgba(11,23,40,0.2)] backdrop-blur-xl transition-[transform,opacity] duration-200 ${
+      className={`fixed inset-x-3 bottom-3 z-40 grid grid-cols-[56px_56px_1fr] gap-1 rounded-lg border border-border bg-white p-1.5 shadow-[0_14px_36px_rgba(11,23,40,0.16)] transition-[transform,opacity] duration-200 ${
         show ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-20 opacity-0"
       }`}
     >
@@ -54,7 +54,7 @@ export default function MobileActionBar() {
       </a>
       <a
         href="#m-contact"
-        className="m-control flex items-center justify-center gap-2 bg-blue px-4 text-[12px] font-semibold text-white"
+        className="m-control flex items-center justify-center gap-2 bg-blue px-4 text-[13px] font-semibold text-white"
       >
         Start a project
         <ArrowUpRight size={15} strokeWidth={2.1} aria-hidden="true" />

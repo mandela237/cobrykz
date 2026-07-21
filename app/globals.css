@@ -36,14 +36,6 @@ body {
   font-family:
     var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: geometricPrecision;
-}
-
-img,
-svg {
-  shape-rendering: geometricPrecision;
 }
 
 a,
@@ -188,8 +180,8 @@ button {
 }
 
 .m-body {
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.9375rem;
+  line-height: 1.65;
 }
 
 .m-control {
