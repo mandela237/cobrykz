@@ -52,11 +52,11 @@ export default function Footer() {
               Contact
             </p>
             <a
-              href="mailto:hello@cobrykz.com"
+              href="mailto:info@cobrykz.com"
               className="mt-4 inline-flex items-center gap-2 text-[13px] font-medium text-white transition-colors hover:text-[#9CC8FF]"
             >
               <Mail size={15} strokeWidth={1.8} aria-hidden="true" />
-              hello@cobrykz.com
+              info@cobrykz.com
             </a>
             <a
               href="#contact"

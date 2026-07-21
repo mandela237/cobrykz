@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { ArrowUpRight, Check, Mail } from "lucide-react";
 import CopyProjectNoteButton from "@/components/CopyProjectNoteButton";
 
-const CONTACT_EMAIL = "hello@cobrykz.com";
+const CONTACT_EMAIL = "info@cobrykz.com";
 
 export default function MobileContact() {
   const [status, setStatus] = useState("");

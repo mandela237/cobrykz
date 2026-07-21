@@ -201,7 +201,7 @@ signals.
 
 ### Contact Form
 
-The form builds a drafted email to `hello@cobrykz.com`. The interface explicitly
+The form builds a drafted email to `info@cobrykz.com`. The interface explicitly
 states that nothing is sent until the visitor reviews and sends the email.
 Never display a success state for a message that was not actually delivered.
 

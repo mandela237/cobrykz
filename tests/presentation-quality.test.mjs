@@ -86,7 +86,8 @@ test("provides an honest project-note fallback", () => {
   ].join("\n");
 
   assert.match(contactSources, /CopyProjectNoteButton/g);
-  assert.match(contactSources, /hello@cobrykz\.com/);
+  assert.match(contactSources, /info@cobrykz\.com/);
+  assert.doesNotMatch(contactSources, /hello@cobrykz\.com/);
   assert.match(contactSources, /mailto:/);
   assert.doesNotMatch(contactSources, /message (?:was|has been) sent/i);
   assert.doesNotMatch(

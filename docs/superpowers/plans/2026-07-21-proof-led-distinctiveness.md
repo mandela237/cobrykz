@@ -51,7 +51,7 @@ Assert that rendered source and CSS do not contain `.page-grid`, the `page-grid`
 
 - [ ] **Step 3: Add failing tests for conversion fallback**
 
-Assert `FinalCTA.tsx` and `MobileContact.tsx` each include a copy action, keep `hello@cobrykz.com`, retain mailto draft behavior, and do not contain copy claiming the message was sent.
+Assert `FinalCTA.tsx` and `MobileContact.tsx` each include a copy action, keep `info@cobrykz.com`, retain mailto draft behavior, and do not contain copy claiming the message was sent.
 
 - [ ] **Step 4: Run the tests and verify RED**
 
@@ -240,7 +240,7 @@ git commit -m "refactor: consolidate mobile homepage narrative"
 **Interfaces:**
 - Produces: `CopyProjectNoteButton({ text, className? }: { text: string; className?: string })` client component.
 - Consumes: the same formatted project-note strings already used to build mailto URLs.
-- Preserves: mailto draft behavior and `hello@cobrykz.com` fallback.
+- Preserves: mailto draft behavior and `info@cobrykz.com` fallback.
 
 - [ ] **Step 1: Create the copy fallback component**
 

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import CopyProjectNoteButton from "@/components/CopyProjectNoteButton";
 
-const CONTACT_EMAIL = "hello@cobrykz.com";
+const CONTACT_EMAIL = "info@cobrykz.com";
 
 const expectations = [
   "A reply directly from Mandela",

@@ -153,7 +153,7 @@ but harden it:
 - State clearly that the button opens an email draft.
 - Keep entered content visible if the handoff fails.
 - Provide a copy-to-clipboard alternative for the project note.
-- Provide a visible, copyable `hello@cobrykz.com` fallback.
+- Provide a visible, copyable `info@cobrykz.com` fallback.
 - Never display a sent or success state for a message that was not delivered.
 
 Placeholder text on dark fields must meet WCAG AA contrast when it communicates
