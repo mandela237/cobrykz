@@ -22,10 +22,11 @@ export default function MobileIndustries() {
       <div className="m-shell">
         <p className="m-kicker text-[#83B8FF]">Built for local trust</p>
         <h2 className="m-title mt-3">
-          People should understand your value before they call.
+          Earn the same trust online that you earn face to face.
         </h2>
-        <p className="m-body mt-4 text-white/62">
-          The language changes by industry. The job stays the same.
+        <p className="m-body mt-4 text-white/80">
+          The details change by industry. The website still needs to make your
+          value clear and the next step easy.
         </p>
       </div>
 
@@ -47,7 +48,7 @@ export default function MobileIndustries() {
                 aria-hidden="true"
               />
               <h3 className="mt-5 text-[14px] font-semibold">{industry.title}</h3>
-              <p className="mt-1 text-[10px] leading-4 text-white/48">
+              <p className="mt-1 text-[13px] leading-5 text-white/72">
                 {industry.detail}
               </p>
             </article>
@@ -55,8 +56,8 @@ export default function MobileIndustries() {
         })}
       </div>
 
-      <p className="m-shell mt-4 text-[11px] leading-5 text-white/45">
-        Swipe to explore. Your exact category does not need to be listed.
+      <p className="m-shell mt-4 text-[13px] leading-5 text-white/70">
+        Swipe to explore. Your field does not need to appear here for us to talk.
       </p>
     </section>
   );

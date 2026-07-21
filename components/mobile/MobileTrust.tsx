@@ -29,8 +29,8 @@ export default function MobileTrust() {
                 className="text-[#83B8FF]"
                 aria-hidden="true"
               />
-              <p className="mt-3 text-[12px] font-semibold">{item.title}</p>
-              <p className="mt-1 text-[10px] leading-4 text-white/52">
+              <p className="mt-3 text-[13px] font-semibold">{item.title}</p>
+              <p className="mt-1 text-[13px] leading-5 text-white/72">
                 {item.detail}
               </p>
             </div>

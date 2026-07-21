@@ -12,25 +12,25 @@ import {
 const services = [
   {
     tab: "Website",
-    title: "A website people trust quickly",
+    title: "A website worthy of your business",
     description:
-      "Sharper positioning, a confident visual system, and a clear next action for the people you want to reach.",
+      "Clear positioning, confident design, and an obvious next step for the people you want to reach.",
     outcomes: ["Custom page strategy", "Responsive design and build", "Clear inquiry flow"],
     icon: MonitorSmartphone,
   },
   {
     tab: "Systems",
-    title: "Less friction behind the scenes",
+    title: "Useful systems behind the scenes",
     description:
-      "Practical booking, intake, client, or automation tools shaped around how your business already works.",
+      "Booking, intake, client, or automation tools shaped around how your business actually works.",
     outcomes: ["Booking and intake", "Client portals", "Useful automation"],
     icon: Blocks,
   },
   {
     tab: "Care",
-    title: "A site that stays credible",
+    title: "Direct help after launch",
     description:
-      "Ongoing updates and improvements without the overhead or distance of a traditional agency.",
+      "Updates and improvements without the layers or distance of a traditional agency.",
     outcomes: ["Content updates", "Quality reviews", "Clear growth advice"],
     icon: Wrench,
   },
@@ -46,10 +46,10 @@ export default function MobileServices() {
       <div className="m-shell">
         <p className="m-kicker text-blue">What COBRYKZ builds</p>
         <h2 className="m-title mt-3 text-navy">
-          Start with the website. Add only what helps.
+          Start with the website. Add more only when it earns its place.
         </h2>
         <p className="m-body mt-4 text-slate">
-          Technology should make the business easier to choose or easier to run.
+          Each piece should make the business easier to choose or easier to run.
         </p>
 
         <div

@@ -7,22 +7,22 @@ const questions = [
   {
     question: "What will my website cost?",
     answer:
-      "After a short call, you receive a clear proposal with scope, price, and payment timing before making a decision.",
+      "After a short call, I send a proposal that states the scope, price, and payment timing before you make a decision.",
   },
   {
     question: "How quickly can we launch?",
     answer:
-      "Focused business websites often launch in one to two weeks. Larger sites and custom tools receive a timeline before work begins.",
+      "A focused business website can often launch in one to two weeks. Larger sites and custom tools receive a schedule before work begins.",
   },
   {
     question: "What do I need to start?",
     answer:
-      "An understanding of your services, customers, and goals is enough for the first conversation. Existing content can be refined together.",
+      "An understanding of your services, customers, and goals is enough for the first call. Existing content can be refined as part of the work.",
   },
   {
     question: "Do you use templates?",
     answer:
-      "No pre-built theme is reskinned and sold as custom work. The message, structure, and visual direction are shaped for your business.",
+      "I do not reskin a pre-built theme and sell it as custom work. The message, structure, and visual direction are shaped for your business.",
   },
   {
     question: "What happens after launch?",
@@ -39,7 +39,7 @@ export default function MobileFAQ() {
       <div className="m-shell">
         <p className="m-kicker text-blue">Quick answers</p>
         <h2 className="m-title mt-3 text-navy">
-          The useful questions, without the sales script.
+          Straight answers, without the sales script.
         </h2>
 
         <div className="mt-7 border-t border-border">
@@ -67,7 +67,7 @@ export default function MobileFAQ() {
                 </button>
                 {isOpen && (
                   <div id={`mobile-faq-${index}`} className="pb-5 pr-9">
-                    <p className="text-[12px] leading-5 text-slate">
+                    <p className="text-[13px] leading-5 text-slate">
                       {item.answer}
                     </p>
                   </div>

@@ -18,9 +18,9 @@ export default function MobileFooter() {
           showWordmark
           wordmarkSize="sm"
         />
-        <p className="mt-4 max-w-[310px] text-[11px] leading-5 text-white/45">
-          Founder-led websites and practical digital systems for local
-          businesses.
+        <p className="mt-4 max-w-[310px] text-[13px] leading-5 text-white/72">
+          Websites and practical digital systems, designed and built directly
+          by Mandela Atud.
         </p>
         <nav className="mt-6 flex gap-5" aria-label="Mobile footer">
           {links.map((link) => (
@@ -33,7 +33,7 @@ export default function MobileFooter() {
             </a>
           ))}
         </nav>
-        <p className="mt-5 border-t border-white/10 pt-5 text-[10px] text-white/32">
+        <p className="mt-5 border-t border-white/10 pt-5 text-[13px] text-white/65">
           &copy; {year} COBRYKZ. Built by Mandela Atud.
         </p>
       </div>

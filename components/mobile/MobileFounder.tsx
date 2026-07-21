@@ -26,28 +26,28 @@ export default function MobileFounder() {
           </div>
           <div className="pb-1">
             <p className="text-[18px] font-bold">Mandela Atud</p>
-            <p className="mt-1 text-[11px] text-white/50">
+            <p className="mt-1 text-[13px] text-white/72">
               Founder, designer, and developer
             </p>
             <blockquote className="mt-4 font-serif text-[17px] leading-[1.4] text-white/90">
-              “Make the real value easier to recognize.”
+              &ldquo;Make the real value easier to recognize.&rdquo;
             </blockquote>
           </div>
         </div>
 
         <h2 className="mt-7 text-[28px] font-extrabold leading-[1.08]">
-          Your project stays close to the person doing the work.
+          The name on the studio is the person doing the work.
         </h2>
-        <p className="mt-4 text-[13px] leading-6 text-white/62">
-          COBRYKZ is intentionally small. That keeps the thinking, communication,
-          and execution connected.
+        <p className="mt-4 text-[14px] leading-6 text-white/82">
+          I keep COBRYKZ intentionally small so I can stay involved from the
+          first question through the final review.
         </p>
 
         <ul className="mt-6 space-y-3">
           {promises.map((promise) => (
             <li
               key={promise}
-              className="flex items-start gap-3 text-[12px] leading-5 text-white/72"
+              className="flex items-start gap-3 text-[13px] leading-5 text-white/82"
             >
               <Check
                 size={14}

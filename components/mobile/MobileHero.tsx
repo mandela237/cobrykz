@@ -76,7 +76,7 @@ export default function MobileHero() {
           <p
             className={`${mobileHeroSans.className} mt-3 max-w-[292px] text-[14px] font-medium leading-[1.6] text-navy/80`}
           >
-            Premium websites for local businesses, built directly with Mandela.
+            Built for local businesses whose website no longer matches their work.
           </p>
 
           <div className="mt-5 flex items-center gap-3">

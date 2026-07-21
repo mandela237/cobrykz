@@ -7,15 +7,15 @@ const fitLists = [
   {
     tab: "Good fit",
     items: [
-      "Your business is strong but the website undersells it.",
-      "You value direct access and clear recommendations.",
-      "You want a focused launch without agency layers.",
+      "Your business is established, but the website undersells it.",
+      "You value direct access and understandable recommendations.",
+      "You want a focused launch rather than a long agency process.",
     ],
   },
   {
     tab: "Not a fit",
     items: [
-      "You only need the cheapest available template.",
+      "Your only priority is the cheapest available template.",
       "You want a large account team and several approval layers.",
       "You want spectacle to matter more than clarity.",
     ],
@@ -31,7 +31,7 @@ export default function MobileFit() {
       <div className="m-shell">
         <p className="m-kicker text-blue">Before we talk</p>
         <h2 className="m-title mt-3 text-navy">
-          A good fit should be clear on both sides.
+          The right working relationship is clear from the start.
         </h2>
 
         <div
@@ -81,7 +81,7 @@ export default function MobileFit() {
                   <Minus size={13} strokeWidth={2.2} aria-hidden="true" />
                 )}
               </span>
-              <p className="text-[12px] leading-5 text-slate">{item}</p>
+              <p className="text-[13px] leading-5 text-slate">{item}</p>
             </div>
           ))}
         </div>

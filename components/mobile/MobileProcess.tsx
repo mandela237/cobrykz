@@ -9,28 +9,28 @@ const steps = [
     title: "Discovery",
     duration: "30 min",
     detail:
-      "We define the business problem, the audience, and the outcome that would make the project worthwhile.",
+      "We define the business problem, the audience, and what the current website is failing to do.",
   },
   {
     number: "02",
     title: "Direction",
     duration: "2-3 days",
     detail:
-      "You review the message, structure, and visual direction before the full build moves forward.",
+      "You review the message, structure, and visual direction before I commit to the full build.",
   },
   {
     number: "03",
     title: "Build and review",
     duration: "4-7 days",
     detail:
-      "The responsive experience is built, shared, and refined through one focused review cycle.",
+      "I build the responsive site, show you the work in progress, and take it through a focused review.",
   },
   {
     number: "04",
     title: "Launch and care",
     duration: "Ongoing",
     detail:
-      "The live site is verified and the right level of ongoing support is agreed together.",
+      "We check the live site, launch it, and agree on the support that makes sense afterward.",
   },
 ];
 
@@ -46,11 +46,11 @@ export default function MobileProcess() {
       <div className="m-shell">
         <p className="m-kicker text-blue">The path to launch</p>
         <h2 className="m-title mt-3 text-navy">
-          Four steps. No mystery in the middle.
+          Four steps, with no black box in the middle.
         </h2>
         <p className="m-body mt-4 text-slate">
-          Focused business sites often launch in one to two weeks. Scope decides
-          the exact timing.
+          A focused business website can often launch in one to two weeks. We
+          agree on the exact schedule before work starts.
         </p>
 
         <div className="mt-7 border-t border-border">
@@ -86,7 +86,7 @@ export default function MobileProcess() {
                 </button>
                 {isOpen && (
                   <div id={`mobile-step-${index}`} className="pb-5 pl-[47px] pr-8">
-                    <p className="text-[12px] leading-5 text-slate">
+                    <p className="text-[13px] leading-5 text-slate">
                       {step.detail}
                     </p>
                   </div>
