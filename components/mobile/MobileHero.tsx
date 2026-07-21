@@ -1,17 +1,10 @@
 import Image from "next/image";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
-import { ArrowDown, ArrowUpRight, ShieldCheck } from "lucide-react";
+import { Manrope } from "next/font/google";
+import { ArrowDown, ArrowUpRight } from "lucide-react";
 
 const mobileHeroSans = Manrope({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const mobileHeroSerif = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: "400",
-  style: "italic",
   display: "swap",
 });
 
@@ -66,8 +59,8 @@ export default function MobileHero() {
           >
             A website that
             <span
-              data-mobile-hero-serif="cormorant-garamond"
-              className={`${mobileHeroSerif.className} mt-1 block text-[38px] font-normal italic leading-none text-blue`}
+              data-mobile-hero-serif="playfair"
+              className="mt-1 block font-serif text-[38px] font-normal italic leading-none text-blue"
             >
               earns trust.
             </span>
@@ -96,21 +89,6 @@ export default function MobileHero() {
             </a>
           </div>
 
-          <div
-            className={`${mobileHeroSans.className} mt-5 flex items-center gap-2 text-[11px] font-medium text-navy/75`}
-          >
-            <ShieldCheck
-              size={14}
-              strokeWidth={1.7}
-              className="shrink-0 text-evergreen"
-              aria-hidden="true"
-            />
-            <span>Direct access</span>
-            <span className="h-3 w-px bg-navy/15" aria-hidden="true" />
-            <span>Custom-built</span>
-            <span className="h-3 w-px bg-navy/15" aria-hidden="true" />
-            <span>Clear process</span>
-          </div>
         </div>
       </div>
     </section>

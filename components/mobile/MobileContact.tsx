@@ -2,24 +2,25 @@
 
 import { FormEvent, useState } from "react";
 import { ArrowUpRight, Check, Mail } from "lucide-react";
+import CopyProjectNoteButton from "@/components/CopyProjectNoteButton";
 
 const CONTACT_EMAIL = "hello@cobrykz.com";
 
 export default function MobileContact() {
   const [status, setStatus] = useState("");
+  const [note, setNote] = useState("Name: \nEmail: \n\nProject note:\n");
+
+  const noteFromForm = (form: HTMLFormElement) => {
+    const data = new FormData(form);
+    return [`Name: ${data.get("name") || ""}`, `Email: ${data.get("email") || ""}`, "", "Project note:", String(data.get("message") || "")].join("\n");
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const name = String(data.get("name") || "");
-    const email = String(data.get("email") || "");
-    const message = String(data.get("message") || "");
     const subject = encodeURIComponent(`COBRYKZ project note from ${name}`);
-    const body = encodeURIComponent(
-      [`Name: ${name}`, `Email: ${email}`, "", "Project note:", message].join(
-        "\n",
-      ),
-    );
+    const body = encodeURIComponent(noteFromForm(event.currentTarget));
 
     setStatus("Opening your email app with the note ready.");
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
@@ -64,6 +65,7 @@ export default function MobileContact() {
           method="post"
           encType="text/plain"
           onSubmit={handleSubmit}
+          onChange={(event) => setNote(noteFromForm(event.currentTarget))}
           className="mt-7"
         >
           <label className="block">
@@ -75,7 +77,7 @@ export default function MobileContact() {
               name="name"
               autoComplete="name"
               required
-              className="m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none placeholder:text-white/28 focus:border-[#83B8FF]/70"
+              className="m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none placeholder:text-white/60 focus:border-[#83B8FF]/70"
               placeholder="Your name"
             />
           </label>
@@ -89,7 +91,7 @@ export default function MobileContact() {
               name="email"
               autoComplete="email"
               required
-              className="m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none placeholder:text-white/28 focus:border-[#83B8FF]/70"
+              className="m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none placeholder:text-white/60 focus:border-[#83B8FF]/70"
               placeholder="you@business.com"
             />
           </label>
@@ -102,7 +104,7 @@ export default function MobileContact() {
               name="message"
               required
               rows={5}
-              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none placeholder:text-white/28 focus:border-[#83B8FF]/70"
+              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none placeholder:text-white/60 focus:border-[#83B8FF]/70"
               placeholder="What is not working today, and what would better look like?"
             />
           </label>
@@ -111,9 +113,13 @@ export default function MobileContact() {
             type="submit"
             className="shimmer m-control mt-5 inline-flex w-full items-center justify-center gap-2 bg-blue px-5 text-[14px] font-semibold text-white"
           >
-            Open project email
+            Open email draft
             <ArrowUpRight size={16} strokeWidth={2.1} aria-hidden="true" />
           </button>
+
+          <div className="mt-3 flex justify-center text-white/85">
+            <CopyProjectNoteButton text={note} />
+          </div>
 
           <p className="mt-3 text-[13px] leading-5 text-white/70">
             This opens a draft to {CONTACT_EMAIL}. Nothing sends until you

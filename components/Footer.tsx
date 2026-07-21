@@ -3,7 +3,7 @@ import CobrykzLogo from "./CobrykzLogo";
 
 const links = [
   { label: "Services", href: "#services" },
-  { label: "Standard", href: "#our-standard" },
+  { label: "Inside the build", href: "#inside-build" },
   { label: "Process", href: "#process" },
   { label: "About", href: "#founder" },
   { label: "Questions", href: "#faq" },

@@ -2,16 +2,9 @@ import Image from "next/image";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  Check,
   CircleCheck,
 } from "lucide-react";
 import TrustField from "@/components/TrustField";
-
-const commitments = [
-  "Direct founder access",
-  "Custom design and code",
-  "Clear path from kickoff to launch",
-];
 
 export default function Hero() {
   return (
@@ -23,15 +16,11 @@ export default function Hero() {
         className="absolute inset-0 bg-[linear-gradient(112deg,#FFFFFF_0%,#F7FAFF_52%,#EAF2FF_100%)]"
         aria-hidden="true"
       />
-      <div
-        className="page-grid absolute inset-y-0 right-0 w-[58%] opacity-60"
-        aria-hidden="true"
-      />
       <TrustField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-90 lg:block" />
 
       <div className="section-shell relative z-10 grid items-center gap-9 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16">
         <div className="max-w-[700px]">
-          <div className="mb-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-normal text-slate md:mb-6">
+          <div className="mb-5 flex items-center gap-3 text-[13px] font-semibold text-slate md:mb-6">
             <span className="h-2 w-2 rounded-full bg-evergreen" aria-hidden="true" />
             Founder-led websites for local businesses
           </div>
@@ -66,19 +55,6 @@ export default function Hero() {
             </a>
           </div>
 
-          <ul className="mt-9 hidden gap-3 border-t border-border pt-5 text-[13px] text-slate xl:grid xl:grid-cols-3">
-            {commitments.map((commitment) => (
-              <li key={commitment} className="flex items-start gap-2">
-                <Check
-                  size={15}
-                  strokeWidth={2.2}
-                  className="mt-0.5 flex-none text-evergreen"
-                  aria-hidden="true"
-                />
-                <span>{commitment}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div className="relative mx-auto w-full max-w-[470px] lg:ml-auto">

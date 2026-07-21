@@ -12,10 +12,10 @@ const navLinks = [
     id: "services",
   },
   {
-    label: "Standard",
-    desktopHref: "#our-standard",
-    mobileHref: "#m-standard",
-    id: "our-standard",
+    label: "Inside the build",
+    desktopHref: "#inside-build",
+    mobileHref: "#m-inside-build",
+    id: "inside-build",
   },
   {
     label: "Process",
@@ -159,7 +159,7 @@ export default function Navbar() {
           aria-modal="true"
           aria-label="Navigation menu"
         >
-          <div className="page-grid absolute inset-0 opacity-55" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gray-light" aria-hidden="true" />
           <nav className="relative mx-auto flex w-full max-w-md flex-1 flex-col">
             <p className="mb-5 text-[11px] font-bold uppercase tracking-normal text-slate">
               Navigate

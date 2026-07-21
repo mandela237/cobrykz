@@ -26,7 +26,7 @@ export default function MobileStandard() {
           of the care and judgment I bring to a project.
         </p>
 
-        <div className="page-grid mt-7 rounded-lg border border-border bg-gray-light p-5">
+        <div className="mt-7 rounded-lg border border-border bg-gray-light p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase text-blue">

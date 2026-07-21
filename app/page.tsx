@@ -1,10 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/sections/Hero";
-import SocialProof from "@/components/sections/SocialProof";
+import BuildArtifact from "@/components/sections/BuildArtifact";
 import Services from "@/components/sections/Services";
-import WhyCOBRYKZ from "@/components/sections/WhyCOBRYKZ";
 import Industries from "@/components/sections/Industries";
-import OurStandard from "@/components/sections/OurStandard";
 import Process from "@/components/sections/Process";
 import Founder from "@/components/sections/Founder";
 import GoodFit from "@/components/sections/GoodFit";
@@ -23,11 +21,9 @@ export default function Home() {
         </div>
         <div className="hidden md:block">
           <Hero />
-          <SocialProof />
+          <BuildArtifact />
           <Services />
-          <WhyCOBRYKZ />
           <Industries />
-          <OurStandard />
           <Process />
           <Founder />
           <GoodFit />

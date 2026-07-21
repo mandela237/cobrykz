@@ -62,7 +62,7 @@ test("renders first-party proof instead of repeated reassurance sections", () =>
     /<OurStandard \/>|<MobileStandard \/>|<WhyCOBRYKZ \/>|<MobileWhy \/>/,
   );
 
-  const proofSources = `${read("components/sections/BuildArtifact.tsx")}\n${read("components/mobile/MobileBuildArtifact.tsx")}`;
+  const proofSources = `${read("components/sections/BuildArtifact.tsx")}\n${read("components/mobile/MobileBuildArtifact.tsx")}\n${read("components/content/buildArtifact.ts")}`;
   assert.match(proofSources, /Lead with reputation/);
   assert.match(proofSources, /Compose mobile separately/);
   assert.match(proofSources, /Create one conversion path/);

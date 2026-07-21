@@ -60,7 +60,7 @@ export default function OurStandard() {
                   cobrykz.com / quality review
                 </div>
               </div>
-              <div className="page-grid px-5 py-7 md:px-7 md:py-9">
+              <div className="bg-gray-light px-5 py-7 md:px-7 md:py-9">
                 <div className="mb-8 flex items-center justify-between gap-5">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-normal text-blue">

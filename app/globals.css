@@ -138,13 +138,6 @@ button {
   background-size: 28px 28px;
 }
 
-.page-grid {
-  background-image:
-    linear-gradient(rgba(31, 94, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(31, 94, 255, 0.045) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-
 .section-shell {
   width: min(100% - 2.5rem, 1200px);
   margin-inline: auto;
@@ -195,7 +188,7 @@ button {
 }
 
 :focus-visible {
-  border-radius: 6px;
+  border-radius: 8px;
   outline: 2px solid rgba(31, 94, 255, 0.78);
   outline-offset: 3px;
 }

@@ -7,6 +7,7 @@ import {
   Mail,
   MessageSquareText,
 } from "lucide-react";
+import CopyProjectNoteButton from "@/components/CopyProjectNoteButton";
 
 const CONTACT_EMAIL = "hello@cobrykz.com";
 
@@ -18,30 +19,23 @@ const expectations = [
 
 export default function FinalCTA() {
   const [status, setStatus] = useState("");
+  const [note, setNote] = useState("Name: \nBusiness: \nEmail: \nProject type: \n\nWhat I need help with:\n");
+
+  const noteFromForm = (form: HTMLFormElement) => {
+    const data = new FormData(form);
+    return [`Name: ${data.get("name") || ""}`, `Business: ${data.get("business") || ""}`, `Email: ${data.get("email") || ""}`, `Project type: ${data.get("projectType") || ""}`, "", "What I need help with:", String(data.get("message") || "")].join("\n");
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const name = String(data.get("name") || "");
     const business = String(data.get("business") || "");
-    const email = String(data.get("email") || "");
-    const projectType = String(data.get("projectType") || "");
-    const message = String(data.get("message") || "");
 
     const subject = encodeURIComponent(
       `COBRYKZ project inquiry from ${business || name}`,
     );
-    const body = encodeURIComponent(
-      [
-        `Name: ${name}`,
-        `Business: ${business}`,
-        `Email: ${email}`,
-        `Project type: ${projectType}`,
-        "",
-        "What I need help with:",
-        message,
-      ].join("\n"),
-    );
+    const body = encodeURIComponent(noteFromForm(event.currentTarget));
 
     setStatus("Opening your email app with the project details ready.");
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
@@ -102,6 +96,7 @@ export default function FinalCTA() {
           method="post"
           encType="text/plain"
           onSubmit={handleSubmit}
+          onChange={(event) => setNote(noteFromForm(event.currentTarget))}
           className="rounded-lg border border-white/12 bg-white/[0.055] p-5 shadow-[0_26px_80px_rgba(0,0,0,0.22)] md:p-7"
         >
           <div className="mb-6 flex items-center gap-3 border-b border-white/10 pb-5">
@@ -130,7 +125,7 @@ export default function FinalCTA() {
                 name="name"
                 autoComplete="name"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
                 placeholder="Your name"
               />
             </label>
@@ -144,7 +139,7 @@ export default function FinalCTA() {
                 name="business"
                 autoComplete="organization"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
                 placeholder="Your business"
               />
             </label>
@@ -158,7 +153,7 @@ export default function FinalCTA() {
                 name="email"
                 autoComplete="email"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
                 placeholder="you@business.com"
               />
             </label>
@@ -193,7 +188,7 @@ export default function FinalCTA() {
               name="message"
               required
               rows={5}
-              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
               placeholder="A short description of the problem, goal, or opportunity."
             />
           </label>
@@ -202,9 +197,13 @@ export default function FinalCTA() {
             type="submit"
             className="shimmer mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.28)] transition-colors hover:bg-blue-dark"
           >
-            Open project email
+            Open email draft
             <ArrowUpRight size={17} strokeWidth={2.1} aria-hidden="true" />
           </button>
+
+          <div className="mt-3 flex justify-center text-white/85">
+            <CopyProjectNoteButton text={note} />
+          </div>
 
           <p className="mt-4 text-[13px] leading-5 text-white/70">
             This opens a drafted email to {CONTACT_EMAIL}. Nothing is sent
