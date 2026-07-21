@@ -47,7 +47,7 @@ export default function CobrykzLogo({
       </svg>
       {showWordmark && (
         <span
-          className={`font-extrabold tracking-[0.07em] ${wordmarkSizes[wordmarkSize]} ${wordmarkColors[variant]}`}
+          className={`font-extrabold tracking-normal ${wordmarkSizes[wordmarkSize]} ${wordmarkColors[variant]}`}
         >
           COBRYKZ
         </span>

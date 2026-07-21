@@ -1,0 +1,64 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { ArrowUpRight, LayoutGrid, Route } from "lucide-react";
+
+export default function MobileActionBar() {
+  const [visible, setVisible] = useState(false);
+  const [contactVisible, setContactVisible] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(min-width: 768px)").matches) return;
+
+    const handleScroll = () => setVisible(window.scrollY > 560);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    const contact = document.getElementById("m-contact");
+    const observer = contact
+      ? new IntersectionObserver(
+          ([entry]) => setContactVisible(entry.isIntersecting),
+          { threshold: 0.08 },
+        )
+      : null;
+    if (contact && observer) observer.observe(contact);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      observer?.disconnect();
+    };
+  }, []);
+
+  const show = visible && !contactVisible;
+
+  return (
+    <nav
+      aria-label="Quick mobile actions"
+      className={`fixed inset-x-3 bottom-3 z-40 grid grid-cols-[56px_56px_1fr] gap-1 rounded-lg border border-border bg-white/95 p-1.5 shadow-[0_16px_44px_rgba(11,23,40,0.2)] backdrop-blur-xl transition-[transform,opacity] duration-200 ${
+        show ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-20 opacity-0"
+      }`}
+    >
+      <a
+        href="#m-services"
+        aria-label="Services"
+        className="m-control flex items-center justify-center text-slate"
+      >
+        <LayoutGrid size={18} strokeWidth={1.9} aria-hidden="true" />
+      </a>
+      <a
+        href="#m-process"
+        aria-label="Process"
+        className="m-control flex items-center justify-center text-slate"
+      >
+        <Route size={18} strokeWidth={1.9} aria-hidden="true" />
+      </a>
+      <a
+        href="#m-contact"
+        className="m-control flex items-center justify-center gap-2 bg-blue px-4 text-[12px] font-semibold text-white"
+      >
+        Start a project
+        <ArrowUpRight size={15} strokeWidth={2.1} aria-hidden="true" />
+      </a>
+    </nav>
+  );
+}

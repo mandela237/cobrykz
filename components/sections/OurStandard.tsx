@@ -1,209 +1,127 @@
-"use client";
+import {
+  Accessibility,
+  Check,
+  Gauge,
+  LayoutTemplate,
+  Smartphone,
+} from "lucide-react";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
-
-const ease = [0.0, 0.0, 0.2, 1.0] as [number, number, number, number];
-
-const lighthouseScores = [
-  { label: "Performance",    score: 100, color: "#16A34A" },
-  { label: "Accessibility",  score: 100, color: "#2563EB" },
-  { label: "Best Practices", score: 100, color: "#D97706" },
-  { label: "SEO",            score: 100, color: "#7C3AED" },
+const standards = [
+  {
+    title: "Custom from the first decision",
+    description:
+      "The structure starts with your audience, offer, and business goals rather than a pre-built theme.",
+    icon: LayoutTemplate,
+  },
+  {
+    title: "Designed for the screen in hand",
+    description:
+      "Mobile is treated as a primary experience, with stable layouts and clear touch targets.",
+    icon: Smartphone,
+  },
+  {
+    title: "Performance-conscious by default",
+    description:
+      "Images, motion, and code are kept intentional so the site feels polished without becoming heavy.",
+    icon: Gauge,
+  },
+  {
+    title: "Accessible interactions",
+    description:
+      "Keyboard focus, contrast, labels, and reduced motion are part of the build, not cleanup work.",
+    icon: Accessibility,
+  },
 ];
-
-const techStack = [
-  "Next.js 16", "React 19", "TypeScript",
-  "Tailwind CSS v4", "Framer Motion", "Lucide Icons", "Geist Font",
-];
-
-const designPrinciples = [
-  "Mobile-first", "Accessibility-first", "Performance-first",
-  "No templates", "Custom components", "Semantic HTML",
-];
-
-const circumference = 2 * Math.PI * 32;
-
-function LighthouseRing({
-  label, score, color, index,
-}: {
-  label: string;
-  score: number;
-  color: string;
-  index: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!isInView) return;
-    const duration = 1400;
-    const startTime = performance.now();
-
-    const tick = (now: number) => {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(eased * score));
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-
-    requestAnimationFrame(tick);
-  }, [isInView, score]);
-
-  return (
-    <div ref={ref} className="flex flex-col items-center text-center">
-      <div className="relative w-28 h-28 mb-4" aria-label={`${label}: ${score}`}>
-        <svg viewBox="0 0 80 80" className="w-full h-full -rotate-90" aria-hidden="true">
-          <circle
-            cx="40" cy="40" r="32"
-            fill="none"
-            stroke="#F1F5F9"
-            strokeWidth="5"
-          />
-          <motion.circle
-            cx="40" cy="40" r="32"
-            fill="none"
-            stroke={color}
-            strokeWidth="5"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            initial={{ strokeDashoffset: circumference }}
-            animate={
-              isInView
-                ? { strokeDashoffset: circumference * (1 - score / 100) }
-                : { strokeDashoffset: circumference }
-            }
-            transition={{ duration: 1.4, delay: index * 0.12, ease }}
-          />
-        </svg>
-        <span
-          className="absolute inset-0 flex items-center justify-center text-[22px] font-black"
-          style={{ color }}
-          aria-hidden="true"
-        >
-          {count}
-        </span>
-      </div>
-      <span className="text-[13px] font-semibold text-navy">{label}</span>
-    </div>
-  );
-}
 
 export default function OurStandard() {
   return (
-    <section
-      id="our-standard"
-      className="py-14 sm:py-20 lg:py-32 bg-gray-light"
-      aria-label="Our standard of work"
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, ease }}
-          className="text-center max-w-2xl mx-auto mb-16"
-        >
-          <h2
-            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] text-navy leading-[1.12] mb-5"
-            style={{ textWrap: "balance" } as React.CSSProperties}
-          >
-            This website is
-            <br />
-            <span className="font-serif italic font-normal tracking-normal">our portfolio.</span>
-          </h2>
-          <p className="text-[14px] sm:text-[16px] text-slate leading-[1.75]">
-            We do not have a portfolio of fake client work to show you. Instead,
-            we invite you to evaluate the quality of what you are currently
-            experiencing. Every decision made on this website represents the
-            standard every client can expect.
-          </p>
-        </motion.div>
+    <section id="our-standard" className="bg-white py-20 md:py-28">
+      <div className="section-shell">
+        <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
+          <div>
+            <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">
+              Proof you can inspect
+            </p>
+            <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
+              The standard is visible before you hire me.
+            </h2>
+            <p className="mt-5 max-w-[540px] text-[15px] leading-[1.8] text-slate md:text-[17px]">
+              This website is not a substitute for client proof. It is a direct
+              demonstration of the care, clarity, and technical judgment you
+              can expect on your project.
+            </p>
 
-        {/* Lighthouse card */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55, ease }}
-          className="bg-white border border-border rounded-3xl p-5 sm:p-8 lg:p-12 mb-8"
-        >
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 rounded-lg bg-blue-tint flex items-center justify-center">
-              <svg
-                width="16" height="16" viewBox="0 0 24 24"
-                fill="none" stroke="#2563EB" strokeWidth="1.5"
-                strokeLinecap="round" strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-[13px] font-bold text-navy">Lighthouse Audit</p>
-              <p className="text-[11px] text-slate">Google Chrome DevTools · Production build</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {lighthouseScores.map((item, i) => (
-              <LighthouseRing
-                key={item.label}
-                label={item.label}
-                score={item.score}
-                color={item.color}
-                index={i}
-              />
-            ))}
-          </div>
-
-          <div className="border-t border-border pt-8 grid lg:grid-cols-2 gap-8">
-            <div>
-              <p className="text-[11px] font-bold tracking-[0.1em] uppercase text-slate mb-3">
-                Tech Stack
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {techStack.map((tech) => (
-                  <span
-                    key={tech}
-                    className="text-[11px] font-semibold text-blue bg-blue-tint px-2.5 py-1 rounded-full"
-                  >
-                    {tech}
-                  </span>
-                ))}
+            <div className="mt-8 overflow-hidden rounded-lg border border-border bg-gray-light shadow-[0_24px_70px_rgba(11,23,40,0.10)]">
+              <div className="flex h-11 items-center gap-2 border-b border-border bg-white px-4">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#DCE5F0]" aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#DCE5F0]" aria-hidden="true" />
+                <span className="h-2.5 w-2.5 rounded-full bg-blue/30" aria-hidden="true" />
+                <div className="ml-2 flex h-6 flex-1 items-center rounded bg-gray-light px-3 text-[10px] text-slate">
+                  cobrykz.com / quality review
+                </div>
               </div>
-            </div>
-            <div>
-              <p className="text-[11px] font-bold tracking-[0.1em] uppercase text-slate mb-3">
-                Design Principles
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {designPrinciples.map((principle) => (
-                  <span
-                    key={principle}
-                    className="text-[11px] font-semibold text-slate bg-gray-100 px-2.5 py-1 rounded-full"
-                  >
-                    {principle}
-                  </span>
-                ))}
+              <div className="page-grid px-5 py-7 md:px-7 md:py-9">
+                <div className="mb-8 flex items-center justify-between gap-5">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-normal text-blue">
+                      Build standard
+                    </p>
+                    <p className="mt-2 text-[22px] font-bold tracking-normal text-navy">
+                      Clear. Useful. Ready for real clients.
+                    </p>
+                  </div>
+                  <div className="hidden h-12 w-12 items-center justify-center rounded-lg bg-navy text-white sm:flex">
+                    <Check size={22} strokeWidth={2} aria-hidden="true" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 border-y border-border bg-white">
+                  {["Design", "Build", "Verify"].map((item, index) => (
+                    <div
+                      key={item}
+                      className={`px-3 py-4 text-center ${
+                        index > 0 ? "border-l border-border" : ""
+                      }`}
+                    >
+                      <p className="text-[10px] font-bold uppercase tracking-normal text-slate">
+                        {item}
+                      </p>
+                      <div className="mx-auto mt-3 h-1.5 max-w-[70px] rounded-full bg-blue/15">
+                        <div
+                          className="h-full rounded-full bg-blue"
+                          style={{ width: `${76 + index * 10}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </motion.div>
 
-        {/* Footer note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center text-[14px] text-slate max-w-xl mx-auto leading-[1.7]"
-        >
-          As real client projects are completed, case studies will be added here.
-          The COBRYKZ website will always remain the baseline standard.
-        </motion.p>
+          <div className="border-t border-border lg:mt-[76px]">
+            {standards.map((standard) => {
+              const Icon = standard.icon;
+              return (
+                <article
+                  key={standard.title}
+                  className="grid gap-4 border-b border-border py-6 sm:grid-cols-[48px_1fr]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-tint text-blue">
+                    <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="text-[17px] font-bold text-navy">
+                      {standard.title}
+                    </h3>
+                    <p className="mt-2 text-[14px] leading-7 text-slate">
+                      {standard.description}
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

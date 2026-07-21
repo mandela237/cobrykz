@@ -1,181 +1,137 @@
-"use client";
+import {
+  ArrowUpRight,
+  Blocks,
+  Check,
+  MonitorSmartphone,
+  Wrench,
+} from "lucide-react";
 
-import { motion } from "framer-motion";
-import { Globe, LayoutTemplate, Cpu, Zap, Palette, Search } from "lucide-react";
-
-const ease = [0.0, 0.0, 0.2, 1.0] as [number, number, number, number];
-
-const secondaryServices = [
+const services = [
   {
-    icon: LayoutTemplate,
-    title: "Web Applications",
+    label: "Core",
+    title: "A website that makes the right first impression",
     description:
-      "Custom booking systems, client portals, and internal tools built to handle the specific way your business operates.",
+      "Clear positioning, confident visual design, and a fast build that turns attention into a next step.",
+    outcomes: [
+      "Custom strategy and page structure",
+      "Responsive design and development",
+      "Conversion-focused calls to action",
+    ],
+    icon: MonitorSmartphone,
+    featured: true,
   },
   {
-    icon: Cpu,
-    title: "AI Solutions",
+    label: "Extend",
+    title: "Digital systems that remove friction",
     description:
-      "AI-powered tools integrated into your website or workflow — chatbots, automation, and intelligent lead capture.",
-    tag: "Coming Soon",
+      "Practical tools for businesses ready to make booking, intake, lead handling, or internal work easier.",
+    outcomes: [
+      "Booking and intake flows",
+      "Client portals and internal tools",
+      "Thoughtful AI and automation",
+    ],
+    icon: Blocks,
+    featured: false,
   },
   {
-    icon: Zap,
-    title: "Business Automation",
+    label: "Support",
+    title: "Ongoing care without agency overhead",
     description:
-      "Systems that save you hours every week by automating repetitive tasks — from follow-ups to scheduling.",
-    tag: "Coming Soon",
-  },
-  {
-    icon: Palette,
-    title: "Branding",
-    description:
-      "Logo design, brand identity, and visual systems that make your business look like it belongs at the top of your industry.",
-  },
-  {
-    icon: Search,
-    title: "SEO & Growth",
-    description:
-      "Google Business Profile optimization, SEO foundations, and analytics setup so new clients can find you online.",
+      "A dependable technical partner for updates, improvements, and the details that keep your site credible.",
+    outcomes: [
+      "Content and feature updates",
+      "Performance and quality reviews",
+      "Clear recommendations as you grow",
+    ],
+    icon: Wrench,
+    featured: false,
   },
 ];
 
 export default function Services() {
   return (
-    <section
-      id="services"
-      className="py-14 sm:py-20 lg:py-32 bg-gray-light"
-      aria-label="Services"
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-
-        {/* Header — no eyebrow */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, ease }}
-          className="max-w-xl mb-10 sm:mb-14"
-        >
-          <h2
-            className="text-2xl sm:text-3xl lg:text-[2.75rem] font-extrabold tracking-[-0.035em] text-navy leading-[1.12] mb-5"
-            style={{ textWrap: "balance" } as React.CSSProperties}
-          >
-            Services Designed to
-            <br />
-            <span className="font-serif italic font-normal tracking-normal">Grow Your Business</span>
-          </h2>
-          <p className="text-[14px] sm:text-[16px] text-slate leading-[1.7] max-w-[420px]">
-            Every service is built around one outcome: more clients. We handle
-            the technology — you focus on what you do best.
-          </p>
-        </motion.div>
-
-        {/* Featured: Website Design */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55, ease }}
-          className="bg-navy rounded-2xl p-5 sm:p-8 lg:p-10 mb-4 grid lg:grid-cols-[1fr_auto] gap-6 lg:gap-16 items-center"
-        >
+    <section id="services" className="bg-white py-20 md:py-28">
+      <div className="section-shell">
+        <div className="grid gap-8 border-b border-border pb-10 md:grid-cols-[0.9fr_1.1fr] md:items-end md:pb-14">
           <div>
-            <span className="inline-flex items-center text-[10px] font-bold tracking-[0.08em] uppercase bg-blue text-white px-3 py-1.5 rounded-full mb-5">
-              Most Popular
-            </span>
-            <div className="flex items-center gap-4 mb-4">
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: "linear-gradient(135deg, #2563EB 0%, #1E40AF 100%)",
-                  boxShadow: "0 4px 16px rgba(37,99,235,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
-                }}
-              >
-                <Globe size={22} className="text-white" strokeWidth={1.5} />
-              </div>
-              <h3 className="font-serif italic font-normal text-[24px] sm:text-[28px] text-white tracking-normal">
-                Website Design
-              </h3>
-            </div>
-            <p className="text-[15px] text-white/60 leading-[1.7] max-w-xl">
-              Custom-built websites that reflect your brand, convert visitors,
-              and grow your business — no templates, ever.
+            <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">
+              What COBRYKZ builds
             </p>
+            <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
+              A better website first. Smarter systems when you need them.
+            </h2>
           </div>
-          <div className="flex-shrink-0">
-            <a
-              href="#contact"
-              className="shimmer inline-flex items-center gap-2 bg-blue hover:bg-blue-dark text-white text-[14px] font-semibold px-6 py-3 rounded-xl transition-colors duration-150 whitespace-nowrap"
-            >
-              Start a Project
-            </a>
-          </div>
-        </motion.div>
+          <p className="max-w-[520px] text-[15px] leading-[1.8] text-slate md:justify-self-end md:text-[17px]">
+            Local businesses rarely need more technology. They need the right
+            technology, explained clearly and built around how people actually
+            choose, call, book, and buy.
+          </p>
+        </div>
 
-        {/* Secondary services — editorial list, not card grid */}
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ border: "1px solid #E2E8F0" }}
-        >
-          {secondaryServices.map((service, i) => {
+        <div className="divide-y divide-border">
+          {services.map((service) => {
             const Icon = service.icon;
-            const isComingSoon = service.tag === "Coming Soon";
             return (
-              <motion.div
+              <article
                 key={service.title}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.35, delay: i * 0.05, ease }}
-                className={`group flex items-center gap-5 sm:gap-7 px-5 sm:px-8 py-5 sm:py-6 transition-colors duration-200 ${
-                  i < secondaryServices.length - 1 ? "border-b border-border" : ""
-                } ${isComingSoon ? "opacity-55" : "hover:bg-[#F0F6FF] cursor-default"}`}
+                className={`grid gap-5 py-9 md:grid-cols-[150px_1fr_0.9fr] md:gap-8 md:py-11 ${
+                  service.featured ? "relative" : ""
+                }`}
               >
-                <div
-                  className={`flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-transform duration-200 ${
-                    !isComingSoon ? "group-hover:scale-105" : ""
-                  }`}
-                  style={{
-                    background: "linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)",
-                    boxShadow: "0 2px 8px rgba(37,99,235,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
-                  }}
-                >
-                  <Icon size={18} strokeWidth={1.5} className="text-blue" />
+                {service.featured && (
+                  <div
+                    className="absolute -inset-x-5 inset-y-0 -z-10 bg-blue-tint/55 md:-inset-x-8"
+                    aria-hidden="true"
+                  />
+                )}
+                <div className="flex items-center gap-3 md:items-start">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue/15 bg-white text-blue shadow-[0_8px_20px_rgba(31,94,255,0.08)]">
+                    <Icon size={19} strokeWidth={1.9} aria-hidden="true" />
+                  </div>
+                  <span className="pt-0 text-[11px] font-bold uppercase tracking-normal text-slate md:pt-3">
+                    {service.label}
+                  </span>
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2.5 mb-0.5 sm:mb-1.5 flex-wrap">
-                    <h3
-                      className={`text-[14px] sm:text-[16px] font-bold tracking-[-0.01em] transition-colors duration-200 ${
-                        isComingSoon
-                          ? "text-navy"
-                          : "text-navy group-hover:text-blue"
-                      }`}
-                    >
-                      {service.title}
-                    </h3>
-                    {isComingSoon && (
-                      <span className="text-[10px] font-bold tracking-[0.06em] uppercase bg-gray-100 text-slate px-2 py-0.5 rounded-full">
-                        Coming Soon
-                      </span>
-                    )}
-                  </div>
-                  <p className="hidden sm:block text-[13px] sm:text-[14px] text-slate leading-[1.65]">
+                <div>
+                  <h3 className="max-w-[540px] text-[23px] font-bold leading-[1.25] tracking-normal text-navy md:text-[28px]">
+                    {service.title}
+                  </h3>
+                  <p className="mt-3 max-w-[560px] text-[14px] leading-7 text-slate md:text-[15px]">
                     {service.description}
                   </p>
                 </div>
 
-                {!isComingSoon && (
-                  <span
-                    className="flex-shrink-0 text-blue text-[18px] opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    aria-hidden="true"
-                  >
-                    →
-                  </span>
-                )}
-              </motion.div>
+                <ul className="space-y-3 self-center text-[13px] text-charcoal md:text-[14px]">
+                  {service.outcomes.map((outcome) => (
+                    <li key={outcome} className="flex items-start gap-3">
+                      <Check
+                        size={16}
+                        strokeWidth={2.1}
+                        className="mt-0.5 flex-none text-evergreen"
+                        aria-hidden="true"
+                      />
+                      {outcome}
+                    </li>
+                  ))}
+                </ul>
+              </article>
             );
           })}
+        </div>
+
+        <div className="mt-8 flex flex-col items-start justify-between gap-5 border-t border-border pt-8 sm:flex-row sm:items-center">
+          <p className="max-w-[580px] text-[14px] leading-6 text-slate">
+            Not sure what you need yet? Start with the business problem. The
+            right scope comes after.
+          </p>
+          <a
+            href="#contact"
+            className="inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-blue transition-colors hover:text-blue-dark"
+          >
+            Talk through your project
+            <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />
+          </a>
         </div>
       </div>
     </section>

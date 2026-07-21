@@ -1,124 +1,64 @@
-"use client";
+import { Eye, Handshake, MessageCircleMore } from "lucide-react";
 
-import { motion } from "framer-motion";
-
-const ease = [0.0, 0.0, 0.2, 1.0] as [number, number, number, number];
-
-const differentiators = [
+const principles = [
   {
-    title: "No Templates. Ever.",
+    title: "One person stays accountable",
     description:
-      "Every project starts from a blank canvas. Your business is unique — your website should be too. We never recycle layouts or use pre-built themes.",
+      "The person on the discovery call is the same person making the strategy, design, and build decisions.",
+    icon: Handshake,
   },
   {
-    title: "Direct Founder Access",
+    title: "Decisions come with reasons",
     description:
-      "You work directly with Mandela Atud, not a junior account manager. Every decision, every design review — the same person, from start to finish.",
+      "You see what is changing, why it matters, and what needs your input. No vague agency language.",
+    icon: MessageCircleMore,
   },
   {
-    title: "Premium Quality, Built to Last",
+    title: "The work is made for real use",
     description:
-      "We build websites that still feel premium in three years. No shortcuts in code, no compromises in design, no cutting corners on performance.",
-  },
-  {
-    title: "Long-term Thinking",
-    description:
-      "We are not a vendor. We are a partner. Our work is designed to scale with your business, and our relationship does not end at launch.",
-  },
-  {
-    title: "Full-Stack Capability",
-    description:
-      "From initial design to deployed production code — we handle it all in-house. No outsourcing, no handoffs, no communication gaps.",
+      "Every screen is reviewed for clarity, mobile behavior, accessibility, and the next action a visitor should take.",
+    icon: Eye,
   },
 ];
 
 export default function WhyCOBRYKZ() {
   return (
-    <section
-      id="why-cobrykz"
-      className="py-14 sm:py-20 lg:py-32 bg-white"
-      aria-label="Why COBRYKZ"
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+    <section id="why-cobrykz" className="bg-gray-light py-20 md:py-28">
+      <div className="section-shell grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+        <div>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">
+            A clearer working relationship
+          </p>
+          <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
+            The work is premium. The relationship stays simple.
+          </h2>
+          <blockquote className="mt-8 border-l border-blue/30 pl-5 font-serif text-[24px] leading-[1.45] text-charcoal md:text-[28px]">
+            “You should never have to wonder who owns the next step.”
+          </blockquote>
+        </div>
 
-          {/* Left — sticky thesis column */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.55, ease }}
-            className="lg:sticky lg:top-28"
-          >
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.04em] text-navy leading-[1.1] mb-7"
-              style={{ textWrap: "balance" } as React.CSSProperties}
-            >
-              Built different.
-              <br />
-              <span className="font-serif italic font-normal tracking-normal">By design.</span>
-            </h2>
-            <p className="text-[14px] sm:text-[16px] text-slate leading-[1.75] mb-10">
-              Most agencies will give you a templated website, a junior
-              designer, and a 12-week timeline. We do the opposite.
-            </p>
-
-            {/* Elevated blockquote */}
-            <blockquote className="relative">
-              <div
-                className="text-[96px] font-serif leading-[0.72] mb-2 select-none pointer-events-none -ml-1"
-                aria-hidden="true"
-                style={{ color: "rgba(37,99,235,0.15)" }}
+        <div className="border-t border-border">
+          {principles.map((principle) => {
+            const Icon = principle.icon;
+            return (
+              <article
+                key={principle.title}
+                className="grid gap-4 border-b border-border py-7 sm:grid-cols-[52px_1fr] sm:gap-5"
               >
-                &ldquo;
-              </div>
-              <p
-                className="font-serif italic font-normal text-[19px] sm:text-[22px] lg:text-[25px] text-navy leading-[1.45] tracking-normal mb-5"
-                style={{ textWrap: "balance" } as React.CSSProperties}
-              >
-                If COBRYKZ puts this much care into its own business,
-                I want them to build mine.
-              </p>
-              <footer className="text-[11px] text-slate-light tracking-[0.08em] uppercase">
-                The standard we hold ourselves to
-              </footer>
-            </blockquote>
-          </motion.div>
-
-          {/* Right — editorial numbered list */}
-          <div className="divide-y divide-border">
-            {differentiators.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: i * 0.08, ease }}
-                className="group flex gap-5 sm:gap-7 py-8 sm:py-9"
-              >
-                {/* Decorative number */}
-                <div className="flex-shrink-0 w-10 sm:w-14 pt-0.5" aria-hidden="true">
-                  <span
-                    className="block text-[38px] sm:text-[48px] font-serif italic leading-none select-none"
-                    style={{ color: "rgba(37,99,235,0.13)" }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-blue/15 bg-white text-blue">
+                  <Icon size={20} strokeWidth={1.8} aria-hidden="true" />
                 </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-serif italic font-normal text-[18px] sm:text-[21px] text-navy leading-tight tracking-normal mb-2.5 group-hover:text-blue transition-colors duration-200">
-                    {item.title}
+                <div>
+                  <h3 className="text-[18px] font-bold tracking-normal text-navy md:text-[20px]">
+                    {principle.title}
                   </h3>
-                  <p className="text-[13px] sm:text-[14px] text-slate leading-[1.72]">
-                    {item.description}
+                  <p className="mt-2 max-w-[590px] text-[14px] leading-7 text-slate md:text-[15px]">
+                    {principle.description}
                   </p>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

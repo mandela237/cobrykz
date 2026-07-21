@@ -1,127 +1,80 @@
-"use client";
-
-import { motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Building2,
+  Cross,
+  HardHat,
+  Scissors,
+  Utensils,
+} from "lucide-react";
 
 const industries = [
-  "Restaurants",
-  "Barbershops",
-  "Hair Salons",
-  "Law Firms",
-  "Medical Practices",
-  "Construction Companies",
-  "Cleaning Services",
-  "Churches",
-  "Nonprofits",
-  "Real Estate",
-  "African-Owned Businesses",
-  "Dental Practices",
-  "Spas & Wellness",
-  "Auto Shops",
-  "Accountants",
-  "Coaches & Consultants",
-  "Event Planners",
-  "Fitness Studios",
+  { label: "Health and wellness", icon: Cross },
+  { label: "Trades and construction", icon: HardHat },
+  { label: "Professional services", icon: BriefcaseBusiness },
+  { label: "Food and hospitality", icon: Utensils },
+  { label: "Beauty and personal care", icon: Scissors },
+  { label: "Community organizations", icon: Building2 },
 ];
-
-const container = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.04 },
-  },
-};
-
-const tag = {
-  hidden: { opacity: 0, scale: 0.85 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.35, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] },
-  },
-};
 
 export default function Industries() {
   return (
-    <section
-      id="industries"
-      className="relative py-14 sm:py-20 lg:py-32 bg-navy overflow-hidden"
-      aria-label="Industries we serve"
-    >
-      {/* Background glow */}
+    <section id="industries" className="relative overflow-hidden bg-navy py-20 text-white md:py-24">
+      <div className="dot-grid absolute inset-0 opacity-70" aria-hidden="true" />
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-y-0 right-0 w-1/3 bg-[linear-gradient(135deg,transparent,rgba(31,94,255,0.12))]"
         aria-hidden="true"
-        style={{
-          background: [
-            "radial-gradient(ellipse 72% 65% at 50% 50%, rgba(37,99,235,0.11) 0%, transparent 68%)",
-            "radial-gradient(ellipse 40% 45% at 90% 10%, rgba(99,102,241,0.09) 0%, transparent 52%)",
-          ].join(", "),
-        }}
       />
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 relative">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
-          className="text-center max-w-2xl mx-auto mb-14"
-        >
-          <h2
-            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] text-white leading-[1.12] mb-5"
-            style={{ textWrap: "balance" } as React.CSSProperties}
-          >
-            We build for businesses
-            <br />
-            <span className="font-serif italic font-normal tracking-normal">like yours.</span>
+      <div className="section-shell relative">
+        <div className="grid gap-8 border-b border-white/12 pb-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+          <h2 className="text-balance max-w-[720px] text-[34px] font-extrabold leading-[1.08] tracking-normal md:text-[48px]">
+            Built for businesses people need to trust before they call.
           </h2>
-          <p className="text-[14px] sm:text-[16px] text-white/70 leading-[1.75]">
-            Every industry has its own language, its own clients, and its own
-            standards. We speak yours — and we build websites that make your
-            visitors feel at home from the first second.
+          <p className="max-w-[480px] text-[15px] leading-[1.8] text-white/65 lg:justify-self-end">
+            The details change by industry. The job stays the same: make your
+            value easy to understand and the next step easy to take.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Tag cloud */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          className="flex flex-wrap gap-3 justify-center"
-        >
-          {industries.map((industry) => (
-            <motion.div
-              key={industry}
-              variants={tag}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#0B1426]/90 border border-white/[0.14] hover:bg-[#0E1A30] hover:border-white/[0.22] transition-all duration-200 cursor-default"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-blue flex-shrink-0" />
-              <span className="text-[13px] font-medium text-white/75 tracking-[0.01em]">
-                {industry}
-              </span>
-            </motion.div>
-          ))}
-        </motion.div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3">
+          {industries.map((industry, index) => {
+            const Icon = industry.icon;
+            return (
+              <div
+                key={industry.label}
+                className={`flex min-h-[116px] items-center gap-4 border-white/12 py-6 ${
+                  index > 0 ? "sm:border-l sm:pl-6" : ""
+                } ${index >= 2 ? "border-t" : ""} ${
+                  index === 2 ? "sm:border-l-0 lg:border-l" : ""
+                } ${index === 3 ? "sm:border-l lg:border-l-0" : ""}`}
+              >
+                <Icon
+                  size={21}
+                  strokeWidth={1.7}
+                  className="flex-none text-[#83B8FF]"
+                  aria-hidden="true"
+                />
+                <span className="text-[14px] font-medium text-white/88">
+                  {industry.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
-          className="text-center mt-12"
-        >
-          <p className="text-[14px] text-white/60 mb-4">
-            Don&apos;t see your industry listed?
+        <div className="mt-8 flex flex-col items-start justify-between gap-5 border-t border-white/12 pt-8 sm:flex-row sm:items-center">
+          <p className="text-[13px] leading-6 text-white/55">
+            Different kind of business? The first conversation is still about
+            your clients, not your category.
           </p>
           <a
             href="#contact"
-            className="text-[14px] font-semibold text-blue hover:text-[#3b82f6] transition-colors"
+            className="inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white transition-colors hover:text-[#9CC8FF]"
           >
-            We work with any business — reach out &rarr;
+            Tell me what you do
+            <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />
           </a>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -1,296 +1,222 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { CheckCircle, ChevronDown } from "lucide-react";
-import CobrykzLogo from "../CobrykzLogo";
+import { FormEvent, useState } from "react";
+import {
+  ArrowUpRight,
+  Check,
+  Mail,
+  MessageSquareText,
+} from "lucide-react";
 
-const businessTypes = [
-  "Restaurant / Food Service",
-  "Barbershop / Hair Salon",
-  "Medical / Dental Practice",
-  "Law Firm",
-  "Construction / Trades",
-  "Cleaning Service",
-  "Church / Nonprofit",
-  "Real Estate",
-  "Retail",
-  "Fitness / Wellness",
-  "Professional Services",
-  "Other",
+const CONTACT_EMAIL = "hello@cobrykz.com";
+
+const expectations = [
+  "A direct reply from Mandela",
+  "A practical first recommendation",
+  "Clear scope and pricing before work starts",
 ];
 
-interface FormState {
-  name: string;
-  businessName: string;
-  businessType: string;
-  email: string;
-  phone: string;
-  message: string;
-}
-
 export default function FinalCTA() {
-  const [form, setForm] = useState<FormState>({
-    name: "",
-    businessName: "",
-    businessType: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const name = String(data.get("name") || "");
+    const business = String(data.get("business") || "");
+    const email = String(data.get("email") || "");
+    const projectType = String(data.get("projectType") || "");
+    const message = String(data.get("message") || "");
+
+    const subject = encodeURIComponent(
+      `COBRYKZ project inquiry from ${business || name}`,
+    );
+    const body = encodeURIComponent(
+      [
+        `Name: ${name}`,
+        `Business: ${business}`,
+        `Email: ${email}`,
+        `Project type: ${projectType}`,
+        "",
+        "What I need help with:",
+        message,
+      ].join("\n"),
+    );
+
+    setStatus("Opening your email app with the project details ready.");
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
   };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
-
-  const inputClass =
-    "w-full text-[14px] font-normal px-4 py-3.5 rounded-xl border border-white/[0.16] bg-[#08111F] text-white placeholder:text-white/50 outline-none transition-all duration-150 focus:border-[#3B82F6]/70 focus:bg-[#060D19] focus:ring-2 focus:ring-[#2563EB]/20";
 
   return (
     <section
       id="contact"
-      className="relative py-14 sm:py-20 lg:py-32 bg-navy dot-grid"
-      aria-label="Contact us"
+      className="relative overflow-hidden bg-navy py-20 text-white md:py-28"
     >
-      {/* Background glow */}
+      <div className="dot-grid absolute inset-0 opacity-65" aria-hidden="true" />
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(145deg,transparent,rgba(31,94,255,0.14))]"
         aria-hidden="true"
-        style={{
-          background: [
-            "radial-gradient(ellipse 60% 70% at 85% 40%, rgba(37,99,235,0.20) 0%, transparent 60%)",
-            "radial-gradient(ellipse 45% 55% at 15% 65%, rgba(99,102,241,0.13) 0%, transparent 55%)",
-          ].join(", "),
-        }}
       />
+      <div className="section-shell relative grid gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:gap-20">
+        <div>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-[#83B8FF]">
+            Start with the business problem
+          </p>
+          <h2 className="text-balance text-[36px] font-extrabold leading-[1.06] tracking-normal md:text-[52px]">
+            Let’s make your online presence match the quality of your work.
+          </h2>
+          <p className="mt-6 max-w-[560px] text-[15px] leading-[1.85] text-white/66 md:text-[17px]">
+            Share what your business does, what is not working today, and what
+            you want to improve. The first response comes from the person who
+            would be doing the work.
+          </p>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 relative">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-          {/* Left: Personal note */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
-            className="lg:sticky lg:top-28"
-          >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.04em] text-white leading-[1.1] mb-6">
-              Ready to build
-              <br />
-              <span className="font-serif italic font-normal tracking-normal">something real?</span>
-            </h2>
-
-            <p className="text-[14px] sm:text-[16px] text-white/75 leading-[1.75] mb-8">
-              Fill out the form and I will personally review your project and
-              reach out within 24 hours to schedule a discovery call. No
-              automated responses. No sales pitch. Just a real conversation
-              about your business.
-            </p>
-
-            {/* What to expect */}
-            <div className="space-y-3 mb-10">
-              {[
-                "30-minute discovery call, no charge",
-                "Honest assessment of what you need",
-                "Clear pricing within 24 hours",
-                "No pressure. No obligation.",
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <CheckCircle size={16} className="text-[#16A34A] flex-shrink-0" strokeWidth={2} />
-                  <span className="text-[14px] text-white/80">{item}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Founder signature */}
-            <div className="flex items-center gap-4 pt-8 border-t border-white/10">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-white/10 flex items-center justify-center">
-                <CobrykzLogo size={22} variant="reversed" />
-              </div>
-              <div>
-                <p className="text-[13px] font-bold text-white">Mandela Atud</p>
-                <p className="text-[11px] text-white/60">Founder & CEO, COBRYKZ</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right: Form */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
-          >
-            {submitted ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                className="bg-[#08111F]/95 border border-white/[0.16] rounded-3xl p-10 text-center"
-                  style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 12px 34px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.08)" }}
+          <ul className="mt-8 space-y-4">
+            {expectations.map((expectation) => (
+              <li
+                key={expectation}
+                className="flex items-center gap-3 text-[13px] text-white/74"
               >
-                <div className="w-16 h-16 rounded-full bg-[#16A34A]/15 flex items-center justify-center mx-auto mb-5">
-                  <CheckCircle size={32} className="text-[#16A34A]" strokeWidth={1.5} />
-                </div>
-                <h3 className="text-[22px] font-extrabold text-white tracking-[-0.02em] mb-3">
-                  Message received.
-                </h3>
-                <p className="text-[15px] text-white/75 leading-[1.7] mb-6">
-                  Mandela will review your project personally and reach out
-                  within 24 hours to schedule your discovery call.
-                </p>
-                <div className="space-y-3 text-left bg-[#0B1426] border border-white/[0.1] rounded-2xl p-5">
-                  <p className="text-[12px] font-bold text-white/60 uppercase tracking-[0.1em] mb-3">
-                    What happens next
-                  </p>
-                  {[
-                    "You receive a confirmation email",
-                    "Mandela reviews your project details",
-                    "You are contacted within 24 hours",
-                    "Discovery call scheduled at your convenience",
-                  ].map((step, i) => (
-                    <div key={step} className="flex items-center gap-3">
-                      <span className="w-5 h-5 rounded-full bg-blue/20 text-blue flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                        {i + 1}
-                      </span>
-                      <span className="text-[13px] text-white/75">{step}</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
-              <form
-                onSubmit={handleSubmit}
-                className="bg-[#08111F]/95 border border-white/[0.16] rounded-3xl p-7 lg:p-9 space-y-5"
-                style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.05), 0 12px 34px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.08)" }}
-                noValidate
-              >
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-[12px] font-semibold text-white/75 mb-2" htmlFor="name">
-                      Your Name <span className="text-[#DC2626]" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      required
-                      placeholder="Mandela Atud"
-                      value={form.name}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] font-semibold text-white/75 mb-2" htmlFor="businessName">
-                      Business Name <span className="text-[#DC2626]" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      id="businessName"
-                      name="businessName"
-                      type="text"
-                      required
-                      placeholder="Your Business Name"
-                      value={form.businessName}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
+                <Check
+                  size={16}
+                  strokeWidth={2.1}
+                  className="text-[#78D7B2]"
+                  aria-hidden="true"
+                />
+                {expectation}
+              </li>
+            ))}
+          </ul>
 
-                <div>
-                  <label className="block text-[12px] font-semibold text-white/75 mb-2" htmlFor="businessType">
-                    Business Type <span className="text-[#DC2626]" aria-hidden="true">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="businessType"
-                      name="businessType"
-                      required
-                      value={form.businessType}
-                      onChange={handleChange}
-                      className={`${inputClass} appearance-none pr-10 cursor-pointer`}
-                    >
-                      <option value="" disabled>Select your industry</option>
-                      {businessTypes.map((t) => (
-                        <option key={t} value={t}>{t}</option>
-                      ))}
-                    </select>
-                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-light pointer-events-none" />
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-[12px] font-semibold text-white/75 mb-2" htmlFor="email">
-                      Email Address <span className="text-[#DC2626]" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      placeholder="you@yourbusiness.com"
-                      value={form.email}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[12px] font-semibold text-white/75 mb-2" htmlFor="phone">
-                      Phone Number
-                    </label>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="+1 (000) 000-0000"
-                      value={form.phone}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[12px] font-semibold text-white/75 mb-2" htmlFor="message">
-                    Tell us about your project <span className="text-[#DC2626]" aria-hidden="true">*</span>
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    required
-                    rows={4}
-                    placeholder="Describe your business and what you're looking to build or improve..."
-                    value={form.message}
-                    onChange={handleChange}
-                    className={`${inputClass} resize-none`}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="shimmer w-full bg-blue hover:bg-blue-dark text-white text-[15px] font-semibold py-4 rounded-xl transition-colors duration-150 active:scale-[0.99] shadow-[0_4px_24px_rgba(37,99,235,0.35)]"
-                >
-                  Send My Project Details
-                </button>
-
-                <p className="text-center text-[11px] text-white/60 leading-snug">
-                  By submitting, you agree that Mandela Atud will contact you
-                  directly. No spam. No automated responses.
-                </p>
-              </form>
-            )}
-          </motion.div>
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="mt-9 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white transition-colors hover:text-[#9CC8FF]"
+          >
+            <Mail size={17} strokeWidth={1.9} aria-hidden="true" />
+            {CONTACT_EMAIL}
+            <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+          </a>
         </div>
+
+        <form
+          action={`mailto:${CONTACT_EMAIL}`}
+          method="post"
+          encType="text/plain"
+          onSubmit={handleSubmit}
+          className="rounded-lg border border-white/12 bg-white/[0.055] p-5 shadow-[0_26px_80px_rgba(0,0,0,0.22)] md:p-7"
+        >
+          <div className="mb-6 flex items-center gap-3 border-b border-white/10 pb-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08] text-[#83B8FF]">
+              <MessageSquareText
+                size={20}
+                strokeWidth={1.8}
+                aria-hidden="true"
+              />
+            </div>
+            <div>
+              <h3 className="text-[18px] font-bold">Project note</h3>
+              <p className="mt-1 text-[12px] text-white/55">
+                A few useful details are enough to begin.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-2 block text-[12px] font-semibold text-white/75">
+                Your name
+              </span>
+              <input
+                type="text"
+                name="name"
+                autoComplete="name"
+                required
+                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+                placeholder="Your name"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[12px] font-semibold text-white/75">
+                Business name
+              </span>
+              <input
+                type="text"
+                name="business"
+                autoComplete="organization"
+                required
+                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+                placeholder="Your business"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[12px] font-semibold text-white/75">
+                Email
+              </span>
+              <input
+                type="email"
+                name="email"
+                autoComplete="email"
+                required
+                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+                placeholder="you@business.com"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-[12px] font-semibold text-white/75">
+                Project type
+              </span>
+              <select
+                name="projectType"
+                required
+                defaultValue=""
+                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors focus:border-[#83B8FF]/70"
+              >
+                <option value="" disabled>
+                  Choose one
+                </option>
+                <option>New business website</option>
+                <option>Website redesign</option>
+                <option>Web app or client portal</option>
+                <option>Automation or AI tool</option>
+                <option>Not sure yet</option>
+              </select>
+            </label>
+          </div>
+
+          <label className="mt-5 block">
+            <span className="mb-2 block text-[12px] font-semibold text-white/75">
+              What needs to change?
+            </span>
+            <textarea
+              name="message"
+              required
+              rows={5}
+              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none transition-colors placeholder:text-white/32 focus:border-[#83B8FF]/70"
+              placeholder="A short description of the problem, goal, or opportunity."
+            />
+          </label>
+
+          <button
+            type="submit"
+            className="shimmer mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.28)] transition-colors hover:bg-blue-dark"
+          >
+            Open project email
+            <ArrowUpRight size={17} strokeWidth={2.1} aria-hidden="true" />
+          </button>
+
+          <p className="mt-4 text-[11px] leading-5 text-white/48">
+            This opens a drafted email to {CONTACT_EMAIL}. Nothing is sent
+            until you review and send it.
+          </p>
+          {status && (
+            <p className="mt-3 text-[12px] font-medium text-[#9AE4C6]" role="status">
+              {status}
+            </p>
+          )}
+        </form>
       </div>
     </section>
   );

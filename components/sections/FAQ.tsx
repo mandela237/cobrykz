@@ -1,134 +1,98 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 
-const faqs = [
+const questions = [
   {
-    q: "What does a premium website cost?",
-    a: "Pricing depends on the scope and complexity of the project. Projects generally start from $500, and most business websites fall between $1,500 and $5,000. Custom web applications are priced separately. We do not believe in one-size-fits-all pricing — your quote is built around what your business actually needs. Book a discovery call and we will give you a clear, honest number within 24 hours.",
+    question: "What does a website project cost?",
+    answer:
+      "Pricing depends on the number of pages, content needs, and any custom functionality. After a short discovery call, you receive a clear proposal with the scope, price, and payment schedule before deciding whether to move forward.",
   },
   {
-    q: "How long does a project take?",
-    a: "Most business websites are live within 1–2 weeks from kickoff. This includes design, development, revisions, and final quality checks. More complex projects — booking systems, custom applications — may take a little longer. We will always give you a timeline before we start, and we honor it.",
+    question: "How long does a typical project take?",
+    answer:
+      "A focused business website can often move from kickoff to launch in one to two weeks. Larger sites, booking systems, portals, or content-heavy projects take longer. The timeline is agreed before work begins.",
   },
   {
-    q: "What do I need to get started?",
-    a: "Not much. You need a clear idea of your business, a logo (or we can discuss branding), and a willingness to give us direction during the design phase. We handle everything technical — domain setup, hosting guidance, analytics, performance optimization. You just need to show up and give feedback.",
+    question: "What do I need before we start?",
+    answer:
+      "A clear understanding of your services, your customers, and what you want the website to change is enough for the first call. Existing brand assets and content are helpful, but they do not need to be perfect before we speak.",
   },
   {
-    q: "Do you use templates?",
-    a: "Never. Every COBRYKZ website is built from scratch, in code, for your business specifically. We do not use Wix, Squarespace, WordPress themes, or any pre-built templates. This is a non-negotiable part of our standard.",
+    question: "Do you use templates?",
+    answer:
+      "No pre-built themes are reskinned and sold as custom work. Reusable code patterns may support quality and speed behind the scenes, but the strategy, structure, and visual system are developed for your business.",
   },
   {
-    q: "How many revisions are included?",
-    a: "We include two full revision rounds in every project — one after the design phase and one after development. Most projects are approved before we reach the second round. We do not charge for small adjustments after launch if they are within reasonable scope.",
+    question: "How are revisions handled?",
+    answer:
+      "The direction is reviewed early so large decisions are settled before the full build. Your proposal defines the review stages and included revisions, which keeps feedback focused and prevents surprise costs.",
   },
   {
-    q: "Do you offer ongoing support?",
-    a: "Yes. After launch, we offer a monthly support retainer for businesses that want ongoing updates, content changes, and performance monitoring. We also provide a 30-day free support window after every launch to address any issues.",
+    question: "Can you support the site after launch?",
+    answer:
+      "Yes. Support can cover updates, small improvements, performance reviews, and new functionality. The right arrangement depends on how often your business expects the site to change.",
   },
   {
-    q: "What technology do you use?",
-    a: "We build with Next.js, React, TypeScript, and Tailwind CSS — the same technology stack used by major technology companies. Your website will be fast, accessible, easy to maintain, and built to scale. We do not use outdated or bloated technology.",
-  },
-  {
-    q: "How do I get started?",
-    a: "Fill out the contact form below or reach out directly. We will set up a 30-minute discovery call at no charge. No pitch, no pressure — just a conversation about your business and whether we are the right fit for each other.",
+    question: "Do you build web apps, AI tools, or automation?",
+    answer:
+      "Yes, when the technology solves a clear business problem. These projects begin with the workflow and desired outcome, then use the simplest reliable system that can do the job.",
   },
 ];
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="border-b border-border last:border-0">
-      <button
-        className="w-full flex items-center justify-between gap-4 py-5 text-left group"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-      >
-        <span className="text-[15px] font-semibold text-navy group-hover:text-blue transition-colors duration-150 leading-snug">
-          {question}
-        </span>
-        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 group-hover:bg-blue-tint flex items-center justify-center transition-colors duration-150">
-          {open ? (
-            <Minus size={14} className="text-blue" strokeWidth={2} />
-          ) : (
-            <Plus size={14} className="text-slate" strokeWidth={2} />
-          )}
-        </span>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="answer"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.4, 0.0, 0.2, 1.0] }}
-            className="overflow-hidden"
-          >
-            <p className="pb-6 text-[14px] text-slate leading-[1.75] max-w-2xl">
-              {answer}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
 export default function FAQ() {
-  return (
-    <section
-      id="faq"
-      className="py-14 sm:py-20 lg:py-32 bg-white"
-      aria-label="Frequently asked questions"
-    >
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="grid lg:grid-cols-[1fr_2fr] gap-8 lg:gap-16 items-start">
-          {/* Left */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
-            className="lg:sticky lg:top-28"
-          >
-            <h2
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] text-navy leading-[1.12] mb-5"
-              style={{ textWrap: "balance" } as React.CSSProperties}
-            >
-              Questions we
-              <br />
-              <span className="font-serif italic font-normal tracking-normal">get asked.</span>
-            </h2>
-            <p className="text-[13px] sm:text-[15px] text-slate leading-[1.7] mb-8">
-              Honest answers to the questions businesses ask before hiring a
-              web development company.
-            </p>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 text-[14px] font-semibold text-blue hover:text-blue-dark transition-colors"
-            >
-              Have a different question? &rarr;
-            </a>
-          </motion.div>
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-          {/* Right: accordion */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] }}
-          >
-            {faqs.map((faq) => (
-              <FAQItem key={faq.q} question={faq.q} answer={faq.a} />
-            ))}
-          </motion.div>
+  return (
+    <section id="faq" className="bg-gray-light py-20 md:py-28">
+      <div className="section-shell grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+        <div>
+          <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">
+            Common questions
+          </p>
+          <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
+            Clear answers before you commit.
+          </h2>
+          <p className="mt-5 max-w-[430px] text-[15px] leading-[1.8] text-slate">
+            If your question is more specific, include it in your project note.
+            You will get a direct answer from Mandela.
+          </p>
+        </div>
+
+        <div className="border-t border-border">
+          {questions.map((item, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <div key={item.question} className="border-b border-border">
+                <button
+                  type="button"
+                  className="flex min-h-[72px] w-full items-center justify-between gap-6 py-5 text-left"
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${index}`}
+                >
+                  <span className="text-[16px] font-semibold leading-6 text-navy md:text-[18px]">
+                    {item.question}
+                  </span>
+                  <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg border border-border bg-white text-blue transition-colors hover:border-blue/25">
+                    {isOpen ? (
+                      <Minus size={17} strokeWidth={2} aria-hidden="true" />
+                    ) : (
+                      <Plus size={17} strokeWidth={2} aria-hidden="true" />
+                    )}
+                  </span>
+                </button>
+                {isOpen && (
+                  <div id={`faq-answer-${index}`} className="pb-6 pr-12">
+                    <p className="max-w-[720px] text-[14px] leading-7 text-slate md:text-[15px]">
+                      {item.answer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -16,9 +16,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "COBRYKZ — Premium Digital Solutions for Ambitious Businesses",
+  title: "COBRYKZ — Founder-Led Websites for Local Businesses",
   description:
-    "COBRYKZ builds premium websites and digital experiences that help businesses earn more trust, attract more clients, and grow faster. Founded by Mandela Atud.",
+    "COBRYKZ designs and builds high-trust websites and practical digital systems for local businesses. Work directly with founder Mandela Atud.",
   keywords: [
     "premium website design",
     "web development",
@@ -32,16 +32,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "COBRYKZ — Premium Digital Solutions",
+    title: "COBRYKZ — Founder-Led Websites for Local Businesses",
     description:
-      "We build premium websites and digital experiences that help businesses earn more trust, attract more clients, and grow faster.",
+      "High-trust websites and practical digital systems, designed and built directly by Mandela Atud.",
     siteName: "COBRYKZ",
   },
   twitter: {
     card: "summary_large_image",
-    title: "COBRYKZ — Premium Digital Solutions",
+    title: "COBRYKZ — Founder-Led Websites for Local Businesses",
     description:
-      "We build premium websites and digital experiences that help businesses earn more trust, attract more clients, and grow faster.",
+      "High-trust websites and practical digital systems for local businesses.",
   },
   robots: {
     index: true,
