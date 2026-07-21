@@ -44,25 +44,21 @@ test("keeps explanatory paragraphs at 13px or larger", () => {
 
 test("renders first-party proof instead of repeated reassurance sections", () => {
   const desktopArtifactPath = join(root, "components/sections/BuildArtifact.tsx");
-  const mobileArtifactPath = join(
-    root,
-    "components/mobile/MobileBuildArtifact.tsx",
-  );
   assert.equal(existsSync(desktopArtifactPath), true, "desktop artifact is missing");
-  assert.equal(existsSync(mobileArtifactPath), true, "mobile artifact is missing");
 
   const pageSource = read("app/page.tsx");
   const mobileExperience = read("components/mobile/MobileExperience.tsx");
   const pageAndExperiences = `${pageSource}\n${mobileExperience}`;
 
   assert.match(pageAndExperiences, /BuildArtifact/);
+  assert.doesNotMatch(mobileExperience, /MobileBuildArtifact/);
   assert.doesNotMatch(pageSource, /<SocialProof \/>/);
   assert.doesNotMatch(
     pageAndExperiences,
     /<OurStandard \/>|<MobileStandard \/>|<WhyCOBRYKZ \/>|<MobileWhy \/>/,
   );
 
-  const proofSources = `${read("components/sections/BuildArtifact.tsx")}\n${read("components/mobile/MobileBuildArtifact.tsx")}\n${read("components/content/buildArtifact.ts")}`;
+  const proofSources = `${read("components/sections/BuildArtifact.tsx")}\n${read("components/content/buildArtifact.ts")}`;
   assert.match(proofSources, /Lead with reputation/);
   assert.match(proofSources, /Compose mobile separately/);
   assert.match(proofSources, /Create one conversion path/);

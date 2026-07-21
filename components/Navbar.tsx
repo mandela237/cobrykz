@@ -165,7 +165,7 @@ export default function Navbar() {
               Navigate
             </p>
             <ul className="border-t border-border" role="list">
-              {navLinks.map((link) => (
+              {navLinks.filter((link) => link.id !== "inside-build").map((link) => (
                 <li key={link.mobileHref} className="border-b border-border">
                   <a
                     href={link.mobileHref}
