@@ -9,22 +9,22 @@ import {
 const services = [
   {
     label: "Core",
-    title: "A website that makes the right first impression",
+    title: "A website worthy of the business behind it",
     description:
-      "Clear positioning, confident visual design, and a fast build that turns attention into a next step.",
+      "Clear positioning, confident design, and a focused build that helps the right visitor take the next step.",
     outcomes: [
       "Custom strategy and page structure",
       "Responsive design and development",
-      "Conversion-focused calls to action",
+      "Clear paths to call, book, or inquire",
     ],
     icon: MonitorSmartphone,
     featured: true,
   },
   {
     label: "Extend",
-    title: "Digital systems that remove friction",
+    title: "Useful systems for the work behind the scenes",
     description:
-      "Practical tools for businesses ready to make booking, intake, lead handling, or internal work easier.",
+      "Practical tools that make booking, intake, lead handling, or internal work easier to manage.",
     outcomes: [
       "Booking and intake flows",
       "Client portals and internal tools",
@@ -35,9 +35,9 @@ const services = [
   },
   {
     label: "Support",
-    title: "Ongoing care without agency overhead",
+    title: "Ongoing care, without the agency layers",
     description:
-      "A dependable technical partner for updates, improvements, and the details that keep your site credible.",
+      "Direct help with updates, improvements, and the details that keep your site working as it should.",
     outcomes: [
       "Content and feature updates",
       "Performance and quality reviews",
@@ -58,13 +58,13 @@ export default function Services() {
               What COBRYKZ builds
             </p>
             <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
-              A better website first. Smarter systems when you need them.
+              Start with the website. Add more only when it earns its place.
             </h2>
           </div>
           <p className="max-w-[520px] text-[15px] leading-[1.8] text-slate md:justify-self-end md:text-[17px]">
-            Local businesses rarely need more technology. They need the right
-            technology, explained clearly and built around how people actually
-            choose, call, book, and buy.
+            Most local businesses do not need more technology. They need the
+            right pieces, built around how their customers actually choose,
+            call, book, and buy.
           </p>
         </div>
 
@@ -122,8 +122,8 @@ export default function Services() {
 
         <div className="mt-8 flex flex-col items-start justify-between gap-5 border-t border-border pt-8 sm:flex-row sm:items-center">
           <p className="max-w-[580px] text-[14px] leading-6 text-slate">
-            Not sure what you need yet? Start with the business problem. The
-            right scope comes after.
+            You do not need to arrive with a technical brief. Start with what
+            is getting in the way; we can define the right scope from there.
           </p>
           <a
             href="#contact"

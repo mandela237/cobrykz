@@ -1,15 +1,15 @@
 import { Check, Minus } from "lucide-react";
 
 const goodFit = [
-  "You have a strong business that needs a more credible online presence.",
-  "You value clear recommendations and direct access to the person doing the work.",
-  "You want a focused launch, not a drawn-out agency process.",
+  "Your business is established, but the website no longer represents it well.",
+  "You value direct access and recommendations you can understand.",
+  "You want a focused launch rather than a long agency process.",
 ];
 
 const notFit = [
-  "You need the cheapest available template installed as quickly as possible.",
+  "Your only priority is installing the cheapest available template.",
   "You want a large account team or several layers of approval.",
-  "You are looking for heavy animation that matters more than clarity.",
+  "You want visual spectacle to take priority over clarity.",
 ];
 
 export default function GoodFit() {
@@ -24,7 +24,7 @@ export default function GoodFit() {
             id="fit-heading"
             className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]"
           >
-            A good fit should be honest on both sides.
+            The right working relationship should be clear from the start.
           </h2>
         </div>
 

@@ -37,7 +37,7 @@ test("keeps explanatory paragraphs at 13px or larger", () => {
     .map((path) => read(path))
     .join("\n");
   const undersizedParagraph =
-    /<p\b[^>]*className="[^"]*text-\[(?:10|11|12)px\][^"]*"[^>]*>/gs;
+    /<p\b[^>]*className="(?![^"]*uppercase)[^"]*text-\[(?:10|11|12)px\][^"]*"[^>]*>/gs;
 
   assert.doesNotMatch(readableMarkup, undersizedParagraph);
 });

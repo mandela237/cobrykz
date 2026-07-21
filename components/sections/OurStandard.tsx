@@ -8,27 +8,27 @@ import {
 
 const standards = [
   {
-    title: "Custom from the first decision",
+    title: "The work starts with your business",
     description:
-      "The structure starts with your audience, offer, and business goals rather than a pre-built theme.",
+      "The structure comes from your audience, your offer, and your goals—not from a pre-built theme.",
     icon: LayoutTemplate,
   },
   {
-    title: "Designed for the screen in hand",
+    title: "Mobile is designed, not compressed",
     description:
-      "Mobile is treated as a primary experience, with stable layouts and clear touch targets.",
+      "Phone layouts are considered from the start, with stable screens and controls that are easy to use.",
     icon: Smartphone,
   },
   {
-    title: "Performance-conscious by default",
+    title: "Polish without unnecessary weight",
     description:
-      "Images, motion, and code are kept intentional so the site feels polished without becoming heavy.",
+      "Images, motion, and code each need a reason to be there, so the finished site stays responsive.",
     icon: Gauge,
   },
   {
-    title: "Accessible interactions",
+    title: "Accessibility is part of the build",
     description:
-      "Keyboard focus, contrast, labels, and reduced motion are part of the build, not cleanup work.",
+      "Keyboard focus, contrast, labels, and reduced motion are handled during the work—not left for cleanup.",
     icon: Accessibility,
   },
 ];
@@ -43,12 +43,12 @@ export default function OurStandard() {
               Proof you can inspect
             </p>
             <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
-              The standard is visible before you hire me.
+              You can inspect the standard before you hire me.
             </h2>
             <p className="mt-5 max-w-[540px] text-[15px] leading-[1.8] text-slate md:text-[17px]">
-              This website is not a substitute for client proof. It is a direct
-              demonstration of the care, clarity, and technical judgment you
-              can expect on your project.
+              This site is not a substitute for client proof. It is, however, a
+              working example of the care, clarity, and technical judgment I
+              bring to a project.
             </p>
 
             <div className="mt-8 overflow-hidden rounded-lg border border-border bg-gray-light shadow-[0_24px_70px_rgba(11,23,40,0.10)]">
@@ -67,7 +67,7 @@ export default function OurStandard() {
                       Build standard
                     </p>
                     <p className="mt-2 text-[22px] font-bold tracking-normal text-navy">
-                      Clear. Useful. Ready for real clients.
+                      Clear, useful, and ready for real customers.
                     </p>
                   </div>
                   <div className="hidden h-12 w-12 items-center justify-center rounded-lg bg-navy text-white sm:flex">

@@ -23,14 +23,14 @@ export default function Footer() {
               showWordmark
               wordmarkSize="sm"
             />
-            <p className="mt-5 max-w-[390px] text-[13px] leading-6 text-white/55">
-              Founder-led websites and practical digital systems for local
-              businesses ready to look as credible online as they are in person.
+            <p className="mt-5 max-w-[390px] text-[13px] leading-6 text-white/75">
+              Websites and practical digital systems, designed and built
+              directly by Mandela Atud for local businesses.
             </p>
           </div>
 
           <div>
-            <p className="text-[11px] font-bold uppercase text-white/42">
+            <p className="text-[13px] font-bold uppercase text-white/65">
               Explore
             </p>
             <ul className="mt-4 space-y-3">
@@ -38,7 +38,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="text-[13px] text-white/68 transition-colors hover:text-white"
+                    className="text-[13px] text-white/78 transition-colors hover:text-white"
                   >
                     {link.label}
                   </a>
@@ -48,7 +48,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <p className="text-[11px] font-bold uppercase text-white/42">
+            <p className="text-[13px] font-bold uppercase text-white/65">
               Contact
             </p>
             <a
@@ -68,7 +68,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 pt-6 text-[11px] text-white/38 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 pt-6 text-[13px] text-white/60 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {year} COBRYKZ. All rights reserved.</p>
           <p>Designed and built by Mandela Atud.</p>
         </div>

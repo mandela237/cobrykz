@@ -6,28 +6,28 @@ const steps = [
     title: "Discovery",
     duration: "30 minutes",
     description:
-      "We talk through your business, the people you need to reach, and what is getting in the way today.",
+      "We talk through the business, the people you need to reach, and what the current website is failing to do.",
   },
   {
     number: "02",
     title: "Direction",
     duration: "2-3 days",
     description:
-      "You see the message, page structure, and visual direction before the full build moves forward.",
+      "You review the message, page structure, and visual direction before I commit to the full build.",
   },
   {
     number: "03",
     title: "Build and review",
     duration: "4-7 days",
     description:
-      "I build the responsive experience, share progress, and work through a focused review with you.",
+      "I build the responsive site, show you the work in progress, and take it through a focused review with you.",
   },
   {
     number: "04",
     title: "Launch and care",
     duration: "Ongoing",
     description:
-      "We launch deliberately, verify the live site, and agree on the support that makes sense next.",
+      "We check the live site carefully, launch it, and agree on the level of support that makes sense afterward.",
   },
 ];
 
@@ -41,12 +41,12 @@ export default function Process() {
               A visible process
             </p>
             <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
-              Know what happens next, from the first call onward.
+              No black box. You know what is happening and why.
             </h2>
             <p className="mt-5 max-w-[500px] text-[15px] leading-[1.8] text-slate">
-              Most focused business websites can move from kickoff to launch in
-              one to two weeks. The exact scope and timeline are agreed before
-              work begins.
+              A focused business website can often move from kickoff to launch
+              in one to two weeks. We agree on the exact scope and schedule
+              before the work begins.
             </p>
             <a
               href="#contact"

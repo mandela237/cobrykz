@@ -11,8 +11,8 @@ import {
 const CONTACT_EMAIL = "hello@cobrykz.com";
 
 const expectations = [
-  "A direct reply from Mandela",
-  "A practical first recommendation",
+  "A reply directly from Mandela",
+  "A useful first recommendation",
   "Clear scope and pricing before work starts",
 ];
 
@@ -63,19 +63,18 @@ export default function FinalCTA() {
             Start with the business problem
           </p>
           <h2 className="text-balance text-[36px] font-extrabold leading-[1.06] tracking-normal md:text-[52px]">
-            Let’s make your online presence match the quality of your work.
+            Let&apos;s make the website match the quality of the business.
           </h2>
-          <p className="mt-6 max-w-[560px] text-[15px] leading-[1.85] text-white/66 md:text-[17px]">
-            Share what your business does, what is not working today, and what
-            you want to improve. The first response comes from the person who
-            would be doing the work.
+          <p className="mt-6 max-w-[560px] text-[15px] leading-[1.75] text-white/82 md:text-[17px]">
+            Tell me what the business does, what the current site gets wrong,
+            and what needs to improve. I will read the note and reply myself.
           </p>
 
           <ul className="mt-8 space-y-4">
             {expectations.map((expectation) => (
               <li
                 key={expectation}
-                className="flex items-center gap-3 text-[13px] text-white/74"
+                className="flex items-center gap-3 text-[13px] text-white/82"
               >
                 <Check
                   size={16}
@@ -115,7 +114,7 @@ export default function FinalCTA() {
             </div>
             <div>
               <h3 className="text-[18px] font-bold">Project note</h3>
-              <p className="mt-1 text-[12px] text-white/55">
+              <p className="mt-1 text-[13px] text-white/75">
                 A few useful details are enough to begin.
               </p>
             </div>
@@ -207,12 +206,12 @@ export default function FinalCTA() {
             <ArrowUpRight size={17} strokeWidth={2.1} aria-hidden="true" />
           </button>
 
-          <p className="mt-4 text-[11px] leading-5 text-white/48">
+          <p className="mt-4 text-[13px] leading-5 text-white/70">
             This opens a drafted email to {CONTACT_EMAIL}. Nothing is sent
             until you review and send it.
           </p>
           {status && (
-            <p className="mt-3 text-[12px] font-medium text-[#9AE4C6]" role="status">
+            <p className="mt-3 text-[13px] font-medium text-[#9AE4C6]" role="status">
               {status}
             </p>
           )}

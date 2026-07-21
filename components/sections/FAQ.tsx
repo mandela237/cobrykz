@@ -7,37 +7,37 @@ const questions = [
   {
     question: "What does a website project cost?",
     answer:
-      "Pricing depends on the number of pages, content needs, and any custom functionality. After a short discovery call, you receive a clear proposal with the scope, price, and payment schedule before deciding whether to move forward.",
+      "The price depends on the number of pages, the content work, and any custom functionality. After a short discovery call, I send a proposal that states the scope, price, and payment schedule before you decide whether to move forward.",
   },
   {
     question: "How long does a typical project take?",
     answer:
-      "A focused business website can often move from kickoff to launch in one to two weeks. Larger sites, booking systems, portals, or content-heavy projects take longer. The timeline is agreed before work begins.",
+      "A focused business website can often move from kickoff to launch in one to two weeks. Larger sites, booking systems, portals, and content-heavy projects take longer. We agree on the schedule before work begins.",
   },
   {
     question: "What do I need before we start?",
     answer:
-      "A clear understanding of your services, your customers, and what you want the website to change is enough for the first call. Existing brand assets and content are helpful, but they do not need to be perfect before we speak.",
+      "An understanding of your services, your customers, and what the website needs to improve is enough for the first call. Existing brand assets and content help, but they do not need to be polished before we speak.",
   },
   {
     question: "Do you use templates?",
     answer:
-      "No pre-built themes are reskinned and sold as custom work. Reusable code patterns may support quality and speed behind the scenes, but the strategy, structure, and visual system are developed for your business.",
+      "I do not reskin a pre-built theme and sell it as custom work. Proven code patterns may help with quality and speed behind the scenes, but the strategy, structure, and visual system are developed for your business.",
   },
   {
     question: "How are revisions handled?",
     answer:
-      "The direction is reviewed early so large decisions are settled before the full build. Your proposal defines the review stages and included revisions, which keeps feedback focused and prevents surprise costs.",
+      "We review the direction early, while the important decisions are still easy to change. Your proposal states the review stages and included revisions, keeping feedback focused and costs predictable.",
   },
   {
     question: "Can you support the site after launch?",
     answer:
-      "Yes. Support can cover updates, small improvements, performance reviews, and new functionality. The right arrangement depends on how often your business expects the site to change.",
+      "Yes. Support can cover updates, small improvements, performance reviews, and new functionality. The right arrangement depends on how often the site is likely to change.",
   },
   {
     question: "Do you build web apps, AI tools, or automation?",
     answer:
-      "Yes, when the technology solves a clear business problem. These projects begin with the workflow and desired outcome, then use the simplest reliable system that can do the job.",
+      "Yes, when the technology solves a clear business problem. We begin with the workflow and the result you need, then choose the simplest reliable system that can do the job.",
   },
 ];
 
@@ -52,11 +52,11 @@ export default function FAQ() {
             Common questions
           </p>
           <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
-            Clear answers before you commit.
+            Straight answers before you commit to anything.
           </h2>
           <p className="mt-5 max-w-[430px] text-[15px] leading-[1.8] text-slate">
-            If your question is more specific, include it in your project note.
-            You will get a direct answer from Mandela.
+            Have a more specific question? Add it to your project note and I
+            will answer it directly.
           </p>
         </div>
 

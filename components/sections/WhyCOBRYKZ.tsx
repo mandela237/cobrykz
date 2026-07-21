@@ -2,21 +2,21 @@ import { Eye, Handshake, MessageCircleMore } from "lucide-react";
 
 const principles = [
   {
-    title: "One person stays accountable",
+    title: "The person you meet does the work",
     description:
-      "The person on the discovery call is the same person making the strategy, design, and build decisions.",
+      "I lead the discovery, shape the strategy, make the design decisions, and build the finished site.",
     icon: Handshake,
   },
   {
-    title: "Decisions come with reasons",
+    title: "Every recommendation has a reason",
     description:
-      "You see what is changing, why it matters, and what needs your input. No vague agency language.",
+      "You see what is changing, why it matters, and where your input is needed—without a layer of agency language.",
     icon: MessageCircleMore,
   },
   {
-    title: "The work is made for real use",
+    title: "The work holds up outside the presentation",
     description:
-      "Every screen is reviewed for clarity, mobile behavior, accessibility, and the next action a visitor should take.",
+      "Every screen is checked for clarity, mobile use, accessibility, and the next action a visitor needs to take.",
     icon: Eye,
   },
 ];
@@ -30,10 +30,10 @@ export default function WhyCOBRYKZ() {
             A clearer working relationship
           </p>
           <h2 className="text-balance text-[34px] font-extrabold leading-[1.08] tracking-normal text-navy md:text-[48px]">
-            The work is premium. The relationship stays simple.
+            Senior work, without the layers that usually come with it.
           </h2>
           <blockquote className="mt-8 border-l border-blue/30 pl-5 font-serif text-[24px] leading-[1.45] text-charcoal md:text-[28px]">
-            “You should never have to wonder who owns the next step.”
+            &ldquo;You should never have to wonder who owns the next step.&rdquo;
           </blockquote>
         </div>
 

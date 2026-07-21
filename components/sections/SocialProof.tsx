@@ -7,23 +7,23 @@ import {
 
 const promises = [
   {
-    title: "One point of contact",
-    detail: "Work directly with Mandela",
+    title: "Mandela is your point of contact",
+    detail: "From the first call through launch",
     icon: MessagesSquare,
   },
   {
-    title: "Built for your business",
-    detail: "No recycled templates",
+    title: "Designed around your business",
+    detail: "Never a reskinned theme",
     icon: CodeXml,
   },
   {
-    title: "A visible process",
-    detail: "Clear decisions and checkpoints",
+    title: "You always know what is next",
+    detail: "Clear decisions and review points",
     icon: Waypoints,
   },
   {
-    title: "Quality before launch",
-    detail: "Responsive, accessible, reviewed",
+    title: "Reviewed before it goes live",
+    detail: "Responsive, accessible, and checked",
     icon: ShieldCheck,
   },
 ];
@@ -55,7 +55,7 @@ export default function SocialProof() {
                 <p className="text-[13px] font-semibold text-white">
                   {promise.title}
                 </p>
-                <p className="mt-1 text-[12px] leading-5 text-white/58">
+                <p className="mt-1 text-[13px] leading-5 text-white/75">
                   {promise.detail}
                 </p>
               </div>

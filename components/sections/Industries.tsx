@@ -28,11 +28,12 @@ export default function Industries() {
       <div className="section-shell relative">
         <div className="grid gap-8 border-b border-white/12 pb-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <h2 className="text-balance max-w-[720px] text-[34px] font-extrabold leading-[1.08] tracking-normal md:text-[48px]">
-            Built for businesses people need to trust before they call.
+            For businesses that earn trust face to face—and need to earn it online.
           </h2>
-          <p className="max-w-[480px] text-[15px] leading-[1.8] text-white/65 lg:justify-self-end">
-            The details change by industry. The job stays the same: make your
-            value easy to understand and the next step easy to take.
+          <p className="max-w-[480px] text-[15px] leading-[1.75] text-white/80 lg:justify-self-end">
+            Every field has its own details. The website still has one job:
+            explain why your business is the right choice and make it easy to
+            act on that decision.
           </p>
         </div>
 
@@ -63,9 +64,9 @@ export default function Industries() {
         </div>
 
         <div className="mt-8 flex flex-col items-start justify-between gap-5 border-t border-white/12 pt-8 sm:flex-row sm:items-center">
-          <p className="text-[13px] leading-6 text-white/55">
-            Different kind of business? The first conversation is still about
-            your clients, not your category.
+          <p className="text-[13px] leading-6 text-white/75">
+            Work in another field? The first conversation is about your
+            customers and your goals—not a category on a list.
           </p>
           <a
             href="#contact"

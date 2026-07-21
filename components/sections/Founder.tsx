@@ -2,9 +2,9 @@ import Image from "next/image";
 import { ArrowUpRight, Check } from "lucide-react";
 
 const founderPromises = [
-  "I stay close to the business problem, not just the visual brief.",
-  "I explain tradeoffs plainly and put important decisions in writing.",
-  "I do not hand your project to a junior team after the first call.",
+  "I stay focused on the business problem, not only the visual brief.",
+  "I explain tradeoffs plainly and document the decisions that matter.",
+  "Your project is not handed to a junior team after the first call.",
 ];
 
 export default function Founder() {
@@ -47,22 +47,21 @@ export default function Founder() {
             Mandela Atud, founder and builder
           </p>
           <h2 className="text-balance max-w-[760px] text-[34px] font-extrabold leading-[1.08] tracking-normal md:text-[48px]">
-            You should know who is responsible for the work.
+            The name on the studio is the person doing the work.
           </h2>
-          <p className="mt-6 max-w-[700px] text-[15px] leading-[1.85] text-white/68 md:text-[17px]">
-            I started COBRYKZ after seeing excellent local businesses get
-            overlooked because their online presence did not reflect the
-            quality people experienced in person. The studio is intentionally
-            small so every client gets senior attention from the first question
-            to the final review.
+          <p className="mt-6 max-w-[700px] text-[15px] leading-[1.75] text-white/82 md:text-[17px]">
+            I started COBRYKZ because too many excellent local businesses were
+            being judged by websites that undersold them. I keep the studio
+            intentionally small, so I can stay involved from the first question
+            through the final review.
           </p>
 
           <blockquote className="mt-7 max-w-[720px] border-l border-[#83B8FF]/45 pl-5 font-serif text-[24px] leading-[1.45] text-white md:text-[29px]">
-            “The goal is not to make your business look bigger. It is to make
-            its real value easier to recognize.”
+            &ldquo;The goal is not to make your business look bigger. It is to
+            make its real value easier to recognize.&rdquo;
           </blockquote>
 
-          <ul className="mt-8 grid gap-3 text-[13px] text-white/72">
+          <ul className="mt-8 grid gap-3 text-[13px] text-white/82">
             {founderPromises.map((promise) => (
               <li key={promise} className="flex items-start gap-3">
                 <Check

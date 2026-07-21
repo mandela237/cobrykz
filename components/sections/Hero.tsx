@@ -45,9 +45,8 @@ export default function Hero() {
           </h1>
 
           <p className="mt-5 max-w-[620px] text-[15px] leading-[1.75] text-slate md:mt-6 md:text-[17px]">
-            I design and build high-trust websites for local businesses that
-            need a sharper first impression, a clearer message, and a dependable
-            path from visit to inquiry.
+            I design and build websites for established local businesses whose
+            online presence no longer reflects the quality of their work.
           </p>
 
           <div className="mt-7 flex flex-col gap-3 min-[430px]:flex-row md:mt-8">
@@ -106,8 +105,8 @@ export default function Hero() {
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-5 p-4 text-white md:p-5">
                 <div>
                   <p className="text-[15px] font-bold">Mandela Atud</p>
-                  <p className="mt-1 text-[11px] text-white/75 md:text-[12px]">
-                    Your designer and developer
+                  <p className="mt-1 text-[13px] font-medium text-white/85">
+                    Designer and developer
                   </p>
                 </div>
                 <div className="hidden items-center gap-2 text-right text-[12px] font-medium text-white/85 xl:flex">
