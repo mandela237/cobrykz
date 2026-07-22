@@ -109,3 +109,16 @@ test("uses the brand film as accessible, non-blocking hero media", () => {
   assert.equal((heroSources.match(/poster="\/hero-video-poster\.jpg"/g) || []).length, 2);
   assert.equal((heroSources.match(/src="\/hero-video\.mp4"/g) || []).length, 2);
 });
+
+test("composes the mobile hero as a persistent text-video split", () => {
+  const mobileHero = read("components/mobile/MobileHero.tsx");
+
+  assert.match(mobileHero, /grid-cols-\[46%_54%\]/);
+  assert.match(mobileHero, /min-h-\[520px\]/);
+  assert.match(mobileHero, /data-mobile-hero-copy/);
+  assert.match(mobileHero, /data-mobile-portrait-stage/);
+  assert.match(mobileHero, /object-cover/);
+  assert.match(mobileHero, /object-\[52%_center\]/);
+  assert.equal((mobileHero.match(/href="#m-contact"/g) || []).length, 1);
+  assert.doesNotMatch(mobileHero, /Explore services|ArrowDown/);
+});
