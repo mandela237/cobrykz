@@ -165,6 +165,118 @@ test("keeps service and industry icons semantically paired", () => {
   }
 });
 
+test("keeps supporting interface icons restrained and consistent", () => {
+  const retainedGlyphs = {
+    "components/Navbar.tsx": ["ArrowUpRight", "Menu", "X"],
+    "components/sections/Hero.tsx": ["ArrowDownRight", "ArrowUpRight"],
+    "components/mobile/MobileHero.tsx": ["ArrowUpRight"],
+    "components/sections/Services.tsx": ["ArrowUpRight", "Check", "MonitorSmartphone", "Workflow", "Wrench"],
+    "components/mobile/MobileServices.tsx": ["ArrowUpRight", "Check", "MonitorSmartphone", "Workflow", "Wrench"],
+    "components/sections/Industries.tsx": ["ArrowUpRight", "BriefcaseBusiness", "Building2", "Cross", "HardHat", "Scissors", "Utensils"],
+    "components/mobile/MobileIndustries.tsx": ["BriefcaseBusiness", "Building2", "Cross", "HardHat", "Scissors", "Utensils"],
+    "components/sections/SocialProof.tsx": ["CodeXml", "MessagesSquare", "ShieldCheck", "Waypoints"],
+    "components/mobile/MobileTrust.tsx": ["CodeXml", "MessageCircle", "Route", "ShieldCheck"],
+    "components/sections/OurStandard.tsx": ["Accessibility", "Check", "Gauge", "LayoutTemplate", "Smartphone"],
+    "components/mobile/MobileStandard.tsx": ["Accessibility", "Check", "Gauge", "LayoutTemplate", "Smartphone"],
+    "components/sections/WhyCOBRYKZ.tsx": ["Eye", "Handshake", "MessageCircleMore"],
+    "components/mobile/MobileWhy.tsx": ["Eye", "Handshake", "MessageCircleMore"],
+    "components/sections/GoodFit.tsx": ["Check", "Minus"],
+    "components/mobile/MobileFit.tsx": ["Check", "Minus"],
+    "components/sections/Process.tsx": ["ArrowUpRight"],
+    "components/mobile/MobileProcess.tsx": ["Minus", "Plus"],
+    "components/sections/FAQ.tsx": ["Minus", "Plus"],
+    "components/mobile/MobileFAQ.tsx": ["Minus", "Plus"],
+    "components/sections/Founder.tsx": ["ArrowUpRight", "Check"],
+    "components/mobile/MobileFounder.tsx": ["ArrowUpRight", "Check"],
+    "components/sections/FinalCTA.tsx": ["ArrowUpRight", "Check", "Mail", "MessageSquareText"],
+    "components/mobile/MobileContact.tsx": ["ArrowUpRight", "Check", "Mail"],
+    "components/CopyProjectNoteButton.tsx": ["Check", "Copy"],
+    "components/mobile/MobileActionBar.tsx": ["ArrowUpRight", "LayoutGrid", "Route"],
+    "components/Footer.tsx": ["ArrowUpRight", "Mail"],
+  };
+  const iconImports = (source) =>
+    [...source.matchAll(/import\s*\{([^}]*)\}\s*from\s*["']lucide-react["']/g)]
+      .flatMap(([, names]) => names.split(","))
+      .map((name) => name.trim().split(/\s+as\s+/)[0])
+      .filter(Boolean)
+      .sort();
+  const noIconMotion = /(?:^|\s)(?:[\w-]+:)?(?:-?rotate|scale|animate-(?:bounce|pulse|spin))[^\s"`}]*/;
+
+  for (const [path, glyphs] of Object.entries(retainedGlyphs)) {
+    const source = read(path);
+    assert.deepEqual(iconImports(source), glyphs, `${path} must retain its audited Lucide glyphs`);
+    for (const glyph of glyphs) {
+      assert.match(
+        source,
+        new RegExp(`(?:<${glyph}\\b|\\bicon:\\s*${glyph}\\b)`),
+        `${path} must continue rendering ${glyph}`,
+      );
+    }
+
+    const renderedIconNames = new Set([...glyphs, "Icon", "ActiveIcon"]);
+    for (const iconName of renderedIconNames) {
+      for (const [, attributes] of source.matchAll(
+        new RegExp(`<${iconName}\\b([^>]*)`, "g"),
+      )) {
+        assert.doesNotMatch(
+          attributes,
+          noIconMotion,
+          `${path} must not add rotate, bounce, or scale motion to ${iconName}`,
+        );
+        assert.match(
+          attributes,
+          /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
+          `${path} must hide its adjacent-text ${iconName} icon`,
+        );
+      }
+    }
+
+    for (const [, attributes] of source.matchAll(
+      /<(?:div|span)\b([^>]*)>\s*<(?:Icon|ActiveIcon)\b/g,
+    )) {
+      assert.doesNotMatch(
+        attributes,
+        noIconMotion,
+        `${path} must not add rotate, bounce, or scale motion to an icon container`,
+      );
+    }
+  }
+
+  const desktopFaq = read("components/sections/FAQ.tsx");
+  const mobileFaq = read("components/mobile/MobileFAQ.tsx");
+  for (const [source, size, control] of [
+    [desktopFaq, 17, "h-9 w-9"],
+    [mobileFaq, 15, "h-8 w-8"],
+  ]) {
+    assert.match(source, new RegExp(`className="[^"]*${control}[^"]*rounded-lg border border-border`));
+    assert.match(source, new RegExp(`<Minus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"`));
+    assert.match(source, new RegExp(`<Plus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"`));
+  }
+
+  const retainedContainers = {
+    "components/sections/Services.tsx": "flex h-10 w-10 items-center justify-center rounded-lg border",
+    "components/mobile/MobileServices.tsx": "flex h-11 w-11 items-center justify-center rounded-lg",
+    "components/sections/SocialProof.tsx": "flex h-10 w-10 flex-none items-center justify-center rounded-lg border",
+    "components/sections/OurStandard.tsx": "hidden h-12 w-12 items-center justify-center rounded-lg bg-navy",
+    "components/mobile/MobileStandard.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-navy",
+    "components/sections/WhyCOBRYKZ.tsx": "flex h-11 w-11 items-center justify-center rounded-lg border",
+    "components/mobile/MobileWhy.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-white",
+    "components/sections/GoodFit.tsx": "flex h-6 w-6 flex-none items-center justify-center rounded-full",
+    "components/mobile/MobileFit.tsx": "flex h-6 w-6 flex-none items-center justify-center rounded-full",
+    "components/sections/FinalCTA.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]",
+    "components/mobile/MobileProcess.tsx": "flex h-8 w-8 items-center justify-center rounded-lg border",
+  };
+  for (const [path, container] of Object.entries(retainedContainers)) {
+    assert.ok(read(path).includes(container), `${path} must retain its audited icon container`);
+  }
+
+  const mobileActionBar = read("components/mobile/MobileActionBar.tsx");
+  assert.match(mobileActionBar, /href="#m-services"\s+aria-label="Services"/s);
+  assert.match(mobileActionBar, /href="#m-process"\s+aria-label="Process"/s);
+  assert.match(mobileActionBar, /<LayoutGrid size=\{18\} strokeWidth=\{1\.9\} aria-hidden="true"/);
+  assert.match(mobileActionBar, /<Route size=\{18\} strokeWidth=\{1\.9\} aria-hidden="true"/);
+});
+
 test("rejects interface icon bypasses in source strings", () => {
   const thirdPartyIcon = `
     import { Menu } from "@fixture/interface-icons";
