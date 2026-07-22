@@ -1,8 +1,8 @@
 import {
   ArrowUpRight,
-  Blocks,
   Check,
   MonitorSmartphone,
+  Workflow,
   Wrench,
 } from "lucide-react";
 
@@ -30,7 +30,7 @@ const services = [
       "Client portals and internal tools",
       "Thoughtful AI and automation",
     ],
-    icon: Blocks,
+    icon: Workflow,
     featured: false,
   },
   {

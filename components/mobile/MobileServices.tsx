@@ -3,9 +3,9 @@
 import { useState } from "react";
 import {
   ArrowUpRight,
-  Blocks,
   Check,
   MonitorSmartphone,
+  Workflow,
   Wrench,
 } from "lucide-react";
 
@@ -24,7 +24,7 @@ const services = [
     description:
       "Booking, intake, client, or automation tools shaped around how your business actually works.",
     outcomes: ["Booking and intake", "Client portals", "Useful automation"],
-    icon: Blocks,
+    icon: Workflow,
   },
   {
     tab: "Care",

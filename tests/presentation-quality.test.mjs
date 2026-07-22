@@ -130,6 +130,41 @@ test("uses one accessible Lucide interface icon family", () => {
   }
 });
 
+test("keeps service and industry icons semantically paired", () => {
+  const serviceSources = [
+    read("components/sections/Services.tsx"),
+    read("components/mobile/MobileServices.tsx"),
+  ];
+  const industrySources = [
+    read("components/sections/Industries.tsx"),
+    read("components/mobile/MobileIndustries.tsx"),
+  ];
+  const iconMappings = (source) =>
+    [...source.matchAll(/\bicon:\s*([A-Z][A-Za-z0-9_]*)/g)].map(
+      ([, icon]) => icon,
+    );
+
+  for (const source of serviceSources) {
+    assert.deepEqual(iconMappings(source), [
+      "MonitorSmartphone",
+      "Workflow",
+      "Wrench",
+    ]);
+    assert.doesNotMatch(source, /\bBlocks\b/);
+  }
+
+  for (const source of industrySources) {
+    assert.deepEqual(iconMappings(source), [
+      "Cross",
+      "HardHat",
+      "BriefcaseBusiness",
+      "Utensils",
+      "Scissors",
+      "Building2",
+    ]);
+  }
+});
+
 test("rejects interface icon bypasses in source strings", () => {
   const thirdPartyIcon = `
     import { Menu } from "@fixture/interface-icons";
