@@ -10,9 +10,10 @@ This change affects only the mobile hero and its presentation-quality contract. 
 
 ## Composition
 
-- Use one full-bleed video stage rather than separate copy and video columns.
-- Use a compact `68svh` hero with a `500px` minimum and `620px` maximum height. For viewports shorter than `650px`, use `100svh` with the same `500px` minimum and compact the vertical gaps so the complete content group remains visible.
-- Position the complete content group at the bottom-left with 20px horizontal spacing at standard phone widths and safe spacing above the bottom edge.
+- Reserve the fixed navigation's `64px` height, then begin a complete `aspect-video` media stage immediately below it.
+- Overlay only the badge, headline, and supporting paragraph on the lower part of the video.
+- Render the “Start a project” CTA in a separate white row beneath the video; it must not share or move with the copy overlay.
+- Position the copy at the bottom-left with 20px horizontal spacing at standard phone widths.
 - Keep the content width constrained so lines remain intentional and do not cover the video unnecessarily.
 - Preserve clear space beneath the mobile navigation.
 

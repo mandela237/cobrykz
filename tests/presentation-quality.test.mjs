@@ -113,21 +113,24 @@ test("uses the brand film as accessible, non-blocking hero media", () => {
 test("composes the mobile hero as a full-bleed video overlay", () => {
   const mobileHero = read("components/mobile/MobileHero.tsx");
 
-  assert.match(mobileHero, /min-h-\[500px\]/);
-  assert.match(mobileHero, /h-\[68svh\]/);
-  assert.match(mobileHero, /max-h-\[620px\]/);
-  assert.match(mobileHero, /\[@media\(max-height:649px\)\]:h-svh/);
+  assert.match(mobileHero, /pt-16/);
   assert.match(mobileHero, /data-mobile-hero-backdrop/);
   assert.match(mobileHero, /data-mobile-video-stage/);
   assert.match(mobileHero, /data-mobile-text-overlay/);
   assert.match(mobileHero, /data-mobile-hero-copy/);
+  assert.match(mobileHero, /data-mobile-hero-cta/);
   assert.match(mobileHero, /absolute inset-0/);
   assert.match(mobileHero, /object-contain object-\[center_top\]/);
-  assert.match(mobileHero, /bottom-0 top-16/);
+  assert.match(mobileHero, /aspect-video/);
+  assert.match(mobileHero, /bg-white/);
   assert.match(mobileHero, /rgba\(11,23,40,.78\)/);
   assert.doesNotMatch(mobileHero, /scale-\[|object-cover|data-mobile-hero-ambient/);
   assert.doesNotMatch(mobileHero, /blur-|brightness-|contrast-|saturate-/);
   assert.doesNotMatch(mobileHero, /bg-gradient-to-r from-navy\/70/);
   assert.equal((mobileHero.match(/href="#m-contact"/g) || []).length, 1);
   assert.doesNotMatch(mobileHero, /grid-cols-\[46%_54%\]|data-mobile-portrait-stage/);
+
+  const copyEnd = mobileHero.indexOf("data-mobile-hero-cta");
+  const ctaLink = mobileHero.indexOf('href="#m-contact"');
+  assert.ok(copyEnd > -1 && ctaLink > copyEnd, "CTA must render outside the copy overlay");
 });

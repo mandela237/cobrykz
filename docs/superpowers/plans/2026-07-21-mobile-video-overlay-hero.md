@@ -4,17 +4,17 @@
 
 **Goal:** Replace the split mobile hero with a readable bottom-left copy overlay on a full-bleed brand video.
 
-**Architecture:** Keep the implementation isolated to `MobileHero.tsx`. Start the media stage immediately below the 64px fixed navigation and top-align one unfiltered `object-contain` video so the complete frame remains visible without a gap, place a localized semi-transparent gradient inside the text block only, and anchor the content group at bottom-left; enforce the structural contract with the existing source-level presentation test.
+**Architecture:** Keep the implementation isolated to `MobileHero.tsx`. After the 64px fixed-navigation offset, render one unfiltered `aspect-video` stage with the badge, headline, and paragraph over its lower portion. Render the CTA independently in a solid white row immediately after the video; enforce these boundaries with the existing source-level presentation test.
 
 **Tech Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, Node test runner.
 
 ## Global Constraints
 
 - Mobile only; desktop hero and downstream sections remain unchanged.
-- Hero uses a compact `68svh` height with a `500px` minimum and `620px` maximum, switching to `100svh` with compact gaps below `650px` viewport height.
+- Hero uses natural content height: `64px` navigation offset, one `aspect-video` media stage, then one independent CTA row.
 - Copy stays bottom-left with 20px standard horizontal spacing.
 - `/hero-video.mp4`, `/hero-video-poster.jpg`, autoplay, muted, loop, and inline playback remain.
-- Film remains fully visible with centered `object-contain`; no scale, crop, filter, duplicate media layer, card, border, rounded overlay container, or uniform heavy tint.
+- Film remains fully visible inside the `aspect-video` stage; no scale, crop, filter, duplicate media layer, card, border, rounded overlay container, or uniform heavy tint.
 - CTA has a minimum 44px touch height and links to `#m-contact`.
 - Layout must not overflow horizontally from 320px through 767px.
 

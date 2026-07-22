@@ -11,11 +11,11 @@ export default function MobileHero() {
   return (
     <section
       id="m-top"
-      className="relative isolate h-[68svh] min-h-[500px] max-h-[620px] overflow-hidden border-b border-white/10 bg-[#d8e0e6] text-white [@media(max-height:649px)]:h-svh"
+      className="isolate overflow-hidden border-b border-border bg-white pt-16"
     >
       <div
         data-mobile-video-stage
-        className="absolute inset-x-0 bottom-0 top-16 bg-[#d8e0e6]"
+        className="relative aspect-video overflow-hidden bg-[#d8e0e6] text-white"
       >
         <video
           data-mobile-hero-backdrop
@@ -25,7 +25,7 @@ export default function MobileHero() {
           playsInline
           preload="metadata"
           poster="/hero-video-poster.jpg"
-          className="h-full w-full object-contain object-[center_top] motion-reduce:hidden"
+          className="absolute inset-0 h-full w-full object-contain object-[center_top] motion-reduce:hidden"
           aria-hidden="true"
           tabIndex={-1}
         >
@@ -35,18 +35,16 @@ export default function MobileHero() {
           className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-contain bg-top bg-no-repeat motion-reduce:block"
           aria-hidden="true"
         />
-      </div>
-
-      <div
-        data-mobile-hero-copy
-        className="relative z-20 flex h-full w-full max-w-[430px] flex-col justify-end px-5 pb-8 pt-24 [@media(max-height:649px)]:pb-5 [@media(max-height:649px)]:pt-20"
-      >
         <div
           data-mobile-text-overlay
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[390px] bg-[linear-gradient(to_top,rgba(11,23,40,.78)_0%,rgba(11,23,40,.54)_58%,transparent_100%)]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[88%] bg-[linear-gradient(to_top,rgba(11,23,40,.78)_0%,rgba(11,23,40,.44)_58%,transparent_100%)]"
           aria-hidden="true"
         />
-        <div className="relative z-10">
+
+        <div
+          data-mobile-hero-copy
+          className="absolute inset-x-0 bottom-0 z-10 mx-auto w-full max-w-[430px] px-5 pb-3"
+        >
           <div
             className={`${mobileHeroSans.className} flex items-center gap-2 text-[10px] font-semibold leading-4 text-white/80`}
           >
@@ -58,29 +56,31 @@ export default function MobileHero() {
           </div>
 
           <h1
-            className={`${mobileHeroSans.className} mt-5 text-[30px] font-normal leading-[1.04] tracking-[-0.02em] text-white min-[400px]:text-[33px] [@media(max-height:649px)]:mt-3`}
+            className={`${mobileHeroSans.className} mt-2 text-[26px] font-normal leading-none tracking-[-0.02em] text-white min-[400px]:text-[28px]`}
           >
             A website that
-            <span className="mt-1 block font-serif text-[36px] font-normal italic leading-none text-white min-[400px]:text-[39px]">
+            <span className="mt-0.5 block font-serif text-[31px] font-normal italic leading-none text-white min-[400px]:text-[33px]">
               earns trust.
             </span>
           </h1>
 
           <p
-            className={`${mobileHeroSans.className} mt-4 max-w-[340px] text-[14px] font-medium leading-[1.6] text-white/80 [@media(max-height:649px)]:mt-3`}
+            className={`${mobileHeroSans.className} mt-2 max-w-[340px] text-[13px] font-medium leading-[1.45] text-white/85`}
           >
             Built for local businesses whose website no longer matches their
             work.
           </p>
-
-          <a
-            href="#m-contact"
-            className={`${mobileHeroSans.className} shimmer mt-6 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-blue px-4 text-[13px] font-semibold text-white shadow-[0_10px_28px_rgba(0,0,0,0.24)] transition-colors hover:bg-blue-dark [@media(max-height:649px)]:mt-4`}
-          >
-            Start a project
-            <ArrowUpRight size={15} strokeWidth={1.9} aria-hidden="true" />
-          </a>
         </div>
+      </div>
+
+      <div data-mobile-hero-cta className="bg-white px-5 py-5">
+        <a
+          href="#m-contact"
+          className={`${mobileHeroSans.className} shimmer mx-auto inline-flex min-h-12 w-full max-w-[390px] items-center justify-center gap-1.5 rounded-lg bg-blue px-4 text-[13px] font-semibold text-white shadow-[0_8px_22px_rgba(31,94,255,0.18)] transition-colors hover:bg-blue-dark`}
+        >
+          Start a project
+          <ArrowUpRight size={15} strokeWidth={1.9} aria-hidden="true" />
+        </a>
       </div>
     </section>
   );
