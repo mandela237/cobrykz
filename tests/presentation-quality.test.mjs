@@ -200,7 +200,98 @@ test("keeps supporting interface icons restrained and consistent", () => {
       .map((name) => name.trim().split(/\s+as\s+/)[0])
       .filter(Boolean)
       .sort();
-  const noIconMotion = /(?:^|\s)(?:[\w-]+:)?(?:-?rotate|scale|animate-(?:bounce|pulse|spin))[^\s"`}]*/;
+  const noIconMotion = /(?:^|[\s"'`{])(?:[\w-]+:)*(?:-?rotate|scale|animate-(?:bounce|pulse|spin))[^\s"`}]*/;
+  const jsxTags = (source) => {
+    const tags = [];
+    let cursor = 0;
+
+    while (cursor < source.length) {
+      const start = source.indexOf("<", cursor);
+      if (start === -1) break;
+      if (!/[A-Za-z/]/.test(source[start + 1] || "")) {
+        cursor = start + 1;
+        continue;
+      }
+
+      let quote = "";
+      let braces = 0;
+      let end = start + 1;
+      for (; end < source.length; end += 1) {
+        const character = source[end];
+        if (quote) {
+          if (character === quote && source[end - 1] !== "\\") quote = "";
+          continue;
+        }
+        if (`'"\``.includes(character)) {
+          quote = character;
+        } else if (character === "{") {
+          braces += 1;
+        } else if (character === "}") {
+          braces -= 1;
+        } else if (character === ">" && braces === 0) {
+          break;
+        }
+      }
+
+      const match = source
+        .slice(start, end + 1)
+        .match(/^<(\/?)([A-Za-z][\w.]*)\b([\s\S]*?)(\/?)>$/);
+      if (match) {
+        tags.push({
+          closing: match[1] === "/",
+          name: match[2],
+          attributes: match[3],
+          selfClosing: match[4] === "/",
+        });
+      }
+      cursor = end + 1;
+    }
+
+    return tags;
+  };
+  const assertIconPresentation = (source, path, glyphs) => {
+    const renderedIconNames = new Set([...glyphs, "Icon", "ActiveIcon"]);
+    const stack = [];
+
+    for (const tag of jsxTags(source)) {
+      if (tag.closing) {
+        const openIndex = stack.map(({ name }) => name).lastIndexOf(tag.name);
+        if (openIndex !== -1) stack.splice(openIndex);
+        continue;
+      }
+
+      if (renderedIconNames.has(tag.name)) {
+        assert.doesNotMatch(
+          tag.attributes,
+          noIconMotion,
+          `${path} must not add rotate, bounce, or scale motion to ${tag.name}`,
+        );
+        assert.match(
+          tag.attributes,
+          /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
+          `${path} must hide its adjacent-text ${tag.name} icon`,
+        );
+        for (const ancestor of stack) {
+          if (!/^(?:a|article|button|div|span)$/.test(ancestor.name)) continue;
+          assert.doesNotMatch(
+            ancestor.attributes,
+            noIconMotion,
+            `${path} must not add rotate, bounce, or scale motion to an icon ancestor`,
+          );
+        }
+      }
+
+      if (!tag.selfClosing) stack.push(tag);
+    }
+  };
+  const assertFaqControls = (source, label, size, control) => {
+    assert.match(source, new RegExp(`className="[^"]*${control}[^"]*rounded-lg border border-border`));
+    assert.match(
+      source,
+      new RegExp(`\\{\\s*isOpen\\s*\\?\\s*\\(\\s*<Minus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"\\s*\\/>\\s*\\)\\s*:\\s*\\(\\s*<Plus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"`),
+      `${label} must render Minus while open and Plus while closed`,
+    );
+  };
 
   for (const [path, glyphs] of Object.entries(retainedGlyphs)) {
     const source = read(path);
@@ -213,51 +304,26 @@ test("keeps supporting interface icons restrained and consistent", () => {
       );
     }
 
-    const renderedIconNames = new Set([...glyphs, "Icon", "ActiveIcon"]);
-    for (const iconName of renderedIconNames) {
-      for (const [, attributes] of source.matchAll(
-        new RegExp(`<${iconName}\\b([^>]*)`, "g"),
-      )) {
-        assert.doesNotMatch(
-          attributes,
-          noIconMotion,
-          `${path} must not add rotate, bounce, or scale motion to ${iconName}`,
-        );
-        assert.match(
-          attributes,
-          /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
-          `${path} must hide its adjacent-text ${iconName} icon`,
-        );
-      }
-    }
-
-    for (const [, attributes] of source.matchAll(
-      /<(?:div|span)\b([^>]*)>\s*<(?:Icon|ActiveIcon)\b/g,
-    )) {
-      assert.doesNotMatch(
-        attributes,
-        noIconMotion,
-        `${path} must not add rotate, bounce, or scale motion to an icon container`,
-      );
-    }
+    assertIconPresentation(source, path, glyphs);
   }
 
   const desktopFaq = read("components/sections/FAQ.tsx");
   const mobileFaq = read("components/mobile/MobileFAQ.tsx");
-  for (const [source, size, control] of [
-    [desktopFaq, 17, "h-9 w-9"],
-    [mobileFaq, 15, "h-8 w-8"],
+  for (const [source, label, size, control] of [
+    [desktopFaq, "desktop FAQ", 17, "h-9 w-9"],
+    [mobileFaq, "mobile FAQ", 15, "h-8 w-8"],
   ]) {
-    assert.match(source, new RegExp(`className="[^"]*${control}[^"]*rounded-lg border border-border`));
-    assert.match(source, new RegExp(`<Minus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"`));
-    assert.match(source, new RegExp(`<Plus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"`));
+    assertFaqControls(source, label, size, control);
   }
 
   const retainedContainers = {
     "components/sections/Services.tsx": "flex h-10 w-10 items-center justify-center rounded-lg border",
     "components/mobile/MobileServices.tsx": "flex h-11 w-11 items-center justify-center rounded-lg",
     "components/sections/SocialProof.tsx": "flex h-10 w-10 flex-none items-center justify-center rounded-lg border",
-    "components/sections/OurStandard.tsx": "hidden h-12 w-12 items-center justify-center rounded-lg bg-navy",
+    "components/sections/OurStandard.tsx": [
+      "hidden h-12 w-12 items-center justify-center rounded-lg bg-navy",
+      "flex h-10 w-10 items-center justify-center rounded-lg bg-blue-tint text-blue",
+    ],
     "components/mobile/MobileStandard.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-navy",
     "components/sections/WhyCOBRYKZ.tsx": "flex h-11 w-11 items-center justify-center rounded-lg border",
     "components/mobile/MobileWhy.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-white",
@@ -266,9 +332,53 @@ test("keeps supporting interface icons restrained and consistent", () => {
     "components/sections/FinalCTA.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]",
     "components/mobile/MobileProcess.tsx": "flex h-8 w-8 items-center justify-center rounded-lg border",
   };
-  for (const [path, container] of Object.entries(retainedContainers)) {
-    assert.ok(read(path).includes(container), `${path} must retain its audited icon container`);
-  }
+  const assertRetainedContainers = (containers, readSource = read) => {
+    for (const [path, required] of Object.entries(containers)) {
+      for (const container of Array.isArray(required) ? required : [required]) {
+        assert.ok(readSource(path).includes(container), `${path} must retain its audited icon container`);
+      }
+    }
+  };
+  assertRetainedContainers(retainedContainers);
+
+  const invertedFaqFixture = `
+    <span className="flex h-9 w-9 rounded-lg border border-border">
+      {isOpen ? (
+        <Plus size={17} strokeWidth={2} aria-hidden="true" />
+      ) : (
+        <Minus size={17} strokeWidth={2} aria-hidden="true" />
+      )}
+    </span>
+  `;
+  assert.throws(
+    () => assertFaqControls(invertedFaqFixture, "fixture FAQ", 17, "h-9 w-9"),
+    /must render Minus while open and Plus while closed/,
+  );
+  assert.throws(
+    () => assertRetainedContainers(
+      { "fixture-standard.tsx": retainedContainers["components/sections/OurStandard.tsx"] },
+      () => "hidden h-12 w-12 items-center justify-center rounded-lg bg-navy",
+    ),
+    /must retain its audited icon container/,
+  );
+  const buttonMotionFixture = `
+    <button className="transition-transform hover:scale-105">
+      <Plus size={15} strokeWidth={2} aria-hidden="true" />
+    </button>
+  `;
+  const wrapperMotionFixture = `
+    <article className="group-hover:rotate-3">
+      <div><span><Plus size={15} strokeWidth={2} aria-hidden="true" /></span></div>
+    </article>
+  `;
+  assert.throws(
+    () => assertIconPresentation(buttonMotionFixture, "fixture-button.tsx", ["Plus"]),
+    /must not add rotate, bounce, or scale motion to an icon ancestor/,
+  );
+  assert.throws(
+    () => assertIconPresentation(wrapperMotionFixture, "fixture-wrapper.tsx", ["Plus"]),
+    /must not add rotate, bounce, or scale motion to an icon ancestor/,
+  );
 
   const mobileActionBar = read("components/mobile/MobileActionBar.tsx");
   assert.match(mobileActionBar, /href="#m-services"\s+aria-label="Services"/s);

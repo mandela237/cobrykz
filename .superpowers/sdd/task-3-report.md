@@ -28,7 +28,8 @@ was changed.
 - Locks Desktop FAQ `Plus`/`Minus` at 17px/2 in the 36px control and Mobile FAQ
   at 15px/2 in the 32px control.
 - Rejects rotate, bounce, and scale utility motion on rendered icons and their
-  immediate dynamic-icon containers without inspecting non-icon animation.
+  relevant class-bearing `a`, `article`, `button`, `div`, and `span` ancestors,
+  without inspecting unrelated page/content animation.
 - Requires rendered Lucide glyphs to remain decorative (`aria-hidden="true"`)
   and preserves the named, icon-only MobileActionBar Services and Process links.
 - Retains the audit-approved service, trust, standard, principle, fit, note,
@@ -58,6 +59,46 @@ was changed.
   shows no service-source modification.
 - Confirmed the contract checks direct and data-driven icon renders, audited
   FAQ scales, accessibility, motion, and retained containers.
+
+## Reviewer follow-up: FAQ logic, standard tiles, and motion ancestry
+
+### Changes
+
+- The FAQ assertion now locks the actual state relationship in both variants:
+  `isOpen ? Minus : Plus`, alongside the retained 17px/36px desktop and
+  15px/32px mobile treatments.
+- The desktop `OurStandard` contract now retains both approved icon tiles: the
+  48px dark quality-review `Check` tile and the 40px pale standards-list tile.
+- Replaced the immediate-wrapper motion check with a JSX-tag stack that checks
+  a rendered supporting icon plus its relevant `a`, `article`, `button`,
+  `div`, and `span` ancestors. It supports multi-variant utilities and avoids
+  inspecting motion on unrelated content elsewhere in a component.
+- Added negative fixtures for inverted FAQ logic, the missing pale standards
+  tile, a motion-enabled button ancestor, and a non-immediate article ancestor.
+
+### Red/green evidence
+
+1. **FAQ red:** temporarily inverted Desktop FAQ to `isOpen ? Plus : Minus`.
+   The focused test failed with `desktop FAQ must render Minus while open and
+   Plus while closed`. The audited source was restored.
+2. **OurStandard red:** temporarily changed the pale 40px list tile from
+   `bg-blue-tint` to `bg-white`. The focused test failed with
+   `components/sections/OurStandard.tsx must retain its audited icon container`.
+   The audited source was restored.
+3. **Motion red:** temporarily added `hover:scale-105` to the Desktop FAQ icon
+   wrapper. The focused test failed with
+   `must not add rotate, bounce, or scale motion to an icon ancestor`. The
+   audited source was restored.
+4. **Negative fixtures:** the final focused contract asserts that each of the
+   four fixture violations throws the corresponding assertion, including both
+   immediate button and non-immediate article ancestor paths.
+5. **Green:** focused contract test passed (1/1) after every restoration.
+
+### Follow-up verification
+
+- `npm test`: pass (14/14).
+- Tracked-source lint: pass with no findings.
+- No production source is included in this follow-up commit.
 
 ## Concerns
 
