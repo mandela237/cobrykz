@@ -110,15 +110,18 @@ test("uses the brand film as accessible, non-blocking hero media", () => {
   assert.equal((heroSources.match(/src="\/hero-video\.mp4"/g) || []).length, 2);
 });
 
-test("composes the mobile hero as a persistent text-video split", () => {
+test("composes the mobile hero as a full-bleed video overlay", () => {
   const mobileHero = read("components/mobile/MobileHero.tsx");
 
-  assert.match(mobileHero, /grid-cols-\[46%_54%\]/);
-  assert.match(mobileHero, /min-h-\[520px\]/);
+  assert.match(mobileHero, /min-h-\[560px\]/);
+  assert.match(mobileHero, /h-\[80svh\]/);
+  assert.match(mobileHero, /max-h-\[649px\]:h-svh/);
+  assert.match(mobileHero, /data-mobile-hero-backdrop/);
+  assert.match(mobileHero, /data-mobile-hero-gradient/);
   assert.match(mobileHero, /data-mobile-hero-copy/);
-  assert.match(mobileHero, /data-mobile-portrait-stage/);
+  assert.match(mobileHero, /absolute inset-0/);
   assert.match(mobileHero, /object-cover/);
-  assert.match(mobileHero, /object-\[52%_center\]/);
+  assert.match(mobileHero, /from-navy/);
   assert.equal((mobileHero.match(/href="#m-contact"/g) || []).length, 1);
-  assert.doesNotMatch(mobileHero, /Explore services|ArrowDown/);
+  assert.doesNotMatch(mobileHero, /grid-cols-\[46%_54%\]|data-mobile-portrait-stage/);
 });
