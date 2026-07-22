@@ -6,6 +6,10 @@ import test from "node:test";
 
 const root = process.cwd();
 const read = (path) => readFileSync(join(root, path), "utf8");
+// `next/image` is the only non-icon, bare-package PascalCase JSX component in tracked TSX.
+const allowedExternalJsxModules = new Set(["next/image"]);
+const isBareExternalModule = (moduleName) =>
+  !moduleName.startsWith(".") && !moduleName.startsWith("@/");
 
 function collectTsx(directory) {
   return readdirSync(join(root, directory), { withFileTypes: true }).flatMap(
@@ -82,15 +86,12 @@ function assertIconSystem(source, path) {
       ? namespaceImportSources.get(rootName)
       : namedImportSources.get(componentName);
     const aliasSources = dynamicIconAliases.get(componentName);
-    const hasDecorativeIconPresentation =
-      /\bstrokeWidth\s*=/.test(attributes) ||
-      (/\bsize\s*=/.test(attributes) && /\baria-hidden\s*=/.test(attributes));
 
-    if (directImportSource && hasDecorativeIconPresentation) {
-      assert.equal(
-        directImportSource,
-        "lucide-react",
-        `${path} imports interface icon ${componentName} from ${directImportSource}; it must come from lucide-react`,
+    if (directImportSource && isBareExternalModule(directImportSource)) {
+      assert.ok(
+        directImportSource === "lucide-react" ||
+          allowedExternalJsxModules.has(directImportSource),
+        `${path} imports PascalCase JSX component ${componentName} from ${directImportSource}; it must come from lucide-react or an approved framework module`,
       );
     }
 
@@ -134,6 +135,10 @@ test("rejects interface icon bypasses in source strings", () => {
     import { Menu } from "@fixture/interface-icons";
     export const Fixture = () => <Menu size={16} strokeWidth={2} aria-hidden="true" />;
   `;
+  const classOnlyThirdPartyIcon = `
+    import { Menu } from "arbitrary-third-party-package";
+    export const Fixture = () => <Menu className="h-4 w-4" aria-hidden="true" />;
+  `;
   const lucideNamespaceWithoutAriaHidden = `
     import * as Lucide from "lucide-react";
     export const Fixture = () => <Lucide.Menu size={16} strokeWidth={2} />;
@@ -145,6 +150,10 @@ test("rejects interface icon bypasses in source strings", () => {
 
   assert.throws(
     () => assertIconSystem(thirdPartyIcon, "fixture-third-party.tsx"),
+    /must come from lucide-react/,
+  );
+  assert.throws(
+    () => assertIconSystem(classOnlyThirdPartyIcon, "fixture-class-only.tsx"),
     /must come from lucide-react/,
   );
   assert.throws(
