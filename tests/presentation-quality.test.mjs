@@ -26,6 +26,95 @@ function collectTrackedTsx() {
     .filter(Boolean);
 }
 
+function assertIconSystem(source, path) {
+  const namedImportSources = new Map();
+  const namespaceImportSources = new Map();
+
+  for (const [, importClause, moduleName] of source.matchAll(
+    /^\s*import\s+([\s\S]*?)\s+from\s*["']([^"']+)["'];?\s*$/gm,
+  )) {
+    const defaultImport = importClause.match(/^([A-Z][A-Za-z0-9_]*)\b/);
+    if (defaultImport) {
+      namedImportSources.set(defaultImport[1], moduleName);
+    }
+
+    const namespaceImport = importClause.match(/\*\s+as\s+([A-Z][A-Za-z0-9_]*)/);
+    if (namespaceImport) {
+      namespaceImportSources.set(namespaceImport[1], moduleName);
+    }
+
+    const namedImport = importClause.match(/\{([\s\S]*?)\}/);
+    if (!namedImport) continue;
+
+    for (const specifier of namedImport[1].split(",")) {
+      const [, importedName, localName] = specifier
+        .trim()
+        .match(/^(?:type\s+)?(\w+)(?:\s+as\s+(\w+))?$/) || [];
+      if (importedName) {
+        namedImportSources.set(localName || importedName, moduleName);
+      }
+    }
+  }
+
+  const inlineSvgCount = (source.match(/<svg\b/g) || []).length;
+  if (path === "components/CobrykzLogo.tsx") {
+    assert.equal(inlineSvgCount, 1, "the COBRYKZ brand mark must retain its SVG");
+  } else {
+    assert.equal(inlineSvgCount, 0, `${path} contains a non-brand inline SVG`);
+  }
+
+  const iconPropertySources = new Set(
+    [...source.matchAll(/\bicon\s*:\s*([A-Z][A-Za-z0-9_]*)\b/g)]
+      .map(([, identifier]) => namedImportSources.get(identifier))
+      .filter(Boolean),
+  );
+  const dynamicIconAliases = new Map(
+    [...source.matchAll(/\bconst\s+(\w+)\s*=\s*\w+\.icon\b/g)].map(
+      ([, alias]) => [alias, iconPropertySources],
+    ),
+  );
+
+  for (const [, componentName, attributes] of source.matchAll(
+    /<([A-Z][A-Za-z0-9_]*(?:\.[A-Z][A-Za-z0-9_]*)?)\b([^>]*)\/?\s*>/g,
+  )) {
+    const [rootName] = componentName.split(".");
+    const directImportSource = componentName.includes(".")
+      ? namespaceImportSources.get(rootName)
+      : namedImportSources.get(componentName);
+    const aliasSources = dynamicIconAliases.get(componentName);
+    const hasDecorativeIconPresentation =
+      /\bstrokeWidth\s*=/.test(attributes) ||
+      (/\bsize\s*=/.test(attributes) && /\baria-hidden\s*=/.test(attributes));
+
+    if (directImportSource && hasDecorativeIconPresentation) {
+      assert.equal(
+        directImportSource,
+        "lucide-react",
+        `${path} imports interface icon ${componentName} from ${directImportSource}; it must come from lucide-react`,
+      );
+    }
+
+    for (const aliasSource of aliasSources || []) {
+      assert.equal(
+        aliasSource,
+        "lucide-react",
+        `${path} renders interface icon ${componentName} from ${aliasSource}; it must come from lucide-react`,
+      );
+    }
+
+    if (
+      directImportSource === "lucide-react" ||
+      [...(aliasSources || [])].includes("lucide-react")
+    ) {
+      assert.match(
+        attributes,
+        /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
+        `${path} must hide adjacent-text decorative ${componentName} icons from assistive technology`,
+      );
+    }
+  }
+}
+
 test("uses platform-native font rasterization", () => {
   const globals = read("app/globals.css");
 
@@ -35,65 +124,34 @@ test("uses platform-native font rasterization", () => {
 });
 
 test("uses one accessible Lucide interface icon family", () => {
-  const trackedTsx = collectTrackedTsx();
-  const iconLibraryPattern =
-    /(?:^|[/@-])(?:lucide|heroicons|react-icons|fontawesome|material-icons|phosphor|tabler|radix-icons)(?:$|[/@-])/i;
-
-  for (const path of trackedTsx) {
-    const source = read(path);
-    const lucideIconNames = new Set();
-    const iconImports = [...source.matchAll(
-      /^\s*import[\s\S]*?from\s*["']([^"']+)["'];?\s*$/gm,
-    )];
-
-    for (const [, moduleName] of iconImports) {
-      if (iconLibraryPattern.test(moduleName)) {
-        assert.equal(
-          moduleName,
-          "lucide-react",
-          `${path} imports interface icons from ${moduleName}`,
-        );
-      }
-    }
-
-    for (const [, importedNames] of source.matchAll(
-      /import\s*\{([\s\S]*?)\}\s*from\s*["']lucide-react["'];/g,
-    )) {
-      for (const importedName of importedNames.split(",")) {
-        const [, importedNameValue, localName] = importedName
-          .trim()
-          .match(/^(?:type\s+)?(\w+)(?:\s+as\s+(\w+))?$/) || [];
-        if (importedNameValue) {
-          lucideIconNames.add(localName || importedNameValue);
-        }
-      }
-    }
-
-    const inlineSvgCount = (source.match(/<svg\b/g) || []).length;
-    if (path === "components/CobrykzLogo.tsx") {
-      assert.equal(inlineSvgCount, 1, "the COBRYKZ brand mark must retain its SVG");
-    } else {
-      assert.equal(inlineSvgCount, 0, `${path} contains a non-brand inline SVG`);
-    }
-
-    if (lucideIconNames.size === 0) continue;
-
-    for (const match of source.matchAll(/<([A-Z][A-Za-z0-9_]*)\b([^>]*)\/?\s*>/g)) {
-      const [, componentName, attributes] = match;
-      const isDecorativeLucideIcon =
-        lucideIconNames.has(componentName) ||
-        (componentName === "Icon" && /(?:const|let)\s+Icon\s*=/.test(source)) ||
-        (componentName === "ActiveIcon" && /(?:const|let)\s+ActiveIcon\s*=/.test(source));
-
-      if (isDecorativeLucideIcon) {
-        assert.match(
-          attributes,
-          /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
-          `${path} must hide adjacent-text decorative ${componentName} icons from assistive technology`,
-        );
-      }
-    }
+  for (const path of collectTrackedTsx()) {
+    assertIconSystem(read(path), path);
   }
+});
+
+test("rejects interface icon bypasses in source strings", () => {
+  const thirdPartyIcon = `
+    import { Menu } from "@fixture/interface-icons";
+    export const Fixture = () => <Menu size={16} strokeWidth={2} aria-hidden="true" />;
+  `;
+  const lucideNamespaceWithoutAriaHidden = `
+    import * as Lucide from "lucide-react";
+    export const Fixture = () => <Lucide.Menu size={16} strokeWidth={2} />;
+  `;
+  const normalDependency = `
+    import Image from "next/image";
+    export const Fixture = () => <Image alt="" fill src="/brand.jpg" />;
+  `;
+
+  assert.throws(
+    () => assertIconSystem(thirdPartyIcon, "fixture-third-party.tsx"),
+    /must come from lucide-react/,
+  );
+  assert.throws(
+    () => assertIconSystem(lucideNamespaceWithoutAriaHidden, "fixture-namespace.tsx"),
+    /must hide adjacent-text decorative Lucide\.Menu icons/,
+  );
+  assert.doesNotThrow(() => assertIconSystem(normalDependency, "fixture-image.tsx"));
 });
 
 test("keeps navigation text on crisp surfaces", () => {
