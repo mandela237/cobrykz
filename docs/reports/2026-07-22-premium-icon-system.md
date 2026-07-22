@@ -59,6 +59,13 @@ All hash links resolved to page targets. Keyboard spot checks produced a visible
 non-Lucide SVG was the COBRYKZ brand mark with `role="img"` and an accessible
 label.
 
+Three icon-only controls are narrow, pre-existing exceptions to the system's
+visible-text preference: the `MobileActionBar` Services and Process links, and
+the `Navbar` mobile menu button. This icon refinement did not introduce or alter
+them. The links retain explicit Services and Process `aria-label`s; the menu
+button retains its stateful Open/Close `aria-label`, `aria-expanded`, and
+`aria-controls`. Their navigation, layout, and product source remain unchanged.
+
 FAQ state remained synchronized with `aria-expanded` at desktop and mobile.
 The mobile menu changed from `Open menu` / collapsed to `Close menu` / expanded,
 then closed after navigating to Services. Required desktop and mobile contact
@@ -67,8 +74,15 @@ submitting or sending data.
 
 No icon uses bounce, rotation, or scale motion. The source contract rejects
 those treatments on glyphs and their relevant ancestors, and browser inspection
-reported zero running page animations at the reviewed capture states. Existing
-icon feedback is limited to restrained color and border changes.
+reported zero running page animations at the reviewed capture states. A later
+reduced-motion follow-up launched the already-installed Chrome 150 with
+`--force-prefers-reduced-motion`, used a transient profile, and inspected the
+local production page at 375x812 through its DevTools endpoint. Browser evidence
+reported `prefersReducedMotion: true`, the motion-reduced hero image hidden, its
+poster shown, transition duration `1e-05s`, and zero running animations. The
+temporary profile was removed and no dependency or tracked browser configuration
+was added. Existing icon feedback is limited to restrained color and border
+changes.
 
 ## Responsive review and evidence
 
@@ -100,6 +114,7 @@ mobile, preserving the exact requested viewport widths across each full page.
 | `npm run start -- -p 3014` | Production server ready; homepage returned HTTP 200. |
 | Browser audits at 320, 375, 430, 768, 1280, and 1440px | No horizontal overflow, clipped controls, broken hash links, exposed Lucide icons, or unnamed icon actions. |
 | Desktop/mobile FAQ, navigation/menu, form-validity, and keyboard-focus checks | Passed. |
+| Chrome 150 reduced-motion emulation at 375x812 | Passed: media query matched; reduced image hidden; poster shown; transitions reduced to 0.01ms; 0 running animations. |
 | Full-page PNG capture at 1440px and 375px | Captured and visually inspected. |
 
 Next.js continues to emit the repository's existing multiple-lockfile

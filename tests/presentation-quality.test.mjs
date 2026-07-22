@@ -143,6 +143,39 @@ test("keeps service and industry icons semantically paired", () => {
     [...source.matchAll(/\bicon:\s*([A-Z][A-Za-z0-9_]*)/g)].map(
       ([, icon]) => icon,
     );
+  const assertAuditedIconTreatment = (source, label, component, size, strokeWidth) => {
+    const renderedTags = [...source.matchAll(new RegExp(`<${component}\\b([^>]*)\\/?>`, "g"))];
+    const message = `${label} must render ${component} at ${size}px with stroke ${strokeWidth}`;
+    assert.equal(renderedTags.length, 1, message);
+
+    const sizePattern = new RegExp(`\\bsize\\s*=\\s*\\{${size}\\}`);
+    const strokePattern = new RegExp(
+      `\\bstrokeWidth\\s*=\\s*\\{${String(strokeWidth).replace(".", "\\.")}\\}`,
+    );
+    assert.ok(
+      renderedTags.every(([, attributes]) =>
+        sizePattern.test(attributes) && strokePattern.test(attributes)),
+      message,
+    );
+  };
+  const auditedTreatments = [
+    [
+      "desktop Services",
+      serviceSources[0],
+      [["Icon", 19, 1.9], ["Check", 16, 2.1], ["ArrowUpRight", 17, 2]],
+    ],
+    [
+      "mobile Services",
+      serviceSources[1],
+      [["ActiveIcon", 21, 1.8], ["Check", 15, 2.2], ["ArrowUpRight", 16, 2]],
+    ],
+    [
+      "desktop Industries",
+      industrySources[0],
+      [["Icon", 21, 1.7], ["ArrowUpRight", 17, 2]],
+    ],
+    ["mobile Industries", industrySources[1], [["Icon", 19, 1.7]]],
+  ];
 
   for (const source of serviceSources) {
     assert.deepEqual(iconMappings(source), [
@@ -162,6 +195,30 @@ test("keeps service and industry icons semantically paired", () => {
       "Scissors",
       "Building2",
     ]);
+  }
+
+  for (const [label, source, treatments] of auditedTreatments) {
+    for (const [component, size, strokeWidth] of treatments) {
+      assertAuditedIconTreatment(source, label, component, size, strokeWidth);
+
+      for (const [property, fixtureSize, fixtureStroke] of [
+        ["size", size + 1, strokeWidth],
+        ["stroke", size, strokeWidth + 0.1],
+      ]) {
+        const fixture = `<${component} size={${fixtureSize}} strokeWidth={${fixtureStroke}} aria-hidden="true" />`;
+        assert.throws(
+          () =>
+            assertAuditedIconTreatment(
+              fixture,
+              `${label} ${property} fixture`,
+              component,
+              size,
+              strokeWidth,
+            ),
+          new RegExp(`must render ${component} at ${size}px with stroke ${strokeWidth}`),
+        );
+      }
+    }
   }
 });
 
@@ -285,7 +342,23 @@ test("keeps supporting interface icons restrained and consistent", () => {
     }
   };
   const assertFaqControls = (source, label, size, control) => {
-    assert.match(source, new RegExp(`className="[^"]*${control}[^"]*rounded-lg border border-border`));
+    const controlSizeTokens = control.split(" ");
+    const controlClasses = [...source.matchAll(/<span\b[^>]*className="([^"]*)"[^>]*>/g)]
+      .map(([, className]) => className.split(/\s+/))
+      .find((classes) => controlSizeTokens.every((token) => classes.includes(token)));
+    assert.ok(controlClasses, `${label} must retain its ${control} state control`);
+    for (const className of ["rounded-lg", "border", "border-border"]) {
+      assert.ok(
+        controlClasses.includes(className),
+        `${label} must retain its restrained bordered state control`,
+      );
+    }
+    for (const className of ["flex", "items-center", "justify-center"]) {
+      assert.ok(
+        controlClasses.includes(className),
+        `${label} must optically center its state glyph with flex, items-center, and justify-center`,
+      );
+    }
     assert.match(
       source,
       new RegExp(`\\{\\s*isOpen\\s*\\?\\s*\\(\\s*<Minus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"\\s*\\/>\\s*\\)\\s*:\\s*\\(\\s*<Plus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"`),
@@ -342,7 +415,7 @@ test("keeps supporting interface icons restrained and consistent", () => {
   assertRetainedContainers(retainedContainers);
 
   const invertedFaqFixture = `
-    <span className="flex h-9 w-9 rounded-lg border border-border">
+    <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border">
       {isOpen ? (
         <Plus size={17} strokeWidth={2} aria-hidden="true" />
       ) : (
@@ -354,6 +427,24 @@ test("keeps supporting interface icons restrained and consistent", () => {
     () => assertFaqControls(invertedFaqFixture, "fixture FAQ", 17, "h-9 w-9"),
     /must render Minus while open and Plus while closed/,
   );
+  for (const [offCenterClass, size, control] of [
+    ["flex h-9 w-9 justify-center rounded-lg border border-border", 17, "h-9 w-9"],
+    ["flex h-8 w-8 items-center rounded-lg border border-border", 15, "h-8 w-8"],
+  ]) {
+    const offCenterFaqFixture = `
+      <span className="${offCenterClass}">
+        {isOpen ? (
+          <Minus size={${size}} strokeWidth={2} aria-hidden="true" />
+        ) : (
+          <Plus size={${size}} strokeWidth={2} aria-hidden="true" />
+        )}
+      </span>
+    `;
+    assert.throws(
+      () => assertFaqControls(offCenterFaqFixture, "off-center FAQ fixture", size, control),
+      /must optically center its state glyph/,
+    );
+  }
   assert.throws(
     () => assertRetainedContainers(
       { "fixture-standard.tsx": retainedContainers["components/sections/OurStandard.tsx"] },

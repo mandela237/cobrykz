@@ -12,12 +12,20 @@ replace `Blocks` with `Workflow` in both service variants. This is one shared
 concept across two render sites, so it preserves the icon count, layout, and
 desktop/mobile equivalence. All other glyphs should be retained.
 
+The visible-text preference has three narrow, pre-existing accessible-name
+exceptions that this icon refinement does not introduce or change:
+`MobileActionBar` uses icon-only Services and Process links, and `Navbar` uses
+an icon-only mobile menu button. The links retain explicit `aria-label` values;
+the menu button retains its stateful Open/Close label plus `aria-expanded` and
+`aria-controls`. They remain audited navigation controls, not decorative icon
+patterns, and no navigation, layout, or product-source change is approved here.
+
 ## Audit table
 
 | Component / section | Current glyph | Purpose | Recommendation | Reason | Optical size | Stroke | Container | Accessibility |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `CobrykzLogo` | Custom four-square COBRYKZ SVG | Brand identification | Retain — sole exception | Brand mark, not an interface icon | 28–32px | Filled brand geometry | None | `role="img"` with `aria-label="COBRYKZ mark"`; intentionally not hidden |
-| `Navbar` | `ArrowUpRight`, `Menu`, `X` | Project CTA; mobile menu state | Retain | Direct action and universally recognizable menu controls | 15px / 20px | 2.1 / 2 | CTA has no extra container; menu uses its button control | CTA has visible text; menu button has an accessible name; glyphs hidden |
+| `Navbar` | `ArrowUpRight`, `Menu`, `X` | Project CTA; mobile menu state | Retain | Direct action and universally recognizable menu controls | 15px / 20px | 2.1 / 2 | CTA has no extra container; menu uses its button control | CTA has visible text; the pre-existing icon-only menu exception has a stateful Open/Close `aria-label`, `aria-expanded`, and `aria-controls`; glyphs hidden |
 | Desktop hero | `ArrowUpRight`, `ArrowDownRight` | Primary and process CTAs | Retain | Directional arrows clarify the distinct destinations without competing with labels | 17px | 2.1 / 2 | CTA buttons | Visible labels communicate the action; glyphs hidden |
 | Mobile hero | `ArrowUpRight` | Primary project CTA | Retain | Matches CTA direction and stays visually subordinate | 15px | 1.9 | CTA button | Visible label; glyph hidden |
 | Desktop Services | `MonitorSmartphone`, `Blocks`, `Wrench`, `Check`, `ArrowUpRight` | Website, systems, support, outcomes, CTA | Replace `Blocks` with `Workflow`; retain the rest | `Workflow` is more specific to intake, portals, and automation; the other symbols are clear and balanced | 19px service / 16px check / 17px CTA | 1.9 / 2.1 / 2 | 40px bordered service tile; checks and CTA uncontained | Adjacent text names every item; glyphs hidden |
@@ -38,7 +46,7 @@ desktop/mobile equivalence. All other glyphs should be retained.
 | `FinalCTA` | `Check`, `Mail`, `MessageSquareText`, `ArrowUpRight` | Expectations, email link, note context, submit CTA | Retain | Clear contact semantics; the 20px note mark is contained and does not overpower the heading | 16px check / 17px mail+CTA / 20px note | 2.1 / 1.9–2 / 1.8 | Note has a 40px subtle tile; other glyphs uncontained | Adjacent labels and form controls provide meaning; glyphs hidden |
 | `MobileContact` | `Check`, `Mail`, `ArrowUpRight` | Expectations, email link, submit CTA | Retain | Mirrors the desktop contact language at mobile scale | 14px check / 15px mail / 16px CTA | 2.2 / 1.8 / 2.1 | Uncontained | Adjacent text and form labels provide meaning; glyphs hidden |
 | `CopyProjectNoteButton` | `Copy`, `Check` | Copy action and confirmation | Retain | Correct stateful pair with text that changes alongside the icon | 15px | Lucide default | Button, no icon-only control | Visible button text states the action/result; glyphs hidden |
-| `MobileActionBar` | `LayoutGrid`, `Route`, `ArrowUpRight` | Services jump, process jump, project CTA | Retain | Compact anchors use familiar navigation symbols; CTA retains visible text | 18px anchors / 15px CTA | 1.9 / 2.1 | Icon anchors are their accessible link controls; CTA uncontained | Anchor `aria-label`s identify icon-only jumps; CTA has visible text; glyphs hidden |
+| `MobileActionBar` | `LayoutGrid`, `Route`, `ArrowUpRight` | Services jump, process jump, project CTA | Retain | Compact anchors use familiar navigation symbols; CTA retains visible text | 18px anchors / 15px CTA | 1.9 / 2.1 | Icon anchors are their accessible link controls; CTA uncontained | The pre-existing icon-only Services and Process exceptions retain explicit `aria-label`s; CTA has visible text; glyphs hidden |
 | `Footer` | `Mail`, `ArrowUpRight` | Email and project CTA | Retain | Small, quiet contact affordances fit the footer hierarchy | 15px | 1.8 / 2 | CTA button only | Adjacent email/CTA text supplies meaning; glyphs hidden |
 
 ## Minimum replacement set for the next task

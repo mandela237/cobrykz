@@ -85,7 +85,22 @@ DONE. No icon defect was found, so no icon-fix commit was needed.
   animations at the reviewed capture states. An extra attempt to emulate
   `prefers-reduced-motion` through
   `cdp Emulation.setEmulatedMedia` was denied by the shared browser's safe CDP
-  allowlist, so no reduced-motion-emulation claim is made.
+  allowlist, so no reduced-motion-emulation claim was made in the original Task
+  4 run.
+
+### Final-review reduced-motion follow-up
+
+- A safe existing route subsequently succeeded without dependency or tracked
+  configuration changes: the installed Chrome 150 binary was launched headless
+  with `--force-prefers-reduced-motion`, a transient user-data directory, and a
+  local DevTools endpoint against the production server at port 3015.
+- At an emulated 375x812 viewport, the browser returned
+  `prefersReducedMotion: true`, `reducedImageDisplay: "none"`,
+  `reducedPosterDisplay: "block"`, `transitionDuration: "1e-05s"`, and
+  `runningAnimations: 0`.
+- The Chrome process, transient profile, verification script, and local server
+  were removed or stopped after the check. No persistent dependency or browser
+  configuration was added.
 
 ## Self-review
 
@@ -110,5 +125,6 @@ DONE. No icon defect was found, so no icon-fix commit was needed.
 
 - The existing Next.js multi-lockfile workspace-root warning remains
   non-blocking.
-- Safe browser tooling does not allow CDP reduced-motion emulation. The exact
-  Task 4 brief did not require that emulation; no claim was made that it ran.
+- The shared browser still does not allow arbitrary CDP media emulation, but the
+  final-review follow-up closed that evidence gap through installed Chrome's
+  supported reduced-motion launch flag and direct read-only inspection.
