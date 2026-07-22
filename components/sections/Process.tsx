@@ -57,11 +57,14 @@ export default function Process() {
             </a>
           </div>
 
-          <ol className="relative border-t border-border">
-            {steps.map((step, index) => (
+          <ol
+            data-editorial-surface="process"
+            className="overflow-hidden rounded-lg border border-border bg-white px-6 shadow-[0_24px_70px_rgba(11,23,40,0.08)] md:px-8"
+          >
+            {steps.map((step) => (
               <li
                 key={step.number}
-                className="grid gap-4 border-b border-border py-7 sm:grid-cols-[62px_1fr_auto] sm:gap-6"
+                className="grid gap-4 border-b border-border py-7 last:border-b-0 sm:grid-cols-[62px_1fr_auto] sm:gap-6 md:py-8"
               >
                 <span className="font-serif text-[25px] italic text-blue" aria-hidden="true">
                   {step.number}
@@ -77,12 +80,6 @@ export default function Process() {
                 <span className="h-fit rounded-full border border-blue/15 bg-white px-3 py-2 text-[11px] font-semibold text-blue">
                   {step.duration}
                 </span>
-                {index < steps.length - 1 && (
-                  <span
-                    className="absolute left-[30px] hidden h-7 w-px translate-y-[93px] bg-blue/20 sm:block"
-                    aria-hidden="true"
-                  />
-                )}
               </li>
             ))}
           </ol>

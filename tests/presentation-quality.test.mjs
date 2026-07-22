@@ -134,3 +134,29 @@ test("composes the mobile hero as a full-bleed video overlay", () => {
   const ctaLink = mobileHero.indexOf('href="#m-contact"');
   assert.ok(copyEnd > -1 && ctaLink > copyEnd, "CTA must render outside the copy overlay");
 });
+
+test("uses selective editorial depth on desktop", () => {
+  const desktopSections = {
+    services: read("components/sections/Services.tsx"),
+    industries: read("components/sections/Industries.tsx"),
+    process: read("components/sections/Process.tsx"),
+    founder: read("components/sections/Founder.tsx"),
+    fit: read("components/sections/GoodFit.tsx"),
+    faq: read("components/sections/FAQ.tsx"),
+    contact: read("components/sections/FinalCTA.tsx"),
+  };
+  const desktopSource = Object.values(desktopSections).join("\n");
+  const surfaceValues = [
+    ...desktopSource.matchAll(/data-editorial-surface="([^"]+)"/g),
+  ].map((match) => match[1]);
+
+  assert.equal(surfaceValues.length, 4);
+  assert.deepEqual(surfaceValues.sort(), ["faq", "fit", "process", "services"]);
+
+  for (const anchor of ["industries", "founder", "contact"]) {
+    assert.doesNotMatch(desktopSections[anchor], /data-editorial-surface/);
+    assert.match(desktopSections[anchor], /\bbg-navy\b/);
+  }
+
+  assert.match(desktopSections.founder, /data-founder-glow/);
+});

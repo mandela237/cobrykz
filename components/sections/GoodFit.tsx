@@ -14,8 +14,14 @@ const notFit = [
 
 export default function GoodFit() {
   return (
-    <section className="bg-white py-20 md:py-28" aria-labelledby="fit-heading">
-      <div className="section-shell">
+    <section
+      className="flow-root bg-gray-light pb-20 pt-0 md:pb-28"
+      aria-labelledby="fit-heading"
+    >
+      <div
+        data-editorial-surface="fit"
+        className="section-shell relative z-10 -mt-10 rounded-lg border border-border bg-white p-7 shadow-[0_28px_80px_rgba(11,23,40,0.10)] md:-mt-14 md:p-10 lg:p-14"
+      >
         <div className="max-w-[760px]">
           <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">
             Before we talk

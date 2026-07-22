@@ -45,7 +45,7 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="bg-gray-light py-20 md:py-28">
+    <section id="faq" className="bg-white py-20 md:py-28">
       <div className="section-shell grid gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
         <div>
           <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">
@@ -60,11 +60,17 @@ export default function FAQ() {
           </p>
         </div>
 
-        <div className="border-t border-border">
+        <div
+          data-editorial-surface="faq"
+          className="overflow-hidden rounded-lg border border-border bg-gray-light px-6 shadow-[0_20px_60px_rgba(11,23,40,0.06)] md:px-8"
+        >
           {questions.map((item, index) => {
             const isOpen = openIndex === index;
             return (
-              <div key={item.question} className="border-b border-border">
+              <div
+                key={item.question}
+                className="border-b border-border last:border-b-0"
+              >
                 <button
                   type="button"
                   className="flex min-h-[72px] w-full items-center justify-between gap-6 py-5 text-left"

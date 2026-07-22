@@ -19,7 +19,10 @@ const industries = [
 
 export default function Industries() {
   return (
-    <section id="industries" className="relative overflow-hidden bg-navy py-20 text-white md:py-24">
+    <section
+      id="industries"
+      className="relative overflow-hidden bg-navy pb-20 pt-28 text-white md:pb-24 md:pt-36"
+    >
       <div className="dot-grid absolute inset-0 opacity-70" aria-hidden="true" />
       <div
         className="absolute inset-y-0 right-0 w-1/3 bg-[linear-gradient(135deg,transparent,rgba(31,94,255,0.12))]"

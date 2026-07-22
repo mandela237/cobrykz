@@ -50,9 +50,12 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="services" className="bg-white py-20 md:py-28">
-      <div className="section-shell">
-        <div className="grid gap-8 border-b border-border pb-10 md:grid-cols-[0.9fr_1.1fr] md:items-end md:pb-14">
+    <section id="services" className="bg-gray-light pb-0 pt-20 md:pt-28">
+      <div
+        data-editorial-surface="services"
+        className="section-shell relative z-10 translate-y-8 overflow-hidden rounded-lg border border-border bg-white p-6 shadow-[0_28px_80px_rgba(11,23,40,0.10)] md:translate-y-12 md:p-10 lg:p-14"
+      >
+        <div className="grid gap-8 border-b border-border pb-10 md:grid-cols-[0.9fr_1.1fr] md:items-end md:pb-12">
           <div>
             <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">
               What COBRYKZ builds
@@ -75,15 +78,11 @@ export default function Services() {
               <article
                 key={service.title}
                 className={`grid gap-5 py-9 md:grid-cols-[150px_1fr_0.9fr] md:gap-8 md:py-11 ${
-                  service.featured ? "relative" : ""
+                  service.featured
+                    ? "-mx-6 bg-blue-tint/55 px-6 md:-mx-10 md:px-10 lg:-mx-14 lg:px-14"
+                    : ""
                 }`}
               >
-                {service.featured && (
-                  <div
-                    className="absolute -inset-x-5 inset-y-0 -z-10 bg-blue-tint/55 md:-inset-x-8"
-                    aria-hidden="true"
-                  />
-                )}
                 <div className="flex items-center gap-3 md:items-start">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue/15 bg-white text-blue shadow-[0_8px_20px_rgba(31,94,255,0.08)]">
                     <Icon size={19} strokeWidth={1.9} aria-hidden="true" />

@@ -21,6 +21,11 @@ export default function Founder() {
       <div className="section-shell relative grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
         <div className="relative mx-auto w-full max-w-[420px] lg:mx-0">
           <div
+            data-founder-glow
+            className="absolute -inset-16 bg-[radial-gradient(circle_at_center,rgba(31,94,255,0.24),transparent_68%)]"
+            aria-hidden="true"
+          />
+          <div
             className="absolute -bottom-5 -right-5 h-[80%] w-[86%] border border-white/12"
             aria-hidden="true"
           />
