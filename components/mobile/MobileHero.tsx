@@ -13,7 +13,7 @@ export default function MobileHero() {
       id="m-top"
       className="relative isolate h-[80svh] min-h-[560px] overflow-hidden border-b border-white/10 bg-navy text-white [@media(max-height:649px)]:h-svh [@media(max-height:649px)]:min-h-svh"
     >
-      <div className="absolute inset-0 bg-navy">
+      <div className="absolute inset-0 bg-[#d8e0e6]">
         <video
           data-mobile-hero-backdrop
           autoPlay
@@ -22,26 +22,21 @@ export default function MobileHero() {
           playsInline
           preload="metadata"
           poster="/hero-video-poster.jpg"
-          className="h-full w-full object-cover object-center motion-reduce:hidden"
+          className="h-full w-full object-contain object-[center_14%] motion-reduce:hidden"
           aria-hidden="true"
           tabIndex={-1}
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
         <div
-          className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-cover bg-center motion-reduce:block"
+          className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-contain bg-[center_14%] bg-no-repeat motion-reduce:block"
           aria-hidden="true"
         />
       </div>
 
       <div
         data-mobile-hero-gradient
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy via-navy/55 to-transparent"
-        aria-hidden="true"
-      />
-      <div
-        data-mobile-hero-gradient
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy/70 via-navy/15 to-transparent"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(11,23,40,.92)_0%,rgba(11,23,40,.58)_38%,rgba(11,23,40,.08)_68%,transparent_100%)]"
         aria-hidden="true"
       />
 

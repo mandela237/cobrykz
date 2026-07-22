@@ -120,8 +120,9 @@ test("composes the mobile hero as a full-bleed video overlay", () => {
   assert.match(mobileHero, /data-mobile-hero-gradient/);
   assert.match(mobileHero, /data-mobile-hero-copy/);
   assert.match(mobileHero, /absolute inset-0/);
-  assert.match(mobileHero, /object-cover/);
-  assert.match(mobileHero, /from-navy/);
+  assert.match(mobileHero, /object-contain/);
+  assert.match(mobileHero, /rgba\(11,23,40,.92\)/);
+  assert.doesNotMatch(mobileHero, /bg-gradient-to-r from-navy\/70/);
   assert.equal((mobileHero.match(/href="#m-contact"/g) || []).length, 1);
   assert.doesNotMatch(mobileHero, /grid-cols-\[46%_54%\]|data-mobile-portrait-stage/);
 });

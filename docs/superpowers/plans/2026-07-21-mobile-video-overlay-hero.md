@@ -4,7 +4,7 @@
 
 **Goal:** Replace the split mobile hero with a readable bottom-left copy overlay on a full-bleed brand video.
 
-**Architecture:** Keep the implementation isolated to `MobileHero.tsx`. Render the video as the absolute backdrop, place two non-interactive navy gradient layers above it, and anchor the existing content group at bottom-left; enforce the structural contract with the existing source-level presentation test.
+**Architecture:** Keep the implementation isolated to `MobileHero.tsx`. Render the 16:9 video at its natural composition as the absolute backdrop, place one non-interactive bottom navy gradient above it, and anchor the existing content group at bottom-left; enforce the structural contract with the existing source-level presentation test.
 
 **Tech Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, Node test runner.
 
@@ -14,7 +14,7 @@
 - Hero uses `80svh` with a `560px` minimum height, switching to `100svh` with compact gaps below `650px` viewport height.
 - Copy stays bottom-left with 20px standard horizontal spacing.
 - `/hero-video.mp4`, `/hero-video-poster.jpg`, autoplay, muted, loop, and inline playback remain.
-- Film remains visually dominant; no card, border, rounded overlay container, or uniform heavy tint.
+- Film remains visually dominant and naturally framed with `object-contain`; no card, border, rounded overlay container, or uniform heavy tint.
 - CTA has a minimum 44px touch height and links to `#m-contact`.
 - Layout must not overflow horizontally from 320px through 767px.
 

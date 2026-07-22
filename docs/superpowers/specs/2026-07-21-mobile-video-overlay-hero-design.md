@@ -29,10 +29,10 @@ Retain the existing lightweight mobile type pairing and italic editorial emphasi
 
 ## Video And Contrast Treatment
 
-- Let `/hero-video.mp4` cover the full hero using `/hero-video-poster.jpg` as its fallback.
-- Tune the focal position to keep the most useful part of the film visible behind and beside the content.
-- Add a layered navy treatment: a stronger bottom gradient behind the copy and a softer left-side gradient for long lines.
-- Fade both gradients into the video rather than creating a visible panel boundary.
+- Present the 16:9 `/hero-video.mp4` at its natural composition with `object-contain` using `/hero-video-poster.jpg` as its fallback, rather than enlarging it to cover the tall phone stage.
+- Position the contained film toward the upper part of the hero so the full brand animation remains visible above the copy.
+- Use one soft navy treatment that grows darker only toward the bottom behind the copy.
+- Fade the gradient into the video rather than creating a visible panel boundary.
 - Keep the upper and right portions of the film substantially unobscured so the video remains the dominant visual.
 - Do not use a frosted card, border, rounded content container, or uniform dark tint over the whole film.
 
