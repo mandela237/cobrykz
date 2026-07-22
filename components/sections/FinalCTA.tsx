@@ -44,7 +44,7 @@ export default function FinalCTA() {
   return (
     <section
       id="contact"
-      className="relative overflow-hidden bg-navy py-20 text-white md:py-28"
+      className="relative overflow-hidden border-t border-white/10 bg-navy pb-24 pt-24 text-white md:pb-32 md:pt-32"
     >
       <div className="dot-grid absolute inset-0 opacity-65" aria-hidden="true" />
       <div

@@ -9,7 +9,10 @@ const promises = [
 
 export default function MobileFounder() {
   return (
-    <section id="m-founder" className="m-section bg-navy text-white">
+    <section
+      id="m-founder"
+      className="m-section bg-navy pb-24 pt-20 text-white"
+    >
       <div className="m-shell">
         <p className="m-kicker text-[#83B8FF]">The person responsible</p>
 

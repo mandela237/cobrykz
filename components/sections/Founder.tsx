@@ -11,7 +11,7 @@ export default function Founder() {
   return (
     <section
       id="founder"
-      className="relative overflow-hidden bg-navy py-20 text-white md:py-28"
+      className="relative overflow-hidden bg-navy pb-28 pt-24 text-white md:pb-36 md:pt-28"
     >
       <div className="dot-grid absolute inset-0 opacity-65" aria-hidden="true" />
       <div

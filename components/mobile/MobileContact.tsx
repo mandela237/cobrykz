@@ -29,7 +29,7 @@ export default function MobileContact() {
   return (
     <section
       id="m-contact"
-      className="m-section border-t border-white/10 bg-navy text-white"
+      className="m-section border-t border-white/10 bg-navy pb-20 pt-20 text-white"
     >
       <div className="m-shell">
         <p className="m-kicker text-[#83B8FF]">Start with a short note</p>

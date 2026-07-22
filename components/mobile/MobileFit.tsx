@@ -30,7 +30,7 @@ export default function MobileFit() {
     <section className="relative flow-root bg-gray-light pb-12">
       <div
         data-editorial-surface="fit"
-        className="m-shell relative z-10 -mt-5 rounded-lg border border-border bg-white px-5 py-8 shadow-[0_18px_48px_rgba(11,23,40,0.095)]"
+        className="m-shell relative z-10 -mt-5 rounded-lg border border-border bg-white px-5 py-8 shadow-[0_16px_42px_rgba(11,23,40,0.08)]"
       >
         <p className="m-kicker text-blue">Before we talk</p>
         <h2 className="m-title mt-3 text-navy">

@@ -21,7 +21,7 @@ export default function Industries() {
   return (
     <section
       id="industries"
-      className="relative overflow-hidden bg-navy pb-20 pt-28 text-white md:pb-24 md:pt-36"
+      className="relative overflow-hidden bg-navy pb-24 pt-28 text-white md:pb-28 md:pt-40"
     >
       <div className="dot-grid absolute inset-0 opacity-70" aria-hidden="true" />
       <div

@@ -33,7 +33,10 @@ const steps = [
 
 export default function Process() {
   return (
-    <section id="process" className="bg-gray-light py-20 md:py-28">
+    <section
+      id="process"
+      className="bg-gray-light pb-24 pt-20 md:pb-32 md:pt-24"
+    >
       <div className="section-shell">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <div>

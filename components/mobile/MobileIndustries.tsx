@@ -18,7 +18,7 @@ const industries = [
 
 export default function MobileIndustries() {
   return (
-    <section className="m-section overflow-hidden bg-navy pt-24 text-white">
+    <section className="m-section overflow-hidden bg-navy pb-20 pt-24 text-white">
       <div className="m-shell">
         <p className="m-kicker text-[#83B8FF]">Built for local trust</p>
         <h2 className="m-title mt-3">

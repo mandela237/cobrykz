@@ -20,7 +20,7 @@ export default function GoodFit() {
     >
       <div
         data-editorial-surface="fit"
-        className="section-shell relative z-10 -mt-10 rounded-lg border border-border bg-white p-7 shadow-[0_28px_80px_rgba(11,23,40,0.10)] md:-mt-14 md:p-10 lg:p-14"
+        className="section-shell relative z-10 -mt-10 rounded-lg border border-border bg-white p-7 shadow-[0_24px_68px_rgba(11,23,40,0.08)] md:-mt-14 md:p-10 lg:p-14"
       >
         <div className="max-w-[760px]">
           <p className="mb-4 text-[11px] font-bold uppercase tracking-normal text-blue">

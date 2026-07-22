@@ -41,7 +41,7 @@ export default function MobileProcess() {
     <section
       id="m-process"
       data-mobile-process
-      className="m-section bg-gray-light"
+      className="m-section bg-gray-light pb-20 pt-14"
     >
       <div className="m-shell">
         <p className="m-kicker text-blue">The path to launch</p>
