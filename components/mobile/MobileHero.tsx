@@ -11,7 +11,7 @@ export default function MobileHero() {
   return (
     <section
       id="m-top"
-      className="relative isolate h-[80svh] min-h-[560px] overflow-hidden border-b border-white/10 bg-navy text-white [@media(max-height:649px)]:h-svh [@media(max-height:649px)]:min-h-svh"
+      className="relative isolate h-[68svh] min-h-[500px] max-h-[620px] overflow-hidden border-b border-white/10 bg-navy text-white [@media(max-height:649px)]:h-svh"
     >
       <div className="absolute inset-0 bg-[#d8e0e6]">
         <video
@@ -22,7 +22,7 @@ export default function MobileHero() {
           playsInline
           preload="metadata"
           poster="/hero-video-poster.jpg"
-          className="h-full w-full object-cover object-center motion-reduce:hidden"
+          className="h-full w-full scale-[1.04] object-cover object-[center_center] motion-reduce:hidden"
           aria-hidden="true"
           tabIndex={-1}
         >

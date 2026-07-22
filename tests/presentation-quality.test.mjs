@@ -113,14 +113,15 @@ test("uses the brand film as accessible, non-blocking hero media", () => {
 test("composes the mobile hero as a full-bleed video overlay", () => {
   const mobileHero = read("components/mobile/MobileHero.tsx");
 
-  assert.match(mobileHero, /min-h-\[560px\]/);
-  assert.match(mobileHero, /h-\[80svh\]/);
+  assert.match(mobileHero, /min-h-\[500px\]/);
+  assert.match(mobileHero, /h-\[68svh\]/);
+  assert.match(mobileHero, /max-h-\[620px\]/);
   assert.match(mobileHero, /\[@media\(max-height:649px\)\]:h-svh/);
   assert.match(mobileHero, /data-mobile-hero-backdrop/);
   assert.match(mobileHero, /data-mobile-text-overlay/);
   assert.match(mobileHero, /data-mobile-hero-copy/);
   assert.match(mobileHero, /absolute inset-0/);
-  assert.match(mobileHero, /object-cover object-center/);
+  assert.match(mobileHero, /scale-\[1\.04\] object-cover object-\[center_center\]/);
   assert.match(mobileHero, /rgba\(11,23,40,.78\)/);
   assert.doesNotMatch(mobileHero, /object-contain|data-mobile-hero-ambient/);
   assert.doesNotMatch(mobileHero, /blur-|brightness-|contrast-|saturate-/);

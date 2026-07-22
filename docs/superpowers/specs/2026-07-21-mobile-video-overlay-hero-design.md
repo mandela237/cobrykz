@@ -11,7 +11,7 @@ This change affects only the mobile hero and its presentation-quality contract. 
 ## Composition
 
 - Use one full-bleed video stage rather than separate copy and video columns.
-- Use an `80svh` hero with a `560px` minimum height. For viewports shorter than `650px`, use `100svh` and compact the vertical gaps so the complete content group remains visible.
+- Use a compact `68svh` hero with a `500px` minimum and `620px` maximum height. For viewports shorter than `650px`, use `100svh` with the same `500px` minimum and compact the vertical gaps so the complete content group remains visible.
 - Position the complete content group at the bottom-left with 20px horizontal spacing at standard phone widths and safe spacing above the bottom edge.
 - Keep the content width constrained so lines remain intentional and do not cover the video unnecessarily.
 - Preserve clear space beneath the mobile navigation.
@@ -30,6 +30,7 @@ Retain the existing lightweight mobile type pairing and italic editorial emphasi
 ## Video And Contrast Treatment
 
 - Make `/hero-video.mp4` the single full-background hero layer with centered `object-cover`, using `/hero-video-poster.jpg` as its fallback.
+- Scale the centered film to `1.04` so the logo is a stronger focal point without an aggressive crop.
 - Preserve the video's original brightness, color, contrast, and sharpness without filters or duplicate ambient imagery.
 - Keep the logo animation centered as the focal point across supported phone widths.
 - Use one localized semi-transparent navy gradient behind the text block only; do not tint the entire video.

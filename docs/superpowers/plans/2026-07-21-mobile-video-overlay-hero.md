@@ -11,7 +11,7 @@
 ## Global Constraints
 
 - Mobile only; desktop hero and downstream sections remain unchanged.
-- Hero uses `80svh` with a `560px` minimum height, switching to `100svh` with compact gaps below `650px` viewport height.
+- Hero uses a compact `68svh` height with a `500px` minimum and `620px` maximum, switching to `100svh` with compact gaps below `650px` viewport height.
 - Copy stays bottom-left with 20px standard horizontal spacing.
 - `/hero-video.mp4`, `/hero-video-poster.jpg`, autoplay, muted, loop, and inline playback remain.
 - Film remains visually dominant with centered `object-cover`; no filter, duplicate media layer, card, border, rounded overlay container, or uniform heavy tint.
