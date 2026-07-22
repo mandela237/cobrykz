@@ -115,7 +115,7 @@ test("composes the mobile hero as a full-bleed video overlay", () => {
 
   assert.match(mobileHero, /min-h-\[560px\]/);
   assert.match(mobileHero, /h-\[80svh\]/);
-  assert.match(mobileHero, /max-h-\[649px\]:h-svh/);
+  assert.match(mobileHero, /\[@media\(max-height:649px\)\]:h-svh/);
   assert.match(mobileHero, /data-mobile-hero-backdrop/);
   assert.match(mobileHero, /data-mobile-hero-gradient/);
   assert.match(mobileHero, /data-mobile-hero-copy/);

@@ -11,14 +11,46 @@ export default function MobileHero() {
   return (
     <section
       id="m-top"
-      className="relative isolate grid min-h-[520px] grid-cols-[46%_54%] overflow-hidden border-b border-border bg-gray-light text-navy"
+      className="relative isolate h-[80svh] min-h-[560px] overflow-hidden border-b border-white/10 bg-navy text-white [@media(max-height:649px)]:h-svh [@media(max-height:649px)]:min-h-svh"
     >
+      <div className="absolute inset-0 bg-navy">
+        <video
+          data-mobile-hero-backdrop
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/hero-video-poster.jpg"
+          className="h-full w-full object-cover object-center motion-reduce:hidden"
+          aria-hidden="true"
+          tabIndex={-1}
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
+        <div
+          className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-cover bg-center motion-reduce:block"
+          aria-hidden="true"
+        />
+      </div>
+
+      <div
+        data-mobile-hero-gradient
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy via-navy/55 to-transparent"
+        aria-hidden="true"
+      />
+      <div
+        data-mobile-hero-gradient
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy/70 via-navy/15 to-transparent"
+        aria-hidden="true"
+      />
+
       <div
         data-mobile-hero-copy
-        className="relative z-20 flex min-w-0 flex-col justify-center px-3 pb-8 pt-24 min-[350px]:px-4"
+        className="relative z-20 flex h-full w-full max-w-[430px] flex-col justify-end px-5 pb-8 pt-24 [@media(max-height:649px)]:pb-5 [@media(max-height:649px)]:pt-20"
       >
         <div
-          className={`${mobileHeroSans.className} flex items-center gap-2 text-[10px] font-semibold leading-4 text-slate`}
+          className={`${mobileHeroSans.className} flex items-center gap-2 text-[10px] font-semibold leading-4 text-white/80`}
         >
           <span
             className="h-1.5 w-1.5 shrink-0 rounded-full bg-evergreen"
@@ -28,48 +60,29 @@ export default function MobileHero() {
         </div>
 
         <h1
-          className={`${mobileHeroSans.className} mt-5 text-[25px] font-normal leading-[1.04] tracking-[-0.02em] text-navy min-[350px]:text-[28px] min-[400px]:text-[31px]`}
+          className={`${mobileHeroSans.className} mt-5 text-[30px] font-normal leading-[1.04] tracking-[-0.02em] text-white min-[400px]:text-[33px] [@media(max-height:649px)]:mt-3`}
         >
           A website that
           <span
-            className="mt-1 block font-serif text-[31px] font-normal italic leading-none text-blue min-[350px]:text-[35px] min-[400px]:text-[38px]"
+            className="mt-1 block font-serif text-[36px] font-normal italic leading-none text-white min-[400px]:text-[39px]"
           >
             earns trust.
           </span>
         </h1>
 
         <p
-          className={`${mobileHeroSans.className} mt-4 text-[12px] font-medium leading-[1.55] text-navy/80 min-[400px]:text-[13px]`}
+          className={`${mobileHeroSans.className} mt-4 max-w-[340px] text-[14px] font-medium leading-[1.6] text-white/80 [@media(max-height:649px)]:mt-3`}
         >
           Built for local businesses whose website no longer matches their work.
         </p>
 
         <a
           href="#m-contact"
-          className={`${mobileHeroSans.className} shimmer mt-6 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-blue px-2 text-[11px] font-semibold text-white shadow-[0_8px_22px_rgba(31,94,255,0.2)] transition-colors hover:bg-blue-dark min-[350px]:text-[12px]`}
+          className={`${mobileHeroSans.className} shimmer mt-6 inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-blue px-4 text-[13px] font-semibold text-white shadow-[0_10px_28px_rgba(0,0,0,0.24)] transition-colors hover:bg-blue-dark [@media(max-height:649px)]:mt-4`}
         >
           Start a project
           <ArrowUpRight size={15} strokeWidth={1.9} aria-hidden="true" />
         </a>
-      </div>
-
-      <div
-        data-mobile-portrait-stage
-        className="relative min-w-0 overflow-hidden border-l border-border bg-[#eef3f7]"
-      >
-        <video
-          data-mobile-hero-backdrop
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster="/hero-video-poster.jpg"
-          className="h-full w-full object-cover object-[52%_center]"
-          aria-label="COBRYKZ brand animation"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-        </video>
       </div>
     </section>
   );
