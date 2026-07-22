@@ -95,3 +95,17 @@ test("provides an honest project-note fallback", () => {
     /placeholder:text-white\/(?:[0-5]?\d)(?!\d)/,
   );
 });
+
+test("uses the brand film as accessible, non-blocking hero media", () => {
+  const heroSources = [
+    read("components/sections/Hero.tsx"),
+    read("components/mobile/MobileHero.tsx"),
+  ].join("\n");
+
+  assert.equal((heroSources.match(/<video/g) || []).length, 2);
+  assert.equal((heroSources.match(/autoPlay/g) || []).length, 2);
+  assert.equal((heroSources.match(/muted/g) || []).length, 2);
+  assert.equal((heroSources.match(/playsInline/g) || []).length, 2);
+  assert.equal((heroSources.match(/poster="\/hero-video-poster\.jpg"/g) || []).length, 2);
+  assert.equal((heroSources.match(/src="\/hero-video\.mp4"/g) || []).length, 2);
+});

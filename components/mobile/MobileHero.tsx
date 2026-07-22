@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Manrope } from "next/font/google";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 
@@ -12,35 +11,28 @@ export default function MobileHero() {
   return (
     <section
       id="m-top"
-      className="relative isolate min-h-[620px] overflow-hidden border-b border-border bg-gray-light text-navy min-[375px]:min-h-[720px] min-[600px]:min-h-[700px]"
+      className="relative isolate overflow-hidden border-b border-border bg-gray-light text-navy"
     >
       <div
         data-mobile-portrait-stage
-        className="absolute inset-0 z-0 overflow-hidden"
+        className="relative mt-16 aspect-video overflow-hidden border-y border-border bg-[#eef3f7]"
       >
-        <Image
+        <video
           data-mobile-hero-backdrop
-          src="/mandela-portrait-sharp.jpg"
-          alt="Mandela Atud, founder of COBRYKZ"
-          fill
-          preload
-          quality={90}
-          className="object-cover object-[53%_top]"
-          sizes="100vw"
-        />
-        <div
-          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_32%)]"
-          aria-hidden="true"
-        />
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/hero-video-poster.jpg"
+          className="h-full w-full object-cover"
+          aria-label="COBRYKZ brand animation"
+        >
+          <source src="/hero-video.mp4" type="video/mp4" />
+        </video>
       </div>
 
-      <div
-        data-mobile-glass-veil
-        className="absolute inset-x-0 bottom-0 z-10 h-[56%] bg-[linear-gradient(180deg,rgba(247,250,255,0.04)_0%,rgba(247,250,255,0.24)_20%,rgba(247,250,255,0.76)_48%,rgba(247,250,255,0.96)_100%)]"
-        aria-hidden="true"
-      />
-
-      <div className="m-shell relative z-20 flex min-h-[620px] flex-col justify-end pb-6 pt-24 min-[375px]:min-h-[720px] min-[600px]:min-h-[700px]">
+      <div className="m-shell relative z-20 py-8">
         <div data-mobile-hero-copy className="max-w-[330px]">
           <p
             data-mobile-glass-chip

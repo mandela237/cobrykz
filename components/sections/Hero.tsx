@@ -1,8 +1,6 @@
-import Image from "next/image";
 import {
   ArrowDownRight,
   ArrowUpRight,
-  CircleCheck,
 } from "lucide-react";
 import TrustField from "@/components/TrustField";
 
@@ -63,38 +61,19 @@ export default function Hero() {
             aria-hidden="true"
           />
           <div className="relative overflow-hidden rounded-lg border border-white bg-white shadow-[0_28px_80px_rgba(11,23,40,0.16)]">
-            <div className="relative aspect-[16/8.4] lg:aspect-[0.83] lg:min-h-[480px] xl:min-h-[510px]">
-              <Image
-                src="/mandela-portrait-sharp.jpg"
-                alt="Mandela Atud, founder and builder at COBRYKZ"
-                fill
-                preload
-                quality={92}
-                loading="eager"
-                className="object-cover object-[52%_12%] lg:object-[52%_7%]"
-                sizes="(max-width: 1023px) calc(100vw - 40px), 42vw"
-              />
-              <div
-                className="absolute inset-0 bg-[linear-gradient(180deg,transparent_48%,rgba(7,19,33,0.66)_100%)]"
-                aria-hidden="true"
-              />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-5 p-4 text-white md:p-5">
-                <div>
-                  <p className="text-[15px] font-bold">Mandela Atud</p>
-                  <p className="mt-1 text-[13px] font-medium text-white/85">
-                    Designer and developer
-                  </p>
-                </div>
-                <div className="hidden items-center gap-2 text-right text-[12px] font-medium text-white/85 xl:flex">
-                  <CircleCheck
-                    size={16}
-                    strokeWidth={2}
-                    className="text-[#78D7B2]"
-                    aria-hidden="true"
-                  />
-                  Founder-led through launch
-                </div>
-              </div>
+            <div className="relative aspect-video bg-[#eef3f7]">
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster="/hero-video-poster.jpg"
+                className="h-full w-full object-cover"
+                aria-label="COBRYKZ brand animation"
+              >
+                <source src="/hero-video.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
         </div>
