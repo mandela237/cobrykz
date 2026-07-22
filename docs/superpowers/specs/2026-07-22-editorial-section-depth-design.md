@@ -134,6 +134,22 @@ No overlap distance, shell inset, or shadow preset is mandatory across every sec
 - Review representative viewport screenshots for one dominant focal point and a coherent visual path into the next section.
 - Confirm desktop and mobile use related art direction without becoming identical templates.
 
+## Final Design Pass
+
+After all section-level changes are implemented, review the page as one continuous experience rather than accepting sections independently.
+
+Inspect complete-page desktop and mobile captures and scroll through both compositions. Adjust spacing, overlaps, surface treatments, transition strength, and visual emphasis wherever necessary so the whole journey feels intentionally composed.
+
+Before completion:
+
+- Refine any section that repeats the treatment or rhythm of its neighbor without earning that similarity.
+- Integrate any section that feels isolated from the visual journey before or after it.
+- Reduce any surface, shadow, glow, heading, or panel that is visually louder than its role requires.
+- Strengthen any transition or focal point that is too weak to guide the eye forward.
+- Recheck the page after those adjustments as a full composition, not only through isolated component screenshots.
+
+This holistic design pass is required before implementation can be considered complete.
+
 ## Acceptance Criteria
 
 - The page reads as one continuous editorial composition rather than a stack of isolated sections.
@@ -145,3 +161,4 @@ No overlap distance, shell inset, or shadow preset is mandatory across every sec
 - Every viewport has one dominant visual focal point.
 - Existing content, typography, colors, order, and behavior remain unchanged.
 - Mobile layouts remain clean and functional from 320px upward.
+- A final full-page review confirms that no section feels repetitive, isolated, or disproportionately loud within the complete scroll.
