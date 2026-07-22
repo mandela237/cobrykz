@@ -22,14 +22,14 @@ export default function MobileHero() {
           playsInline
           preload="metadata"
           poster="/hero-video-poster.jpg"
-          className="h-full w-full scale-[1.04] object-cover object-[center_center] motion-reduce:hidden"
+          className="h-full w-full object-contain object-[center_center] motion-reduce:hidden"
           aria-hidden="true"
           tabIndex={-1}
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
         <div
-          className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-cover bg-center motion-reduce:block"
+          className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-contain bg-center bg-no-repeat motion-reduce:block"
           aria-hidden="true"
         />
       </div>

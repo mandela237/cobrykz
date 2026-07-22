@@ -29,8 +29,8 @@ Retain the existing lightweight mobile type pairing and italic editorial emphasi
 
 ## Video And Contrast Treatment
 
-- Make `/hero-video.mp4` the single full-background hero layer with centered `object-cover`, using `/hero-video-poster.jpg` as its fallback.
-- Scale the centered film to `1.04` so the logo is a stronger focal point without an aggressive crop.
+- Make `/hero-video.mp4` the single hero media layer with centered `object-contain`, using `/hero-video-poster.jpg` as its fallback, so the complete 16:9 frame remains visible on tall phones.
+- Do not scale or crop the film.
 - Preserve the video's original brightness, color, contrast, and sharpness without filters or duplicate ambient imagery.
 - Keep the logo animation centered as the focal point across supported phone widths.
 - Use one localized semi-transparent navy gradient behind the text block only; do not tint the entire video.
