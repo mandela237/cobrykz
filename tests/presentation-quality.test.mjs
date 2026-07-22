@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
@@ -15,12 +16,84 @@ function collectTsx(directory) {
   );
 }
 
+function collectTrackedTsx() {
+  return execFileSync("git", ["ls-files", "--", "*.tsx"], {
+    cwd: root,
+    encoding: "utf8",
+  })
+    .trim()
+    .split("\n")
+    .filter(Boolean);
+}
+
 test("uses platform-native font rasterization", () => {
   const globals = read("app/globals.css");
 
   assert.doesNotMatch(globals, /text-rendering:\s*geometricPrecision/);
   assert.doesNotMatch(globals, /-webkit-font-smoothing:\s*antialiased/);
   assert.doesNotMatch(globals, /-moz-osx-font-smoothing:\s*grayscale/);
+});
+
+test("uses one accessible Lucide interface icon family", () => {
+  const trackedTsx = collectTrackedTsx();
+  const iconLibraryPattern =
+    /(?:^|[/@-])(?:lucide|heroicons|react-icons|fontawesome|material-icons|phosphor|tabler|radix-icons)(?:$|[/@-])/i;
+
+  for (const path of trackedTsx) {
+    const source = read(path);
+    const lucideIconNames = new Set();
+    const iconImports = [...source.matchAll(
+      /^\s*import[\s\S]*?from\s*["']([^"']+)["'];?\s*$/gm,
+    )];
+
+    for (const [, moduleName] of iconImports) {
+      if (iconLibraryPattern.test(moduleName)) {
+        assert.equal(
+          moduleName,
+          "lucide-react",
+          `${path} imports interface icons from ${moduleName}`,
+        );
+      }
+    }
+
+    for (const [, importedNames] of source.matchAll(
+      /import\s*\{([\s\S]*?)\}\s*from\s*["']lucide-react["'];/g,
+    )) {
+      for (const importedName of importedNames.split(",")) {
+        const [, importedNameValue, localName] = importedName
+          .trim()
+          .match(/^(?:type\s+)?(\w+)(?:\s+as\s+(\w+))?$/) || [];
+        if (importedNameValue) {
+          lucideIconNames.add(localName || importedNameValue);
+        }
+      }
+    }
+
+    const inlineSvgCount = (source.match(/<svg\b/g) || []).length;
+    if (path === "components/CobrykzLogo.tsx") {
+      assert.equal(inlineSvgCount, 1, "the COBRYKZ brand mark must retain its SVG");
+    } else {
+      assert.equal(inlineSvgCount, 0, `${path} contains a non-brand inline SVG`);
+    }
+
+    if (lucideIconNames.size === 0) continue;
+
+    for (const match of source.matchAll(/<([A-Z][A-Za-z0-9_]*)\b([^>]*)\/?\s*>/g)) {
+      const [, componentName, attributes] = match;
+      const isDecorativeLucideIcon =
+        lucideIconNames.has(componentName) ||
+        (componentName === "Icon" && /(?:const|let)\s+Icon\s*=/.test(source)) ||
+        (componentName === "ActiveIcon" && /(?:const|let)\s+ActiveIcon\s*=/.test(source));
+
+      if (isDecorativeLucideIcon) {
+        assert.match(
+          attributes,
+          /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
+          `${path} must hide adjacent-text decorative ${componentName} icons from assistive technology`,
+        );
+      }
+    }
+  }
 });
 
 test("keeps navigation text on crisp surfaces", () => {
