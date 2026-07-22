@@ -4,7 +4,7 @@
 
 **Goal:** Replace the split mobile hero with a readable bottom-left copy overlay on a full-bleed brand video.
 
-**Architecture:** Keep the implementation isolated to `MobileHero.tsx`. Render one centered, unfiltered `object-contain` video as the absolute media layer so the complete frame remains visible, place a localized semi-transparent gradient inside the text block only, and anchor the content group at bottom-left; enforce the structural contract with the existing source-level presentation test.
+**Architecture:** Keep the implementation isolated to `MobileHero.tsx`. Start the media stage immediately below the 64px fixed navigation and top-align one unfiltered `object-contain` video so the complete frame remains visible without a gap, place a localized semi-transparent gradient inside the text block only, and anchor the content group at bottom-left; enforce the structural contract with the existing source-level presentation test.
 
 **Tech Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, Node test runner.
 

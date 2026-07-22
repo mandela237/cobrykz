@@ -11,9 +11,12 @@ export default function MobileHero() {
   return (
     <section
       id="m-top"
-      className="relative isolate h-[68svh] min-h-[500px] max-h-[620px] overflow-hidden border-b border-white/10 bg-navy text-white [@media(max-height:649px)]:h-svh"
+      className="relative isolate h-[68svh] min-h-[500px] max-h-[620px] overflow-hidden border-b border-white/10 bg-[#d8e0e6] text-white [@media(max-height:649px)]:h-svh"
     >
-      <div className="absolute inset-0 bg-[#d8e0e6]">
+      <div
+        data-mobile-video-stage
+        className="absolute inset-x-0 bottom-0 top-16 bg-[#d8e0e6]"
+      >
         <video
           data-mobile-hero-backdrop
           autoPlay
@@ -22,14 +25,14 @@ export default function MobileHero() {
           playsInline
           preload="metadata"
           poster="/hero-video-poster.jpg"
-          className="h-full w-full object-contain object-[center_center] motion-reduce:hidden"
+          className="h-full w-full object-contain object-[center_top] motion-reduce:hidden"
           aria-hidden="true"
           tabIndex={-1}
         >
           <source src="/hero-video.mp4" type="video/mp4" />
         </video>
         <div
-          className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-contain bg-center bg-no-repeat motion-reduce:block"
+          className="absolute inset-0 hidden bg-[url('/hero-video-poster.jpg')] bg-contain bg-top bg-no-repeat motion-reduce:block"
           aria-hidden="true"
         />
       </div>
