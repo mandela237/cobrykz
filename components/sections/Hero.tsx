@@ -16,7 +16,7 @@ export default function Hero() {
       />
       <TrustField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-90 lg:block" />
 
-      <div className="section-shell relative z-10 grid items-center gap-9 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16">
+      <div className="relative z-10 mx-auto grid w-[calc(100%-2.5rem)] max-w-[1560px] items-center gap-9 md:w-[calc(100%-5rem)] lg:grid-cols-[0.86fr_1.14fr] lg:gap-14">
         <div className="max-w-[700px]">
           <div className="mb-5 flex items-center gap-3 text-[13px] font-semibold text-slate md:mb-6">
             <span className="h-2 w-2 rounded-full bg-evergreen" aria-hidden="true" />
@@ -55,7 +55,7 @@ export default function Hero() {
 
         </div>
 
-        <div className="relative mx-auto w-full max-w-[470px] lg:ml-auto">
+        <div className="relative mx-auto w-full lg:ml-auto">
           <div
             className="absolute -left-5 -top-5 hidden h-[78%] w-[82%] border border-blue/20 bg-white/35 lg:block"
             aria-hidden="true"
