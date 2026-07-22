@@ -121,7 +121,7 @@ test("composes the mobile hero as a full-bleed video overlay", () => {
   assert.match(mobileHero, /data-mobile-text-overlay/);
   assert.match(mobileHero, /data-mobile-hero-copy/);
   assert.match(mobileHero, /absolute inset-0/);
-  assert.match(mobileHero, /object-contain object-\[center_center\]/);
+  assert.match(mobileHero, /object-contain object-\[center_top\]/);
   assert.match(mobileHero, /rgba\(11,23,40,.78\)/);
   assert.doesNotMatch(mobileHero, /scale-\[|object-cover|data-mobile-hero-ambient/);
   assert.doesNotMatch(mobileHero, /blur-|brightness-|contrast-|saturate-/);
