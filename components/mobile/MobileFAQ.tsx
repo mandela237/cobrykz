@@ -35,18 +35,24 @@ export default function MobileFAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section id="m-faq" className="m-section bg-gray-light">
+    <section id="m-faq" className="m-section bg-white">
       <div className="m-shell">
         <p className="m-kicker text-blue">Quick answers</p>
         <h2 className="m-title mt-3 text-navy">
           Straight answers, without the sales script.
         </h2>
 
-        <div className="mt-7 border-t border-border">
+        <div
+          data-editorial-surface="faq"
+          className="mt-7 overflow-hidden rounded-lg border border-border bg-gray-light/75 px-4 shadow-[0_12px_34px_rgba(11,23,40,0.055)]"
+        >
           {questions.map((item, index) => {
             const isOpen = openIndex === index;
             return (
-              <div key={item.question} className="border-b border-border">
+              <div
+                key={item.question}
+                className="border-b border-border last:border-b-0"
+              >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? -1 : index)}

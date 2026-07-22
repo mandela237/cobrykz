@@ -160,3 +160,29 @@ test("uses selective editorial depth on desktop", () => {
 
   assert.match(desktopSections.founder, /data-founder-glow/);
 });
+
+test("composes selective editorial depth independently on mobile", () => {
+  const mobileSections = {
+    services: read("components/mobile/MobileServices.tsx"),
+    industries: read("components/mobile/MobileIndustries.tsx"),
+    process: read("components/mobile/MobileProcess.tsx"),
+    founder: read("components/mobile/MobileFounder.tsx"),
+    fit: read("components/mobile/MobileFit.tsx"),
+    faq: read("components/mobile/MobileFAQ.tsx"),
+    contact: read("components/mobile/MobileContact.tsx"),
+  };
+  const mobileSource = Object.values(mobileSections).join("\n");
+  const surfaceValues = [
+    ...mobileSource.matchAll(/data-editorial-surface="([^"]+)"/g),
+  ].map((match) => match[1]);
+
+  assert.equal(surfaceValues.length, 4);
+  assert.deepEqual(surfaceValues.sort(), ["faq", "fit", "process", "services"]);
+
+  for (const anchor of ["industries", "founder", "contact"]) {
+    assert.doesNotMatch(mobileSections[anchor], /data-editorial-surface/);
+    assert.match(mobileSections[anchor], /\bbg-navy\b/);
+  }
+
+  assert.match(mobileSections.founder, /data-founder-glow/);
+});

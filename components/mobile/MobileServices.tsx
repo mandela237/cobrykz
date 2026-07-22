@@ -42,8 +42,11 @@ export default function MobileServices() {
   const ActiveIcon = active.icon;
 
   return (
-    <section id="m-services" className="m-section bg-white">
-      <div className="m-shell">
+    <section id="m-services" className="relative bg-gray-light pb-0 pt-14">
+      <div
+        data-editorial-surface="services"
+        className="m-shell relative z-10 translate-y-5 rounded-lg border border-border bg-white px-5 py-8 shadow-[0_16px_42px_rgba(11,23,40,0.08)]"
+      >
         <p className="m-kicker text-blue">What COBRYKZ builds</p>
         <h2 className="m-title mt-3 text-navy">
           Start with the website. Add more only when it earns its place.

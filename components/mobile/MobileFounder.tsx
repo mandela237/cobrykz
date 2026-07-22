@@ -14,15 +14,22 @@ export default function MobileFounder() {
         <p className="m-kicker text-[#83B8FF]">The person responsible</p>
 
         <div className="mt-5 grid grid-cols-[108px_1fr] items-end gap-5">
-          <div className="relative aspect-[0.78] overflow-hidden rounded-lg border border-white/12">
-            <Image
-              src="/mandela-portrait-sharp.jpg"
-              alt="Mandela Atud, founder of COBRYKZ"
-              fill
-              quality={86}
-              className="object-cover object-[52%_8%]"
-              sizes="108px"
+          <div className="relative">
+            <div
+              data-founder-glow
+              className="pointer-events-none absolute -inset-5 bg-[radial-gradient(circle_at_50%_42%,rgba(31,94,255,0.20),transparent_70%)]"
+              aria-hidden="true"
             />
+            <div className="relative z-10 aspect-[0.78] overflow-hidden rounded-lg border border-white/12">
+              <Image
+                src="/mandela-portrait-sharp.jpg"
+                alt="Mandela Atud, founder of COBRYKZ"
+                fill
+                quality={86}
+                className="object-cover object-[52%_8%]"
+                sizes="108px"
+              />
+            </div>
           </div>
           <div className="pb-1">
             <p className="text-[18px] font-bold">Mandela Atud</p>

@@ -27,8 +27,11 @@ export default function MobileFit() {
   const isPositive = activeIndex === 0;
 
   return (
-    <section className="m-section bg-white">
-      <div className="m-shell">
+    <section className="relative flow-root bg-gray-light pb-12">
+      <div
+        data-editorial-surface="fit"
+        className="m-shell relative z-10 -mt-5 rounded-lg border border-border bg-white px-5 py-8 shadow-[0_18px_48px_rgba(11,23,40,0.095)]"
+      >
         <p className="m-kicker text-blue">Before we talk</p>
         <h2 className="m-title mt-3 text-navy">
           The right working relationship is clear from the start.

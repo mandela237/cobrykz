@@ -53,11 +53,17 @@ export default function MobileProcess() {
           agree on the exact schedule before work starts.
         </p>
 
-        <div className="mt-7 border-t border-border">
+        <div
+          data-editorial-surface="process"
+          className="mt-7 overflow-hidden rounded-lg border border-border bg-white px-4 shadow-[0_14px_38px_rgba(11,23,40,0.075)]"
+        >
           {steps.map((step, index) => {
             const isOpen = openIndex === index;
             return (
-              <div key={step.number} className="border-b border-border">
+              <div
+                key={step.number}
+                className="border-b border-border last:border-b-0"
+              >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? -1 : index)}
