@@ -58,7 +58,7 @@ The immutable baseline was captured before any edit to `app/globals.css`.
 - Existing value: `rgba(31, 94, 255, 0.78)`.
 - Repeated consumers: focus-visible controls within existing `bg-navy` and
   `bg-footer-bg` destinations: desktop Industries, Founder, FinalCTA, and Footer;
-  mobile Industries, Founder, Contact, and Footer.
+  mobile Founder, Contact, and Footer.
 - Visual role: the current focus-ring color where the surrounding surface is
   dark.
 - Reason: light- and dark-surface focus are different roles even though their
