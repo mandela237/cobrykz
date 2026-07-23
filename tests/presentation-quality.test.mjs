@@ -59,6 +59,66 @@ function assertRestrainedActionStates(source, label) {
   }
 }
 
+function testPattern(pattern, value) {
+  pattern.lastIndex = 0;
+  return pattern.test(value);
+}
+
+function assertActionContract(source, sourceLabel, contract) {
+  const matches = actionBlocks(source).filter((action) =>
+    testPattern(contract.identity, action),
+  );
+  const contractLabel = `${sourceLabel} ${contract.name}`;
+
+  assert.equal(
+    matches.length,
+    1,
+    `${contractLabel} must resolve to exactly one action instance`,
+  );
+
+  const [action] = matches;
+  assert.match(
+    action,
+    /\baction-transition\b/,
+    `${contractLabel} must apply action-transition to that action instance`,
+  );
+
+  for (const [detail, pattern] of Object.entries(contract.required)) {
+    assert.match(action, pattern, `${contractLabel} changed its ${detail}`);
+  }
+  for (const [detail, pattern] of Object.entries(contract.forbidden || {})) {
+    assert.doesNotMatch(action, pattern, `${contractLabel} gained ${detail}`);
+  }
+
+  return action;
+}
+
+function assertSourceActionContracts(source, sourceLabel, contracts) {
+  const contractedActions = contracts.map((contract) =>
+    assertActionContract(source, sourceLabel, contract),
+  );
+  const transitionedActions = actionBlocks(source).filter((action) =>
+    /\baction-transition\b/.test(action),
+  );
+
+  assert.equal(
+    transitionedActions.length,
+    contracts.length,
+    `${sourceLabel} must transition exactly its audited action instances`,
+  );
+  assert.deepEqual(
+    transitionedActions.toSorted(),
+    contractedActions.toSorted(),
+    `${sourceLabel} must not move action-transition to a different action`,
+  );
+}
+
+function assertSourceFacts(source, sourceLabel, facts) {
+  for (const [detail, pattern] of Object.entries(facts)) {
+    assert.match(source, pattern, `${sourceLabel} changed its ${detail}`);
+  }
+}
+
 function assertIconSystem(source, path) {
   const namedImportSources = new Map();
   const namespaceImportSources = new Map();
@@ -236,8 +296,8 @@ test("keeps equivalent actions and links behaviorally consistent", () => {
 
   assert.match(
     globals,
-    /\.action-transition\s*{[^}]*var\(--control-transition\)[^}]*}/s,
-    "equivalent action color states must consume --control-transition",
+    /\.action-transition\s*{\s*transition:\s*color var\(--control-transition\),\s*background-color var\(--control-transition\),\s*border-color var\(--control-transition\);\s*}/s,
+    "equivalent actions must transition only color, background-color, and border-color with --control-transition",
   );
   assert.match(
     globals,
@@ -252,67 +312,533 @@ test("keeps equivalent actions and links behaviorally consistent", () => {
   );
   assert.match(
     globals,
+    /:focus-visible\s*{\s*outline:\s*2px solid var\(--focus-ring-light\);\s*outline-offset:\s*3px;\s*}/s,
+    "shared focus must retain the exact light outline width and offset",
+  );
+  assert.match(
+    globals,
     /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
   );
 
-  const transitionConsumers = {
-    navbar: 5,
-    hero: 2,
-    services: 1,
-    industries: 1,
-    process: 1,
-    founder: 1,
-    contact: 2,
-    footer: 3,
-    copyNote: 1,
-    mobileActionBar: 3,
-    mobileHero: 1,
-    mobileServices: 2,
-    mobileFit: 1,
-    mobileFounder: 1,
-    mobileContact: 2,
-    mobileFooter: 1,
-  };
-  for (const [label, count] of Object.entries(transitionConsumers)) {
-    assert.equal(
-      (sources[label].match(/\baction-transition\b/g) || []).length,
-      count,
-      `${label} must apply the shared timing only to audited action roles`,
-    );
-  }
-
-  const protectedContracts = {
+  const actionContracts = {
     navbar: [
-      /href="#contact"[\s\S]*?min-h-11[\s\S]*?bg-blue[\s\S]*?px-5[\s\S]*?shadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\][\s\S]*?>\s*Start a project/s,
-      /href="#m-contact"\s+onClick=\{closeMenu\}[\s\S]*?min-h-12 w-full[\s\S]*?bg-blue px-5[\s\S]*?>\s*Start a project/s,
-      /onClick=\{\(\) => setMobileOpen\(\(open\) => !open\)\}/,
-      /href=\{link\.mobileHref\}\s+onClick=\{closeMenu\}/s,
+      {
+        name: "desktop navigation template",
+        identity: /href=\{link\.desktopHref\}/,
+        required: {
+          "dynamic href": /href=\{link\.desktopHref\}/,
+          label: /\{link\.label\}/,
+          "dimensions and spacing": /\bblock px-4 py-2 text-\[13px\] font-medium\b/,
+          "navigation fill and active behavior":
+            /active \? "text-navy" : "text-slate hover:text-navy"/,
+          "underline behavior": /\bnav-underline action-transition\b/,
+        },
+        forbidden: {
+          "button border, fill, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "desktop Start a project",
+        identity: /href="#contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing": /\bhidden min-h-11 items-center gap-2\b[\s\S]*\bpx-5\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\]/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+          border: /\brounded-lg\b/,
+        },
+      },
+      {
+        name: "mobile menu toggle",
+        identity: /aria-controls="mobile-menu"/,
+        required: {
+          behavior: /onClick=\{\(\) => setMobileOpen\(\(open\) => !open\)\}/,
+          label: /aria-label=\{mobileOpen \? "Close menu" : "Open menu"\}/,
+          "expanded state": /aria-expanded=\{mobileOpen\}/,
+          "dimensions and spacing": /\bmin-h-11 min-w-11 items-center justify-center\b/,
+          "border and fill": /\brounded-lg border border-border bg-white text-navy\b/,
+          states: /\bhover:bg-gray-light active:bg-gray-100\b/,
+        },
+      },
+      {
+        name: "mobile navigation template",
+        identity: /href=\{link\.mobileHref\}/,
+        required: {
+          "dynamic href": /href=\{link\.mobileHref\}/,
+          label: /\{link\.label\}/,
+          behavior: /onClick=\{closeMenu\}/,
+          "dimensions and spacing": /\bflex min-h-14 items-center justify-between\b/,
+          fill: /\btext-navy hover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "button border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "mobile menu Start a project",
+        identity: /href="#m-contact"[\s\S]*?onClick=\{closeMenu\}[\s\S]*?Start a project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Start a project\s*</,
+          behavior: /onClick=\{closeMenu\}/,
+          "dimensions and spacing":
+            /\bflex min-h-12 w-full items-center justify-center gap-2\b[\s\S]*\bpx-5\b/,
+          "border and fill": /\brounded-lg bg-blue\b[\s\S]*\btext-white\b/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
     ],
     hero: [
-      /href="#contact"[\s\S]*?min-h-12[\s\S]*?bg-blue px-6[\s\S]*?shadow-\[0_10px_28px_rgba\(31,94,255,0\.26\)\][\s\S]*?>\s*Start a project/s,
-      /href="#process"[\s\S]*?min-h-12[\s\S]*?border-border bg-white px-6[\s\S]*?shadow-\[0_8px_24px_rgba\(11,23,40,0\.05\)\][\s\S]*?>\s*See how I work/s,
+      {
+        name: "Start a project",
+        identity: /href="#contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing":
+            /\binline-flex min-h-12 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_10px_28px_rgba\(31,94,255,0\.26\)\]/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+      },
+      {
+        name: "See how I work",
+        identity: /href="#process"[\s\S]*?See how I work/,
+        required: {
+          href: /href="#process"/,
+          label: />\s*See how I work\s*</,
+          "dimensions and spacing":
+            /\binline-flex min-h-12 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
+          "border and fill": /\bborder border-border bg-white\b[\s\S]*\btext-navy\b/,
+          shadow: /\bshadow-\[0_8px_24px_rgba\(11,23,40,0\.05\)\]/,
+          states:
+            /\bhover:border-blue\/30 hover:bg-blue-tint active:border-blue\/30 active:bg-blue-tint\b/,
+        },
+      },
+    ],
+    services: [
+      {
+        name: "Talk through your project",
+        identity: /Talk through your project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Talk through your project\s*</,
+          "dimensions and spacing": /\binline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-blue\b/,
+          states: /\bhover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    industries: [
+      {
+        name: "Tell me what you do",
+        identity: /Tell me what you do/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Tell me what you do\s*</,
+          "dimensions and spacing": /\binline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    process: [
+      {
+        name: "Start with a conversation",
+        identity: /Start with a conversation/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start with a conversation\s*</,
+          "dimensions and spacing": /\bmt-7 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-blue\b/,
+          states: /\bhover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    founder: [
+      {
+        name: "Tell me about your business",
+        identity: /Tell me about your business/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Tell me about your business\s*</,
+          "dimensions and spacing": /\bmt-8 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
     ],
     contact: [
-      /onSubmit=\{handleSubmit\}/,
-      /type="submit"[\s\S]*?min-h-12 w-full[\s\S]*?bg-blue px-6[\s\S]*?shadow-\[0_10px_28px_rgba\(31,94,255,0\.28\)\][\s\S]*?>\s*Open email draft/s,
+      {
+        name: "email link",
+        identity: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+        required: {
+          href: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+          label: /\{CONTACT_EMAIL\}/,
+          "dimensions and spacing": /\bmt-9 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Open email draft submit",
+        identity: /type="submit"[\s\S]*?Open email draft/,
+        required: {
+          behavior: /type="submit"/,
+          label: />\s*Open email draft\s*</,
+          "dimensions and spacing":
+            /\bmt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_10px_28px_rgba\(31,94,255,0\.28\)\]/,
+          states:
+            /\bhover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue\/60 disabled:text-white\/75\b/,
+        },
+      },
     ],
-    mobileHero: [
-      /href="#m-contact"[\s\S]*?min-h-12 w-full max-w-\[390px\][\s\S]*?bg-blue px-4[\s\S]*?shadow-\[0_8px_22px_rgba\(31,94,255,0\.18\)\][\s\S]*?>\s*Start a project/s,
+    footer: [
+      {
+        name: "Explore link template",
+        identity: /href=\{link\.href\}/,
+        required: {
+          "dynamic href": /href=\{link\.href\}/,
+          label: /\{link\.label\}/,
+          "dimensions and spacing": /\btext-\[13px\]/,
+          fill: /\btext-white\/78\b/,
+          states: /\bhover:text-white\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "info email link",
+        identity: /href="mailto:info@cobrykz\.com"/,
+        required: {
+          href: /href="mailto:info@cobrykz\.com"/,
+          label: /info@cobrykz\.com/,
+          "dimensions and spacing": /\bmt-4 inline-flex items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-medium text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Start a project",
+        identity: /href="#contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing": /\bmt-5 inline-flex min-h-11 items-center gap-2\b[\s\S]*\bpx-4\b/,
+          "border and fill":
+            /\brounded-lg border border-white\/14 bg-white\/\[0\.06\][\s\S]*\btext-white\b/,
+          states: /\bhover:bg-white\/\[0\.1\] active:bg-white\/\[0\.1\]/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
+    ],
+    copyNote: [
+      {
+        name: "Copy project note",
+        identity: /onClick=\{copyNote\}/,
+        required: {
+          behavior: /type="button" onClick=\{copyNote\}/,
+          labels: /"Project note copied" : "Copy project note"/,
+          "dimensions and spacing":
+            /\binline-flex min-h-11 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-4\b/,
+          border: /\bborder border-current\/20\b/,
+          fill: /\btext-\[13px\] font-semibold\b/,
+          states: /\bhover:bg-white\/10 active:bg-white\/10\b/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
     ],
     mobileActionBar: [
-      /href="#m-services"\s+aria-label="Services"[\s\S]*?m-control/s,
-      /href="#m-process"\s+aria-label="Process"[\s\S]*?m-control/s,
-      /href="#m-contact"[\s\S]*?m-control[\s\S]*?bg-blue px-4[\s\S]*?>\s*Start a project/s,
+      {
+        name: "Services",
+        identity: /aria-label="Services"/,
+        required: {
+          href: /href="#m-services"/,
+          label: /aria-label="Services"/,
+          "dimensions and spacing": /\bm-control flex items-center justify-center\b/,
+          fill: /\btext-slate\b/,
+          states: /\bhover:bg-gray-light hover:text-navy active:bg-gray-100\b/,
+          icon: /<LayoutGrid size=\{18\} strokeWidth=\{1\.9\}/,
+        },
+        forbidden: {
+          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Process",
+        identity: /aria-label="Process"/,
+        required: {
+          href: /href="#m-process"/,
+          label: /aria-label="Process"/,
+          "dimensions and spacing": /\bm-control flex items-center justify-center\b/,
+          fill: /\btext-slate\b/,
+          states: /\bhover:bg-gray-light hover:text-navy active:bg-gray-100\b/,
+          icon: /<Route size=\{18\} strokeWidth=\{1\.9\}/,
+        },
+        forbidden: {
+          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Start a project",
+        identity: /href="#m-contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing":
+            /\bm-control flex items-center justify-center gap-2\b[\s\S]*\bpx-4\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+        forbidden: {
+          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
+        },
+      },
+    ],
+    mobileHero: [
+      {
+        name: "Start a project",
+        identity: /href="#m-contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing":
+            /\bmx-auto inline-flex min-h-12 w-full max-w-\[390px\] items-center justify-center gap-1\.5 rounded-lg\b[\s\S]*\bpx-4\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.18\)\]/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+      },
+    ],
+    mobileServices: [
+      {
+        name: "service tab template",
+        identity: /aria-controls="mobile-service-panel"/,
+        required: {
+          labels: /\{service\.tab\}/,
+          behavior:
+            /role="tab"[\s\S]*?aria-selected=\{activeIndex === index\}[\s\S]*?onClick=\{\(\) => setActiveIndex\(index\)\}/,
+          "dimensions and spacing": /\bm-control px-2 text-\[12px\] font-semibold\b/,
+          "border and fill behavior":
+            /activeIndex === index[\s\S]*?"bg-white text-navy shadow-\[0_5px_16px_rgba\(11,23,40,0\.08\)\]"[\s\S]*?: "text-slate"/,
+        },
+      },
+      {
+        name: "Talk through your project",
+        identity: /Talk through your project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Talk through your project\s*</,
+          "dimensions and spacing": /\bmt-5 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-semibold text-blue\b/,
+          states: /\bhover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    mobileFit: [
+      {
+        name: "project-fit tab template",
+        identity: /aria-controls="mobile-fit-panel"/,
+        required: {
+          labels: /\{list\.tab\}/,
+          behavior:
+            /role="tab"[\s\S]*?aria-selected=\{activeIndex === index\}[\s\S]*?onClick=\{\(\) => setActiveIndex\(index\)\}/,
+          "dimensions and spacing": /\bm-control text-\[12px\] font-semibold\b/,
+          "border and fill behavior":
+            /activeIndex === index[\s\S]*?"bg-white text-navy shadow-\[0_5px_16px_rgba\(11,23,40,0\.08\)\]"[\s\S]*?: "text-slate"/,
+        },
+      },
+    ],
+    mobileFounder: [
+      {
+        name: "Tell Mandela what you need",
+        identity: /Tell Mandela what you need/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Tell Mandela what you need\s*</,
+          "dimensions and spacing": /\bmt-6 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
     ],
     mobileContact: [
-      /onSubmit=\{handleSubmit\}/,
-      /type="submit"[\s\S]*?m-control[\s\S]*?w-full[\s\S]*?bg-blue px-5[\s\S]*?>\s*Open email draft/s,
+      {
+        name: "Open email draft submit",
+        identity: /type="submit"[\s\S]*?Open email draft/,
+        required: {
+          behavior: /type="submit"/,
+          label: />\s*Open email draft\s*</,
+          "dimensions and spacing":
+            /\bm-control mt-5 inline-flex w-full items-center justify-center gap-2\b[\s\S]*\bpx-5\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          states:
+            /\bhover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue\/60 disabled:text-white\/75\b/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
+      {
+        name: "email link",
+        identity: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+        required: {
+          href: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+          label: /\{CONTACT_EMAIL\}/,
+          "dimensions and spacing": /\bmt-6 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    mobileFooter: [
+      {
+        name: "footer link template",
+        identity: /href=\{link\.href\}/,
+        required: {
+          "dynamic href": /href=\{link\.href\}/,
+          label: /\{link\.label\}/,
+          "dimensions and spacing": /\binline-flex min-h-11 min-w-11 items-center\b/,
+          fill: /\btext-\[11px\] font-medium text-white\/65\b/,
+          states: /\bhover:text-white\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
     ],
   };
-  for (const [label, contracts] of Object.entries(protectedContracts)) {
-    for (const contract of contracts) {
-      assert.match(sources[label], contract, `${label} changed a protected action contract`);
-    }
+
+  assert.deepEqual(
+    Object.keys(actionContracts).toSorted(),
+    Object.keys(sources).toSorted(),
+    "all 16 audited source groups must have explicit action contracts",
+  );
+  for (const [label, contracts] of Object.entries(actionContracts)) {
+    assertSourceActionContracts(sources[label], label, contracts);
+  }
+
+  const protectedSourceFacts = {
+    navbar: {
+      "Services navigation mapping":
+        /label: "Services",\s*desktopHref: "#services",\s*mobileHref: "#m-services",\s*id: "services"/,
+      "Inside the build navigation mapping":
+        /label: "Inside the build",\s*desktopHref: "#inside-build",\s*mobileHref: "#m-inside-build",\s*id: "inside-build"/,
+      "Process navigation mapping":
+        /label: "Process",\s*desktopHref: "#process",\s*mobileHref: "#m-process",\s*id: "process"/,
+      "About navigation mapping":
+        /label: "About",\s*desktopHref: "#founder",\s*mobileHref: "#m-founder",\s*id: "founder"/,
+      "mobile navigation filter":
+        /navLinks\.filter\(\(link\) => link\.id !== "inside-build"\)/,
+      "mobile logo link": /href="#m-top"[\s\S]*?aria-label="COBRYKZ, back to top"/,
+      "desktop logo link": /href="#top"[\s\S]*?aria-label="COBRYKZ, back to top"/,
+    },
+    hero: {},
+    services: {},
+    industries: {},
+    process: {},
+    founder: {},
+    contact: {
+      "exact contact label": /const CONTACT_EMAIL = "info@cobrykz\.com"/,
+      "mailto form behavior":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}/,
+      "draft-navigation behavior":
+        /window\.location\.href = `mailto:\$\{CONTACT_EMAIL\}\?subject=\$\{subject\}&body=\$\{body\}`/,
+    },
+    footer: {
+      "Services link mapping": /\{ label: "Services", href: "#services" \}/,
+      "Inside the build link mapping":
+        /\{ label: "Inside the build", href: "#inside-build" \}/,
+      "Process link mapping": /\{ label: "Process", href: "#process" \}/,
+      "About link mapping": /\{ label: "About", href: "#founder" \}/,
+      "Questions link mapping": /\{ label: "Questions", href: "#faq" \}/,
+    },
+    copyNote: {
+      "clipboard behavior": /await navigator\.clipboard\.writeText\(text\)/,
+      "copied-state behavior":
+        /setCopied\(true\)[\s\S]*?window\.setTimeout\(\(\) => setCopied\(false\), 2200\)/,
+    },
+    mobileActionBar: {
+      "bar dimensions, border, fill, and shadow":
+        /grid-cols-\[56px_56px_1fr\] gap-1 rounded-lg border border-border bg-white p-1\.5 shadow-\[0_14px_36px_rgba\(11,23,40,0\.16\)\]/,
+      "reveal behavior":
+        /show \? "translate-y-0 opacity-100" : "pointer-events-none translate-y-20 opacity-0"/,
+    },
+    mobileHero: {},
+    mobileServices: {
+      "Website tab label": /tab: "Website"/,
+      "Systems tab label": /tab: "Systems"/,
+      "Care tab label": /tab: "Care"/,
+      "tablist border, fill, and spacing":
+        /className="mt-6 grid grid-cols-3 rounded-lg border border-border bg-gray-light p-1"/,
+    },
+    mobileFit: {
+      "Good fit tab label": /tab: "Good fit"/,
+      "Not a fit tab label": /tab: "Not a fit"/,
+      "tablist border, fill, and spacing":
+        /className="mt-6 grid grid-cols-2 rounded-lg border border-border bg-gray-light p-1"/,
+    },
+    mobileFounder: {},
+    mobileContact: {
+      "exact contact label": /const CONTACT_EMAIL = "info@cobrykz\.com"/,
+      "mailto form behavior":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}/,
+      "draft-navigation behavior":
+        /window\.location\.href = `mailto:\$\{CONTACT_EMAIL\}\?subject=\$\{subject\}&body=\$\{body\}`/,
+    },
+    mobileFooter: {
+      "Services link mapping": /\{ label: "Services", href: "#m-services" \}/,
+      "Process link mapping": /\{ label: "Process", href: "#m-process" \}/,
+      "About link mapping": /\{ label: "About", href: "#m-founder" \}/,
+    },
+  };
+  assert.deepEqual(
+    Object.keys(protectedSourceFacts).toSorted(),
+    Object.keys(sources).toSorted(),
+    "all 16 audited source groups must protect their source-level mappings and behaviors",
+  );
+  for (const [label, facts] of Object.entries(protectedSourceFacts)) {
+    assertSourceFacts(sources[label], label, facts);
   }
 
   for (const fixture of [
@@ -327,6 +853,53 @@ test("keeps equivalent actions and links behaviorally consistent", () => {
       /must transition only intentional state properties|must reject scale, lift, glow, and heavy shadow states|must keep action feedback quiet without shimmer/,
     );
   }
+
+  const fixtureContract = {
+    name: "fixture Start a project",
+    identity: /data-audited="primary"/,
+    required: {
+      href: /href="#contact"/,
+      label: />Start a project</,
+      "dimensions and spacing": /\bmin-h-11\b[\s\S]*\bgap-2\b[\s\S]*\bpx-5\b/,
+      fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+      shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\]/,
+      states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+    },
+  };
+  const fixtureClass =
+    "action-transition min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark";
+
+  assert.throws(
+    () =>
+      assertSourceActionContracts(
+        `<a data-audited="primary" href="#contact" className="min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark">Start a project</a>
+         <a href="#other" className="${fixtureClass}">Other</a>`,
+        "moved-transition fixture",
+        [fixtureContract],
+      ),
+    /must apply action-transition to that action instance/,
+    "moving action-transition to a neighboring action must fail",
+  );
+  assert.throws(
+    () =>
+      assertSourceActionContracts(
+        '<a data-audited="primary" href="#contact" className="min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark">Start a project</a>',
+        "missing-transition fixture",
+        [fixtureContract],
+      ),
+    /must apply action-transition to that action instance/,
+    "removing action-transition from an audited action must fail",
+  );
+  assert.throws(
+    () =>
+      assertSourceActionContracts(
+        `<a data-audited="primary" href="#wrong" className="${fixtureClass.replace("min-h-11", "min-h-10")}">Start a project</a>`,
+        "contract-drift fixture",
+        [fixtureContract],
+      ),
+    /changed its href|changed its dimensions and spacing/,
+    "href or geometry drift inside the correct transitioned action must fail",
+  );
 
   assert.doesNotMatch(renderedActionSources, /hover:(?:scale|translate-y|shadow|drop-shadow)-/);
 });
