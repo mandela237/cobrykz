@@ -21,6 +21,11 @@
 }
 
 :root {
+  --control-transition: 0.2s ease;
+  --focus-ring-light: rgba(31, 94, 255, 0.78);
+  --focus-ring-dark: rgba(31, 94, 255, 0.78);
+  --control-height-compact: 44px;
+
   color-scheme: light;
 }
 
@@ -118,9 +123,9 @@ button {
   opacity: 0;
   background: #1f5eff;
   transition:
-    left 0.2s ease,
-    right 0.2s ease,
-    opacity 0.2s ease;
+    left var(--control-transition),
+    right var(--control-transition),
+    opacity var(--control-transition);
 }
 
 .nav-underline:hover::after {
@@ -178,7 +183,7 @@ button {
 }
 
 .m-control {
-  min-height: 44px;
+  min-height: var(--control-height-compact);
   border-radius: 8px;
 }
 
@@ -189,8 +194,13 @@ button {
 
 :focus-visible {
   border-radius: 8px;
-  outline: 2px solid rgba(31, 94, 255, 0.78);
+  outline: 2px solid var(--focus-ring-light);
   outline-offset: 3px;
+}
+
+.bg-navy :focus-visible,
+.bg-footer-bg :focus-visible {
+  outline-color: var(--focus-ring-dark);
 }
 
 @media (min-width: 768px) {

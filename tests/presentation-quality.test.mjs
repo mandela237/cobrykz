@@ -124,6 +124,60 @@ test("uses platform-native font rasterization", () => {
   assert.doesNotMatch(globals, /-moz-osx-font-smoothing:\s*grayscale/);
 });
 
+test("keeps the premium component token layer small and intentional", () => {
+  const globals = read("app/globals.css");
+  const candidateTokens = [
+    "--control-transition",
+    "--focus-ring-light",
+    "--focus-ring-dark",
+    "--control-height-compact",
+    "--control-height-standard",
+    "--radius-control",
+    "--shadow-quiet",
+    "--shadow-elevated",
+    "--border-control-light",
+    "--border-control-dark",
+  ];
+  const acceptedTokens = [
+    "--control-transition",
+    "--focus-ring-light",
+    "--focus-ring-dark",
+    "--control-height-compact",
+  ];
+  const rootBlock = globals.match(/:root\s*{(?<body>[^}]*)}/s);
+
+  assert.ok(rootBlock, "globals.css must retain a :root token scope");
+
+  const declaredCandidates = [
+    ...globals.matchAll(/(--[\w-]+)\s*:/g),
+  ]
+    .map(([, token]) => token)
+    .filter((token) => candidateTokens.includes(token))
+    .sort();
+  const rootCandidates = [
+    ...rootBlock.groups.body.matchAll(/(--[\w-]+)\s*:/g),
+  ]
+    .map(([, token]) => token)
+    .filter((token) => candidateTokens.includes(token))
+    .sort();
+
+  assert.deepEqual(
+    declaredCandidates,
+    acceptedTokens.toSorted(),
+    "only the audited component-token allowlist may be declared",
+  );
+  assert.deepEqual(
+    rootCandidates,
+    acceptedTokens.toSorted(),
+    "accepted component tokens must be declared once in :root",
+  );
+
+  for (const token of acceptedTokens) {
+    const uses = globals.match(new RegExp(`var\\(${token}\\)`, "g")) || [];
+    assert.ok(uses.length > 0, `${token} must be consumed by shared CSS`);
+  }
+});
+
 test("uses one accessible Lucide interface icon family", () => {
   for (const path of collectTrackedTsx()) {
     assertIconSystem(read(path), path);
