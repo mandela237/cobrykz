@@ -1003,6 +1003,11 @@ test("keeps form refinement visual and state-complete", () => {
     );
     assert.doesNotMatch(
       className,
+      /\brounded-lg\b/,
+      "mobile field must source its radius from the shared form-field contract instead of a literal class",
+    );
+    assert.doesNotMatch(
+      className,
       /\boutline-none\b/,
       "mobile field must not suppress the shared focus-visible outline",
     );
