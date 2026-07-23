@@ -904,6 +904,217 @@ test("keeps equivalent actions and links behaviorally consistent", () => {
   assert.doesNotMatch(renderedActionSources, /hover:(?:scale|translate-y|shadow|drop-shadow)-/);
 });
 
+test("keeps form refinement visual and state-complete", () => {
+  const globals = read("app/globals.css");
+  const desktop = read("components/sections/FinalCTA.tsx");
+  const mobile = read("components/mobile/MobileContact.tsx");
+
+  const protectedFieldFacts = {
+    desktop: {
+      "name field identity": /name="name"[\s\S]{0,60}autoComplete="name"[\s\S]{0,60}required/,
+      "business field identity": /name="business"[\s\S]{0,60}autoComplete="organization"[\s\S]{0,60}required/,
+      "email field identity": /type="email"[\s\S]{0,60}name="email"[\s\S]{0,60}autoComplete="email"[\s\S]{0,60}required/,
+      "project type select identity": /name="projectType"[\s\S]{0,30}required[\s\S]{0,30}defaultValue=""/,
+      "select options": /<option value="" disabled>\s*Choose one\s*<\/option>\s*<option>New business website<\/option>\s*<option>Website redesign<\/option>\s*<option>Web app or client portal<\/option>\s*<option>Automation or AI tool<\/option>\s*<option>Not sure yet<\/option>/,
+      "message field identity": /name="message"[\s\S]{0,30}required[\s\S]{0,30}rows=\{5\}/,
+      "message placeholder": /placeholder="A short description of the problem, goal, or opportunity\."/,
+      "name placeholder": /placeholder="Your name"/,
+      "business placeholder": /placeholder="Your business"/,
+      "email placeholder": /placeholder="you@business\.com"/,
+      "form action, method, and handlers":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}[\s\S]*?onChange=\{\(event\) => setNote\(noteFromForm\(event\.currentTarget\)\)\}/,
+      "success status string": /Opening your email app with the project details ready\./,
+      "helper text": /This opens a drafted email to \{CONTACT_EMAIL\}\. Nothing is sent\s*until you review and send it\./,
+    },
+    mobile: {
+      "name field identity": /name="name"[\s\S]{0,60}autoComplete="name"[\s\S]{0,60}required/,
+      "email field identity": /type="email"[\s\S]{0,60}name="email"[\s\S]{0,60}autoComplete="email"[\s\S]{0,60}required/,
+      "message field identity": /name="message"[\s\S]{0,30}required[\s\S]{0,30}rows=\{5\}/,
+      "message placeholder": /placeholder="What is not working today, and what would better look like\?"/,
+      "name placeholder": /placeholder="Your name"/,
+      "email placeholder": /placeholder="you@business\.com"/,
+      "form action, method, and handlers":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}[\s\S]*?onChange=\{\(event\) => setNote\(noteFromForm\(event\.currentTarget\)\)\}/,
+      "success status string": /Opening your email app with the note ready\./,
+      "helper text": /This opens a draft to \{CONTACT_EMAIL\}\. Nothing sends until you\s*review it\./,
+    },
+  };
+
+  for (const [label, source] of [
+    ["desktop", desktop],
+    ["mobile", mobile],
+  ]) {
+    for (const [detail, pattern] of Object.entries(protectedFieldFacts[label])) {
+      assert.match(source, pattern, `${label} form must keep its ${detail} unchanged`);
+    }
+
+    assert.equal(
+      (source.match(/useState\(/g) || []).length,
+      2,
+      `${label} form must not introduce new component state`,
+    );
+    assert.doesNotMatch(source, /aria-invalid/, `${label} form must not add aria-invalid handling`);
+    assert.doesNotMatch(source, /onInvalid=/, `${label} form must not add an invalid handler`);
+    assert.doesNotMatch(source, /role="alert"/, `${label} form must not add an alert role`);
+    assert.doesNotMatch(
+      source,
+      /checkValidity|reportValidity|setCustomValidity/,
+      `${label} form must not add manual validation logic`,
+    );
+    assert.doesNotMatch(source, /\berror\b/i, `${label} form must not introduce error state or copy`);
+  }
+
+  const fieldPattern = /<(?:input|select|textarea)\b[^>]*className="([^"]*)"[^>]*>/g;
+  const desktopFieldClasses = [...desktop.matchAll(fieldPattern)].map(([, className]) => className);
+  const mobileFieldClasses = [...mobile.matchAll(fieldPattern)].map(([, className]) => className);
+
+  assert.equal(desktopFieldClasses.length, 5, "desktop form must expose its five field controls");
+  assert.equal(mobileFieldClasses.length, 3, "mobile form must expose its three field controls");
+
+  for (const className of desktopFieldClasses) {
+    assert.match(className, /\bform-field\b/, "desktop field must adopt the shared form-field contract");
+    assert.match(
+      className,
+      /\bborder border-white\/14 bg-\[#071321\](?=\s|$)/,
+      "desktop field must keep its shared border and background",
+    );
+    assert.doesNotMatch(
+      className,
+      /\brounded-lg\b/,
+      "desktop field must source its radius from the shared form-field contract instead of a literal class",
+    );
+    assert.doesNotMatch(
+      className,
+      /\boutline-none\b/,
+      "desktop field must not suppress the shared focus-visible outline",
+    );
+    assert.match(
+      className,
+      /\bfocus-visible:border-\[#83B8FF\]\/70\b/,
+      "desktop field must keep its accent border on focus-visible",
+    );
+  }
+  for (const className of mobileFieldClasses) {
+    assert.match(className, /\bform-field\b/, "mobile field must adopt the shared form-field contract");
+    assert.match(
+      className,
+      /\bborder border-white\/14 bg-\[#071321\](?=\s|$)/,
+      "mobile field must keep its shared border and background",
+    );
+    assert.doesNotMatch(
+      className,
+      /\boutline-none\b/,
+      "mobile field must not suppress the shared focus-visible outline",
+    );
+    assert.match(
+      className,
+      /\bfocus-visible:border-\[#83B8FF\]\/70\b/,
+      "mobile field must keep its accent border on focus-visible",
+    );
+  }
+
+  assert.match(
+    desktop,
+    /form-field min-h-12 w-full border/,
+    "desktop name field must keep its existing 48px height literal",
+  );
+  assert.match(
+    mobile,
+    /form-field m-control w-full border/,
+    "mobile name field must keep its existing 44px compact control height",
+  );
+
+  assert.match(
+    desktop,
+    /<p className="form-helper mt-4">/,
+    "desktop helper text must use the shared helper typography class",
+  );
+  assert.match(
+    mobile,
+    /<p className="form-helper mt-3">/,
+    "mobile helper text must use the shared helper typography class",
+  );
+  assert.match(
+    desktop,
+    /<p className="form-status" role="status">/,
+    "desktop success status must use the shared status class",
+  );
+  assert.match(
+    mobile,
+    /<p className="form-status" role="status">/,
+    "mobile success status must use the shared status class",
+  );
+
+  assert.match(
+    globals,
+    /\.form-field\s*{\s*border-radius:\s*8px;\s*transition:\s*border-color var\(--control-transition\),\s*background-color var\(--control-transition\);\s*}/s,
+    "form-field must define one shared radius and transition contract reusing --control-transition",
+  );
+  assert.match(
+    globals,
+    /\.form-field:hover\s*{[^}]*border-color[^}]*}/s,
+    "form-field must define a quiet hover state",
+  );
+  assert.doesNotMatch(
+    globals,
+    /\.form-field:required\b/,
+    "required must stay visually neutral by NOT declaring a dedicated :required rule — every field carries " +
+      "the required attribute, so any such rule is an unlayered, equal-specificity selector declared after " +
+      ".form-field:hover and would permanently shadow hover, focus-visible, disabled, and user-invalid styling " +
+      "on every field regardless of source order among those other rules",
+  );
+  assert.match(
+    globals,
+    /\.form-field:disabled\s*{[^}]*cursor:\s*not-allowed[^}]*}/s,
+    "form-field disabled state must use the not-allowed cursor",
+  );
+
+  // Custom (unlayered) form-field state rules share equal specificity
+  // (one class + one pseudo-class), so when more than one pseudo-class is
+  // simultaneously true on a field, source order decides the winner. Lock
+  // in the intended precedence: hover < disabled < user-invalid, so a
+  // disabled or invalid field never reverts to plain hover styling.
+  const hoverIndex = globals.indexOf(".form-field:hover");
+  const disabledIndex = globals.indexOf(".form-field:disabled");
+  const userInvalidIndex = globals.indexOf(".form-field:user-invalid");
+  assert.ok(
+    hoverIndex > -1 && disabledIndex > hoverIndex,
+    "form-field:disabled must be declared after form-field:hover so disabled styling wins on a hovered, disabled field",
+  );
+  assert.ok(
+    userInvalidIndex > disabledIndex,
+    "form-field:user-invalid must be declared after form-field:disabled",
+  );
+
+  const supportsBlockMatch = globals.match(
+    /@supports selector\(:user-invalid\)\s*{\s*\.form-field:user-invalid\s*{[^}]*border-color[^}]*}\s*}/,
+  );
+  assert.ok(
+    supportsBlockMatch,
+    "user-invalid styling must be feature-detected via @supports so it degrades safely on unsupported browsers",
+  );
+  const globalsWithoutSupportsBlock = globals.replace(
+    /@supports selector\(:user-invalid\)\s*{[\s\S]*?}\s*}/,
+    "",
+  );
+  assert.doesNotMatch(
+    globalsWithoutSupportsBlock,
+    /:invalid\b/,
+    "invalid styling must never run outside the safe @supports fallback, or it would render prematurely",
+  );
+
+  assert.match(
+    globals,
+    /\.form-helper\s*{[^}]*font-size:\s*13px;[^}]*color:\s*rgba\(255,\s*255,\s*255,\s*0\.7\)[^}]*}/s,
+    "form-helper must define shared helper typography",
+  );
+  assert.match(
+    globals,
+    /\.form-status\s*{[^}]*color:\s*#9AE4C6[^}]*}/s,
+    "form-status must define the shared success color",
+  );
+});
+
 test("uses one accessible Lucide interface icon family", () => {
   for (const path of collectTrackedTsx()) {
     assertIconSystem(read(path), path);

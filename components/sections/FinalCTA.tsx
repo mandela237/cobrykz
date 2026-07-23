@@ -125,7 +125,7 @@ export default function FinalCTA() {
                 name="name"
                 autoComplete="name"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
                 placeholder="Your name"
               />
             </label>
@@ -139,7 +139,7 @@ export default function FinalCTA() {
                 name="business"
                 autoComplete="organization"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
                 placeholder="Your business"
               />
             </label>
@@ -153,7 +153,7 @@ export default function FinalCTA() {
                 name="email"
                 autoComplete="email"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
                 placeholder="you@business.com"
               />
             </label>
@@ -166,7 +166,7 @@ export default function FinalCTA() {
                 name="projectType"
                 required
                 defaultValue=""
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white focus-visible:border-[#83B8FF]/70"
               >
                 <option value="" disabled>
                   Choose one
@@ -188,7 +188,7 @@ export default function FinalCTA() {
               name="message"
               required
               rows={5}
-              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+              className="form-field w-full resize-y border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
               placeholder="A short description of the problem, goal, or opportunity."
             />
           </label>
@@ -205,12 +205,12 @@ export default function FinalCTA() {
             <CopyProjectNoteButton text={note} />
           </div>
 
-          <p className="mt-4 text-[13px] leading-5 text-white/70">
+          <p className="form-helper mt-4">
             This opens a drafted email to {CONTACT_EMAIL}. Nothing is sent
             until you review and send it.
           </p>
           {status && (
-            <p className="mt-3 text-[13px] font-medium text-[#9AE4C6]" role="status">
+            <p className="form-status" role="status">
               {status}
             </p>
           )}

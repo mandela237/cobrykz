@@ -166,6 +166,43 @@ button {
   border-radius: 8px;
 }
 
+.form-field {
+  border-radius: 8px;
+  transition:
+    border-color var(--control-transition),
+    background-color var(--control-transition);
+}
+
+.form-field:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.form-field:disabled {
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.14);
+  background-color: rgba(7, 19, 33, 0.6);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@supports selector(:user-invalid) {
+  .form-field:user-invalid {
+    border-color: rgba(255, 138, 128, 0.65);
+  }
+}
+
+.form-helper {
+  font-size: 13px;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-status {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9AE4C6;
+}
+
 ::selection {
   color: #0b1728;
   background: rgba(31, 94, 255, 0.2);
