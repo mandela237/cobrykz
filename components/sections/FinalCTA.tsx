@@ -83,7 +83,7 @@ export default function FinalCTA() {
 
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="mt-9 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white transition-colors hover:text-[#9CC8FF]"
+            className="action-transition mt-9 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white hover:text-[#9CC8FF]"
           >
             <Mail size={17} strokeWidth={1.9} aria-hidden="true" />
             {CONTACT_EMAIL}
@@ -195,7 +195,7 @@ export default function FinalCTA() {
 
           <button
             type="submit"
-            className="shimmer mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.28)] transition-colors hover:bg-blue-dark"
+            className="action-transition mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.28)] hover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue/60 disabled:text-white/75"
           >
             Open email draft
             <ArrowUpRight size={17} strokeWidth={2.1} aria-hidden="true" />

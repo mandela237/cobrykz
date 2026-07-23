@@ -72,7 +72,7 @@ export default function MobileFounder() {
 
         <a
           href="#m-contact"
-          className="mt-6 inline-flex min-h-11 items-center gap-2 text-[13px] font-semibold text-white"
+          className="action-transition mt-6 inline-flex min-h-11 items-center gap-2 text-[13px] font-semibold text-white hover:text-[#9CC8FF]"
         >
           Tell Mandela what you need
           <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />

@@ -82,7 +82,7 @@ export default function Founder() {
 
           <a
             href="#contact"
-            className="mt-8 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white transition-colors hover:text-[#9CC8FF]"
+            className="action-transition mt-8 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white hover:text-[#9CC8FF]"
           >
             Tell me about your business
             <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />

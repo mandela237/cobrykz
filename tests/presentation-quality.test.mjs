@@ -30,6 +30,35 @@ function collectTrackedTsx() {
     .filter(Boolean);
 }
 
+function actionBlocks(source) {
+  return [...source.matchAll(/<(a|button)\b[\s\S]*?<\/\1>/g)].map(
+    ([block]) => block,
+  );
+}
+
+function assertRestrainedActionStates(source, label) {
+  const actions = actionBlocks(source);
+  assert.ok(actions.length > 0, `${label} must contain an action fixture`);
+
+  for (const action of actions) {
+    assert.doesNotMatch(
+      action,
+      /\btransition-all\b/,
+      `${label} must transition only intentional state properties`,
+    );
+    assert.doesNotMatch(
+      action,
+      /\b(?:hover|active):(?:scale|translate-y|shadow|drop-shadow|brightness)-/,
+      `${label} must reject scale, lift, glow, and heavy shadow states`,
+    );
+    assert.doesNotMatch(
+      action,
+      /\bshimmer\b/,
+      `${label} must keep action feedback quiet without shimmer`,
+    );
+  }
+}
+
 function assertIconSystem(source, path) {
   const namedImportSources = new Map();
   const namespaceImportSources = new Map();
@@ -176,6 +205,130 @@ test("keeps the premium component token layer small and intentional", () => {
     const uses = globals.match(new RegExp(`var\\(${token}\\)`, "g")) || [];
     assert.ok(uses.length > 0, `${token} must be consumed by shared CSS`);
   }
+});
+
+test("keeps equivalent actions and links behaviorally consistent", () => {
+  const globals = read("app/globals.css");
+  const sources = {
+    navbar: read("components/Navbar.tsx"),
+    hero: read("components/sections/Hero.tsx"),
+    services: read("components/sections/Services.tsx"),
+    industries: read("components/sections/Industries.tsx"),
+    process: read("components/sections/Process.tsx"),
+    founder: read("components/sections/Founder.tsx"),
+    contact: read("components/sections/FinalCTA.tsx"),
+    footer: read("components/Footer.tsx"),
+    copyNote: read("components/CopyProjectNoteButton.tsx"),
+    mobileActionBar: read("components/mobile/MobileActionBar.tsx"),
+    mobileHero: read("components/mobile/MobileHero.tsx"),
+    mobileServices: read("components/mobile/MobileServices.tsx"),
+    mobileFit: read("components/mobile/MobileFit.tsx"),
+    mobileFounder: read("components/mobile/MobileFounder.tsx"),
+    mobileContact: read("components/mobile/MobileContact.tsx"),
+    mobileFooter: read("components/mobile/MobileFooter.tsx"),
+  };
+  const renderedActionSources = Object.entries(sources)
+    .map(([label, source]) => {
+      assertRestrainedActionStates(source, label);
+      return source;
+    })
+    .join("\n");
+
+  assert.match(
+    globals,
+    /\.action-transition\s*{[^}]*var\(--control-transition\)[^}]*}/s,
+    "equivalent action color states must consume --control-transition",
+  );
+  assert.match(
+    globals,
+    /\.action-transition:disabled\s*{[^}]*cursor:\s*not-allowed/s,
+    "native disabled actions must override the global pointer cursor",
+  );
+  assert.doesNotMatch(globals, /@keyframes\s+btn-shimmer|\.shimmer\b/);
+  assert.doesNotMatch(
+    globals,
+    /:focus-visible\s*{[^}]*border-radius\s*:/s,
+    "shared focus must preserve each action or link's own geometry",
+  );
+  assert.match(
+    globals,
+    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
+  );
+
+  const transitionConsumers = {
+    navbar: 5,
+    hero: 2,
+    services: 1,
+    industries: 1,
+    process: 1,
+    founder: 1,
+    contact: 2,
+    footer: 3,
+    copyNote: 1,
+    mobileActionBar: 3,
+    mobileHero: 1,
+    mobileServices: 2,
+    mobileFit: 1,
+    mobileFounder: 1,
+    mobileContact: 2,
+    mobileFooter: 1,
+  };
+  for (const [label, count] of Object.entries(transitionConsumers)) {
+    assert.equal(
+      (sources[label].match(/\baction-transition\b/g) || []).length,
+      count,
+      `${label} must apply the shared timing only to audited action roles`,
+    );
+  }
+
+  const protectedContracts = {
+    navbar: [
+      /href="#contact"[\s\S]*?min-h-11[\s\S]*?bg-blue[\s\S]*?px-5[\s\S]*?shadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\][\s\S]*?>\s*Start a project/s,
+      /href="#m-contact"\s+onClick=\{closeMenu\}[\s\S]*?min-h-12 w-full[\s\S]*?bg-blue px-5[\s\S]*?>\s*Start a project/s,
+      /onClick=\{\(\) => setMobileOpen\(\(open\) => !open\)\}/,
+      /href=\{link\.mobileHref\}\s+onClick=\{closeMenu\}/s,
+    ],
+    hero: [
+      /href="#contact"[\s\S]*?min-h-12[\s\S]*?bg-blue px-6[\s\S]*?shadow-\[0_10px_28px_rgba\(31,94,255,0\.26\)\][\s\S]*?>\s*Start a project/s,
+      /href="#process"[\s\S]*?min-h-12[\s\S]*?border-border bg-white px-6[\s\S]*?shadow-\[0_8px_24px_rgba\(11,23,40,0\.05\)\][\s\S]*?>\s*See how I work/s,
+    ],
+    contact: [
+      /onSubmit=\{handleSubmit\}/,
+      /type="submit"[\s\S]*?min-h-12 w-full[\s\S]*?bg-blue px-6[\s\S]*?shadow-\[0_10px_28px_rgba\(31,94,255,0\.28\)\][\s\S]*?>\s*Open email draft/s,
+    ],
+    mobileHero: [
+      /href="#m-contact"[\s\S]*?min-h-12 w-full max-w-\[390px\][\s\S]*?bg-blue px-4[\s\S]*?shadow-\[0_8px_22px_rgba\(31,94,255,0\.18\)\][\s\S]*?>\s*Start a project/s,
+    ],
+    mobileActionBar: [
+      /href="#m-services"\s+aria-label="Services"[\s\S]*?m-control/s,
+      /href="#m-process"\s+aria-label="Process"[\s\S]*?m-control/s,
+      /href="#m-contact"[\s\S]*?m-control[\s\S]*?bg-blue px-4[\s\S]*?>\s*Start a project/s,
+    ],
+    mobileContact: [
+      /onSubmit=\{handleSubmit\}/,
+      /type="submit"[\s\S]*?m-control[\s\S]*?w-full[\s\S]*?bg-blue px-5[\s\S]*?>\s*Open email draft/s,
+    ],
+  };
+  for (const [label, contracts] of Object.entries(protectedContracts)) {
+    for (const contract of contracts) {
+      assert.match(sources[label], contract, `${label} changed a protected action contract`);
+    }
+  }
+
+  for (const fixture of [
+    '<a className="transition-all hover:bg-blue-dark">Start</a>',
+    '<button className="transition-colors active:translate-y-px">Start</button>',
+    '<a className="transition-transform hover:scale-105">Start</a>',
+    '<button className="transition-shadow hover:shadow-[0_0_28px_blue]">Start</button>',
+    '<a className="shimmer transition-colors">Start</a>',
+  ]) {
+    assert.throws(
+      () => assertRestrainedActionStates(fixture, "negative action fixture"),
+      /must transition only intentional state properties|must reject scale, lift, glow, and heavy shadow states|must keep action feedback quiet without shimmer/,
+    );
+  }
+
+  assert.doesNotMatch(renderedActionSources, /hover:(?:scale|translate-y|shadow|drop-shadow)-/);
 });
 
 test("uses one accessible Lucide interface icon family", () => {
@@ -618,7 +771,6 @@ test("avoids repeated generated-landing-page decoration", () => {
   assert.doesNotMatch(globals, /\.page-grid/);
   assert.doesNotMatch(renderedSources, /\bpage-grid\b/);
   assert.doesNotMatch(renderedSources, /Cormorant_Garamond/);
-  assert.match(globals, /:focus-visible\s*{[^}]*border-radius:\s*8px/s);
 });
 
 test("provides an honest project-note fallback", () => {

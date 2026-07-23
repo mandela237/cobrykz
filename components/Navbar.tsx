@@ -115,7 +115,7 @@ export default function Navbar() {
                 <li key={link.desktopHref}>
                   <a
                     href={link.desktopHref}
-                    className={`nav-underline block px-4 py-2 text-[13px] font-medium transition-colors ${
+                    className={`nav-underline action-transition block px-4 py-2 text-[13px] font-medium ${
                       active ? "text-navy" : "text-slate hover:text-navy"
                     }`}
                   >
@@ -128,7 +128,7 @@ export default function Navbar() {
 
           <a
             href="#contact"
-            className="shimmer hidden min-h-11 items-center gap-2 rounded-lg bg-blue px-5 text-[13px] font-semibold text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] transition-all hover:bg-blue-dark active:translate-y-px md:inline-flex"
+            className="action-transition hidden min-h-11 items-center gap-2 rounded-lg bg-blue px-5 text-[13px] font-semibold text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark md:inline-flex"
           >
             Start a project
             <ArrowUpRight size={15} strokeWidth={2.1} aria-hidden="true" />
@@ -136,7 +136,7 @@ export default function Navbar() {
 
           <button
             type="button"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border bg-white text-navy transition-colors hover:bg-gray-light md:hidden"
+            className="action-transition flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border bg-white text-navy hover:bg-gray-light active:bg-gray-100 md:hidden"
             onClick={() => setMobileOpen((open) => !open)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
@@ -170,7 +170,7 @@ export default function Navbar() {
                   <a
                     href={link.mobileHref}
                     onClick={closeMenu}
-                    className="flex min-h-14 items-center justify-between text-[18px] font-semibold text-navy"
+                    className="action-transition flex min-h-14 items-center justify-between text-[18px] font-semibold text-navy hover:text-blue-dark"
                   >
                     {link.label}
                     <ArrowUpRight
@@ -192,7 +192,7 @@ export default function Navbar() {
               <a
                 href="#m-contact"
                 onClick={closeMenu}
-                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-5 text-[14px] font-semibold text-white"
+                className="action-transition flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-5 text-[14px] font-semibold text-white hover:bg-blue-dark active:bg-blue-dark"
               >
                 Start a project
                 <ArrowUpRight size={17} aria-hidden="true" />

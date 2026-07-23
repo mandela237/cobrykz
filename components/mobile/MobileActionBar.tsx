@@ -41,20 +41,20 @@ export default function MobileActionBar() {
       <a
         href="#m-services"
         aria-label="Services"
-        className="m-control flex items-center justify-center text-slate"
+        className="action-transition m-control flex items-center justify-center text-slate hover:bg-gray-light hover:text-navy active:bg-gray-100"
       >
         <LayoutGrid size={18} strokeWidth={1.9} aria-hidden="true" />
       </a>
       <a
         href="#m-process"
         aria-label="Process"
-        className="m-control flex items-center justify-center text-slate"
+        className="action-transition m-control flex items-center justify-center text-slate hover:bg-gray-light hover:text-navy active:bg-gray-100"
       >
         <Route size={18} strokeWidth={1.9} aria-hidden="true" />
       </a>
       <a
         href="#m-contact"
-        className="m-control flex items-center justify-center gap-2 bg-blue px-4 text-[13px] font-semibold text-white"
+        className="action-transition m-control flex items-center justify-center gap-2 bg-blue px-4 text-[13px] font-semibold text-white hover:bg-blue-dark active:bg-blue-dark"
       >
         Start a project
         <ArrowUpRight size={15} strokeWidth={2.1} aria-hidden="true" />

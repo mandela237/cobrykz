@@ -76,7 +76,7 @@ export default function MobileHero() {
       <div data-mobile-hero-cta className="bg-white px-5 py-5">
         <a
           href="#m-contact"
-          className={`${mobileHeroSans.className} shimmer mx-auto inline-flex min-h-12 w-full max-w-[390px] items-center justify-center gap-1.5 rounded-lg bg-blue px-4 text-[13px] font-semibold text-white shadow-[0_8px_22px_rgba(31,94,255,0.18)] transition-colors hover:bg-blue-dark`}
+          className={`${mobileHeroSans.className} action-transition mx-auto inline-flex min-h-12 w-full max-w-[390px] items-center justify-center gap-1.5 rounded-lg bg-blue px-4 text-[13px] font-semibold text-white shadow-[0_8px_22px_rgba(31,94,255,0.18)] hover:bg-blue-dark active:bg-blue-dark`}
         >
           Start a project
           <ArrowUpRight size={15} strokeWidth={1.9} aria-hidden="true" />

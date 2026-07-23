@@ -77,36 +77,15 @@ button {
   background: rgba(31, 94, 255, 0.62);
 }
 
-@keyframes btn-shimmer {
-  0% {
-    transform: translateX(-150%) skewX(-15deg);
-  }
-  100% {
-    transform: translateX(220%) skewX(-15deg);
-  }
+.action-transition {
+  transition:
+    color var(--control-transition),
+    background-color var(--control-transition),
+    border-color var(--control-transition);
 }
 
-.shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.16) 50%,
-    transparent 100%
-  );
-  transform: translateX(-150%) skewX(-15deg);
-}
-
-.shimmer:hover::after {
-  animation: btn-shimmer 0.55s ease-out forwards;
+.action-transition:disabled {
+  cursor: not-allowed;
 }
 
 .nav-underline {
@@ -193,7 +172,6 @@ button {
 }
 
 :focus-visible {
-  border-radius: 8px;
   outline: 2px solid var(--focus-ring-light);
   outline-offset: 3px;
 }

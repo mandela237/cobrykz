@@ -50,7 +50,7 @@ export default function MobileFit() {
               aria-selected={activeIndex === index}
               aria-controls="mobile-fit-panel"
               onClick={() => setActiveIndex(index)}
-              className={`m-control text-[12px] font-semibold ${
+              className={`action-transition m-control text-[12px] font-semibold ${
                 activeIndex === index
                   ? "bg-white text-navy shadow-[0_5px_16px_rgba(11,23,40,0.08)]"
                   : "text-slate"

@@ -126,7 +126,7 @@ export default function Services() {
           </p>
           <a
             href="#contact"
-            className="inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-blue transition-colors hover:text-blue-dark"
+            className="action-transition inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-blue hover:text-blue-dark"
           >
             Talk through your project
             <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />

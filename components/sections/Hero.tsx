@@ -39,14 +39,14 @@ export default function Hero() {
           <div className="mt-7 flex flex-col gap-3 min-[430px]:flex-row md:mt-8">
             <a
               href="#contact"
-              className="shimmer inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.26)] transition-all hover:bg-blue-dark active:translate-y-px"
+              className="action-transition inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.26)] hover:bg-blue-dark active:bg-blue-dark"
             >
               Start a project
               <ArrowUpRight size={17} strokeWidth={2.1} aria-hidden="true" />
             </a>
             <a
               href="#process"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border bg-white px-6 text-[14px] font-semibold text-navy shadow-[0_8px_24px_rgba(11,23,40,0.05)] transition-colors hover:border-blue/30 hover:bg-blue-tint"
+              className="action-transition inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-border bg-white px-6 text-[14px] font-semibold text-navy shadow-[0_8px_24px_rgba(11,23,40,0.05)] hover:border-blue/30 hover:bg-blue-tint active:border-blue/30 active:bg-blue-tint"
             >
               See how I work
               <ArrowDownRight size={17} strokeWidth={2} aria-hidden="true" />

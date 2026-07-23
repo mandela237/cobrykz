@@ -68,7 +68,7 @@ export default function MobileServices() {
               aria-selected={activeIndex === index}
               aria-controls="mobile-service-panel"
               onClick={() => setActiveIndex(index)}
-              className={`m-control px-2 text-[12px] font-semibold transition-colors ${
+              className={`action-transition m-control px-2 text-[12px] font-semibold ${
                 activeIndex === index
                   ? "bg-white text-navy shadow-[0_5px_16px_rgba(11,23,40,0.08)]"
                   : "text-slate"
@@ -111,7 +111,7 @@ export default function MobileServices() {
 
         <a
           href="#m-contact"
-          className="mt-5 inline-flex min-h-11 items-center gap-2 text-[13px] font-semibold text-blue"
+          className="action-transition mt-5 inline-flex min-h-11 items-center gap-2 text-[13px] font-semibold text-blue hover:text-blue-dark"
         >
           Talk through your project
           <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
