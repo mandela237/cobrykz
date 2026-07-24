@@ -30,6 +30,95 @@ function collectTrackedTsx() {
     .filter(Boolean);
 }
 
+function actionBlocks(source) {
+  return [...source.matchAll(/<(a|button)\b[\s\S]*?<\/\1>/g)].map(
+    ([block]) => block,
+  );
+}
+
+function assertRestrainedActionStates(source, label) {
+  const actions = actionBlocks(source);
+  assert.ok(actions.length > 0, `${label} must contain an action fixture`);
+
+  for (const action of actions) {
+    assert.doesNotMatch(
+      action,
+      /\btransition-all\b/,
+      `${label} must transition only intentional state properties`,
+    );
+    assert.doesNotMatch(
+      action,
+      /\b(?:hover|active):(?:scale|translate-y|shadow|drop-shadow|brightness)-/,
+      `${label} must reject scale, lift, glow, and heavy shadow states`,
+    );
+    assert.doesNotMatch(
+      action,
+      /\bshimmer\b/,
+      `${label} must keep action feedback quiet without shimmer`,
+    );
+  }
+}
+
+function testPattern(pattern, value) {
+  pattern.lastIndex = 0;
+  return pattern.test(value);
+}
+
+function assertActionContract(source, sourceLabel, contract) {
+  const matches = actionBlocks(source).filter((action) =>
+    testPattern(contract.identity, action),
+  );
+  const contractLabel = `${sourceLabel} ${contract.name}`;
+
+  assert.equal(
+    matches.length,
+    1,
+    `${contractLabel} must resolve to exactly one action instance`,
+  );
+
+  const [action] = matches;
+  assert.match(
+    action,
+    /\baction-transition\b/,
+    `${contractLabel} must apply action-transition to that action instance`,
+  );
+
+  for (const [detail, pattern] of Object.entries(contract.required)) {
+    assert.match(action, pattern, `${contractLabel} changed its ${detail}`);
+  }
+  for (const [detail, pattern] of Object.entries(contract.forbidden || {})) {
+    assert.doesNotMatch(action, pattern, `${contractLabel} gained ${detail}`);
+  }
+
+  return action;
+}
+
+function assertSourceActionContracts(source, sourceLabel, contracts) {
+  const contractedActions = contracts.map((contract) =>
+    assertActionContract(source, sourceLabel, contract),
+  );
+  const transitionedActions = actionBlocks(source).filter((action) =>
+    /\baction-transition\b/.test(action),
+  );
+
+  assert.equal(
+    transitionedActions.length,
+    contracts.length,
+    `${sourceLabel} must transition exactly its audited action instances`,
+  );
+  assert.deepEqual(
+    transitionedActions.toSorted(),
+    contractedActions.toSorted(),
+    `${sourceLabel} must not move action-transition to a different action`,
+  );
+}
+
+function assertSourceFacts(source, sourceLabel, facts) {
+  for (const [detail, pattern] of Object.entries(facts)) {
+    assert.match(source, pattern, `${sourceLabel} changed its ${detail}`);
+  }
+}
+
 function assertIconSystem(source, path) {
   const namedImportSources = new Map();
   const namespaceImportSources = new Map();
@@ -122,6 +211,913 @@ test("uses platform-native font rasterization", () => {
   assert.doesNotMatch(globals, /text-rendering:\s*geometricPrecision/);
   assert.doesNotMatch(globals, /-webkit-font-smoothing:\s*antialiased/);
   assert.doesNotMatch(globals, /-moz-osx-font-smoothing:\s*grayscale/);
+});
+
+test("keeps the premium component token layer small and intentional", () => {
+  const globals = read("app/globals.css");
+  const candidateTokens = [
+    "--control-transition",
+    "--focus-ring-light",
+    "--focus-ring-dark",
+    "--control-height-compact",
+    "--control-height-standard",
+    "--radius-control",
+    "--shadow-quiet",
+    "--shadow-elevated",
+    "--border-control-light",
+    "--border-control-dark",
+  ];
+  const acceptedTokens = [
+    "--control-transition",
+    "--focus-ring-light",
+    "--focus-ring-dark",
+    "--control-height-compact",
+  ];
+  const rootBlock = globals.match(/:root\s*{(?<body>[^}]*)}/s);
+
+  assert.ok(rootBlock, "globals.css must retain a :root token scope");
+
+  const declaredCandidates = [
+    ...globals.matchAll(/(--[\w-]+)\s*:/g),
+  ]
+    .map(([, token]) => token)
+    .filter((token) => candidateTokens.includes(token))
+    .sort();
+  const rootCandidates = [
+    ...rootBlock.groups.body.matchAll(/(--[\w-]+)\s*:/g),
+  ]
+    .map(([, token]) => token)
+    .filter((token) => candidateTokens.includes(token))
+    .sort();
+
+  assert.deepEqual(
+    declaredCandidates,
+    acceptedTokens.toSorted(),
+    "only the audited component-token allowlist may be declared",
+  );
+  assert.deepEqual(
+    rootCandidates,
+    acceptedTokens.toSorted(),
+    "accepted component tokens must be declared once in :root",
+  );
+
+  for (const token of acceptedTokens) {
+    const uses = globals.match(new RegExp(`var\\(${token}\\)`, "g")) || [];
+    assert.ok(uses.length > 0, `${token} must be consumed by shared CSS`);
+  }
+});
+
+test("keeps equivalent actions and links behaviorally consistent", () => {
+  const globals = read("app/globals.css");
+  const sources = {
+    navbar: read("components/Navbar.tsx"),
+    hero: read("components/sections/Hero.tsx"),
+    services: read("components/sections/Services.tsx"),
+    industries: read("components/sections/Industries.tsx"),
+    process: read("components/sections/Process.tsx"),
+    founder: read("components/sections/Founder.tsx"),
+    contact: read("components/sections/FinalCTA.tsx"),
+    footer: read("components/Footer.tsx"),
+    copyNote: read("components/CopyProjectNoteButton.tsx"),
+    mobileActionBar: read("components/mobile/MobileActionBar.tsx"),
+    mobileHero: read("components/mobile/MobileHero.tsx"),
+    mobileServices: read("components/mobile/MobileServices.tsx"),
+    mobileFit: read("components/mobile/MobileFit.tsx"),
+    mobileFounder: read("components/mobile/MobileFounder.tsx"),
+    mobileContact: read("components/mobile/MobileContact.tsx"),
+    mobileFooter: read("components/mobile/MobileFooter.tsx"),
+  };
+  const renderedActionSources = Object.entries(sources)
+    .map(([label, source]) => {
+      assertRestrainedActionStates(source, label);
+      return source;
+    })
+    .join("\n");
+
+  assert.match(
+    globals,
+    /\.action-transition\s*{\s*transition:\s*color var\(--control-transition\),\s*background-color var\(--control-transition\),\s*border-color var\(--control-transition\);\s*}/s,
+    "equivalent actions must transition only color, background-color, and border-color with --control-transition",
+  );
+  assert.match(
+    globals,
+    /\.action-transition:disabled\s*{[^}]*cursor:\s*not-allowed/s,
+    "native disabled actions must override the global pointer cursor",
+  );
+  assert.doesNotMatch(globals, /@keyframes\s+btn-shimmer|\.shimmer\b/);
+  assert.doesNotMatch(
+    globals,
+    /:focus-visible\s*{[^}]*border-radius\s*:/s,
+    "shared focus must preserve each action or link's own geometry",
+  );
+  assert.match(
+    globals,
+    /:focus-visible\s*{\s*outline:\s*2px solid var\(--focus-ring-light\);\s*outline-offset:\s*3px;\s*}/s,
+    "shared focus must retain the exact light outline width and offset",
+  );
+  assert.match(
+    globals,
+    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
+  );
+
+  const actionContracts = {
+    navbar: [
+      {
+        name: "desktop navigation template",
+        identity: /href=\{link\.desktopHref\}/,
+        required: {
+          "dynamic href": /href=\{link\.desktopHref\}/,
+          label: /\{link\.label\}/,
+          "dimensions and spacing": /\bblock px-4 py-2 text-\[13px\] font-medium\b/,
+          "navigation fill and active behavior":
+            /active \? "text-navy" : "text-slate hover:text-navy"/,
+          "underline behavior": /\bnav-underline action-transition\b/,
+        },
+        forbidden: {
+          "button border, fill, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "desktop Start a project",
+        identity: /href="#contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing": /\bhidden min-h-11 items-center gap-2\b[\s\S]*\bpx-5\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\]/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+          border: /\brounded-lg\b/,
+        },
+      },
+      {
+        name: "mobile menu toggle",
+        identity: /aria-controls="mobile-menu"/,
+        required: {
+          behavior: /onClick=\{\(\) => setMobileOpen\(\(open\) => !open\)\}/,
+          label: /aria-label=\{mobileOpen \? "Close menu" : "Open menu"\}/,
+          "expanded state": /aria-expanded=\{mobileOpen\}/,
+          "dimensions and spacing": /\bmin-h-11 min-w-11 items-center justify-center\b/,
+          "border and fill": /\brounded-lg border border-border bg-white text-navy\b/,
+          states: /\bhover:bg-gray-light active:bg-gray-100\b/,
+        },
+      },
+      {
+        name: "mobile navigation template",
+        identity: /href=\{link\.mobileHref\}/,
+        required: {
+          "dynamic href": /href=\{link\.mobileHref\}/,
+          label: /\{link\.label\}/,
+          behavior: /onClick=\{closeMenu\}/,
+          "dimensions and spacing": /\bflex min-h-14 items-center justify-between\b/,
+          fill: /\btext-navy hover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "button border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "mobile menu Start a project",
+        identity: /href="#m-contact"[\s\S]*?onClick=\{closeMenu\}[\s\S]*?Start a project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Start a project\s*</,
+          behavior: /onClick=\{closeMenu\}/,
+          "dimensions and spacing":
+            /\bflex min-h-12 w-full items-center justify-center gap-2\b[\s\S]*\bpx-5\b/,
+          "border and fill": /\brounded-lg bg-blue\b[\s\S]*\btext-white\b/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
+    ],
+    hero: [
+      {
+        name: "Start a project",
+        identity: /href="#contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing":
+            /\binline-flex min-h-12 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_10px_28px_rgba\(31,94,255,0\.26\)\]/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+      },
+      {
+        name: "See how I work",
+        identity: /href="#process"[\s\S]*?See how I work/,
+        required: {
+          href: /href="#process"/,
+          label: />\s*See how I work\s*</,
+          "dimensions and spacing":
+            /\binline-flex min-h-12 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
+          "border and fill": /\bborder border-border bg-white\b[\s\S]*\btext-navy\b/,
+          shadow: /\bshadow-\[0_8px_24px_rgba\(11,23,40,0\.05\)\]/,
+          states:
+            /\bhover:border-blue\/30 hover:bg-blue-tint active:border-blue\/30 active:bg-blue-tint\b/,
+        },
+      },
+    ],
+    services: [
+      {
+        name: "Talk through your project",
+        identity: /Talk through your project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Talk through your project\s*</,
+          "dimensions and spacing": /\binline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-blue\b/,
+          states: /\bhover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    industries: [
+      {
+        name: "Tell me what you do",
+        identity: /Tell me what you do/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Tell me what you do\s*</,
+          "dimensions and spacing": /\binline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    process: [
+      {
+        name: "Start with a conversation",
+        identity: /Start with a conversation/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start with a conversation\s*</,
+          "dimensions and spacing": /\bmt-7 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-blue\b/,
+          states: /\bhover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    founder: [
+      {
+        name: "Tell me about your business",
+        identity: /Tell me about your business/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Tell me about your business\s*</,
+          "dimensions and spacing": /\bmt-8 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    contact: [
+      {
+        name: "email link",
+        identity: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+        required: {
+          href: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+          label: /\{CONTACT_EMAIL\}/,
+          "dimensions and spacing": /\bmt-9 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[14px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Open email draft submit",
+        identity: /type="submit"[\s\S]*?Open email draft/,
+        required: {
+          behavior: /type="submit"/,
+          label: />\s*Open email draft\s*</,
+          "dimensions and spacing":
+            /\bmt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_10px_28px_rgba\(31,94,255,0\.28\)\]/,
+          states:
+            /\bhover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue\/60 disabled:text-white\/75\b/,
+        },
+      },
+    ],
+    footer: [
+      {
+        name: "Explore link template",
+        identity: /href=\{link\.href\}/,
+        required: {
+          "dynamic href": /href=\{link\.href\}/,
+          label: /\{link\.label\}/,
+          "dimensions and spacing": /\btext-\[13px\]/,
+          fill: /\btext-white\/78\b/,
+          states: /\bhover:text-white\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "info email link",
+        identity: /href="mailto:info@cobrykz\.com"/,
+        required: {
+          href: /href="mailto:info@cobrykz\.com"/,
+          label: /info@cobrykz\.com/,
+          "dimensions and spacing": /\bmt-4 inline-flex items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-medium text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Start a project",
+        identity: /href="#contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing": /\bmt-5 inline-flex min-h-11 items-center gap-2\b[\s\S]*\bpx-4\b/,
+          "border and fill":
+            /\brounded-lg border border-white\/14 bg-white\/\[0\.06\][\s\S]*\btext-white\b/,
+          states: /\bhover:bg-white\/\[0\.1\] active:bg-white\/\[0\.1\]/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
+    ],
+    copyNote: [
+      {
+        name: "Copy project note",
+        identity: /onClick=\{copyNote\}/,
+        required: {
+          behavior: /type="button" onClick=\{copyNote\}/,
+          labels: /"Project note copied" : "Copy project note"/,
+          "dimensions and spacing":
+            /\binline-flex min-h-11 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-4\b/,
+          border: /\bborder border-current\/20\b/,
+          fill: /\btext-\[13px\] font-semibold\b/,
+          states: /\bhover:bg-white\/10 active:bg-white\/10\b/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
+    ],
+    mobileActionBar: [
+      {
+        name: "Services",
+        identity: /aria-label="Services"/,
+        required: {
+          href: /href="#m-services"/,
+          label: /aria-label="Services"/,
+          "dimensions and spacing": /\bm-control flex items-center justify-center\b/,
+          fill: /\btext-slate\b/,
+          states: /\bhover:bg-gray-light hover:text-navy active:bg-gray-100\b/,
+          icon: /<LayoutGrid size=\{18\} strokeWidth=\{1\.9\}/,
+        },
+        forbidden: {
+          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Process",
+        identity: /aria-label="Process"/,
+        required: {
+          href: /href="#m-process"/,
+          label: /aria-label="Process"/,
+          "dimensions and spacing": /\bm-control flex items-center justify-center\b/,
+          fill: /\btext-slate\b/,
+          states: /\bhover:bg-gray-light hover:text-navy active:bg-gray-100\b/,
+          icon: /<Route size=\{18\} strokeWidth=\{1\.9\}/,
+        },
+        forbidden: {
+          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
+        },
+      },
+      {
+        name: "Start a project",
+        identity: /href="#m-contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing":
+            /\bm-control flex items-center justify-center gap-2\b[\s\S]*\bpx-4\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+        forbidden: {
+          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
+        },
+      },
+    ],
+    mobileHero: [
+      {
+        name: "Start a project",
+        identity: /href="#m-contact"[\s\S]*?Start a project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Start a project\s*</,
+          "dimensions and spacing":
+            /\bmx-auto inline-flex min-h-12 w-full max-w-\[390px\] items-center justify-center gap-1\.5 rounded-lg\b[\s\S]*\bpx-4\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.18\)\]/,
+          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+        },
+      },
+    ],
+    mobileServices: [
+      {
+        name: "service tab template",
+        identity: /aria-controls="mobile-service-panel"/,
+        required: {
+          labels: /\{service\.tab\}/,
+          behavior:
+            /role="tab"[\s\S]*?aria-selected=\{activeIndex === index\}[\s\S]*?onClick=\{\(\) => setActiveIndex\(index\)\}/,
+          "dimensions and spacing": /\bm-control px-2 text-\[12px\] font-semibold\b/,
+          "border and fill behavior":
+            /activeIndex === index[\s\S]*?"bg-white text-navy shadow-\[0_5px_16px_rgba\(11,23,40,0\.08\)\]"[\s\S]*?: "text-slate"/,
+        },
+      },
+      {
+        name: "Talk through your project",
+        identity: /Talk through your project/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Talk through your project\s*</,
+          "dimensions and spacing": /\bmt-5 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-semibold text-blue\b/,
+          states: /\bhover:text-blue-dark\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    mobileFit: [
+      {
+        name: "project-fit tab template",
+        identity: /aria-controls="mobile-fit-panel"/,
+        required: {
+          labels: /\{list\.tab\}/,
+          behavior:
+            /role="tab"[\s\S]*?aria-selected=\{activeIndex === index\}[\s\S]*?onClick=\{\(\) => setActiveIndex\(index\)\}/,
+          "dimensions and spacing": /\bm-control text-\[12px\] font-semibold\b/,
+          "border and fill behavior":
+            /activeIndex === index[\s\S]*?"bg-white text-navy shadow-\[0_5px_16px_rgba\(11,23,40,0\.08\)\]"[\s\S]*?: "text-slate"/,
+        },
+      },
+    ],
+    mobileFounder: [
+      {
+        name: "Tell Mandela what you need",
+        identity: /Tell Mandela what you need/,
+        required: {
+          href: /href="#m-contact"/,
+          label: />\s*Tell Mandela what you need\s*</,
+          "dimensions and spacing": /\bmt-6 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    mobileContact: [
+      {
+        name: "Open email draft submit",
+        identity: /type="submit"[\s\S]*?Open email draft/,
+        required: {
+          behavior: /type="submit"/,
+          label: />\s*Open email draft\s*</,
+          "dimensions and spacing":
+            /\bm-control mt-5 inline-flex w-full items-center justify-center gap-2\b[\s\S]*\bpx-5\b/,
+          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+          states:
+            /\bhover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue\/60 disabled:text-white\/75\b/,
+        },
+        forbidden: {
+          shadow: /\bshadow-\S+/,
+        },
+      },
+      {
+        name: "email link",
+        identity: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+        required: {
+          href: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
+          label: /\{CONTACT_EMAIL\}/,
+          "dimensions and spacing": /\bmt-6 inline-flex min-h-11 items-center gap-2\b/,
+          fill: /\btext-\[13px\] font-semibold text-white\b/,
+          states: /\bhover:text-\[#9CC8FF\]/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+    mobileFooter: [
+      {
+        name: "footer link template",
+        identity: /href=\{link\.href\}/,
+        required: {
+          "dynamic href": /href=\{link\.href\}/,
+          label: /\{link\.label\}/,
+          "dimensions and spacing": /\binline-flex min-h-11 min-w-11 items-center\b/,
+          fill: /\btext-\[11px\] font-medium text-white\/65\b/,
+          states: /\bhover:text-white\b/,
+        },
+        forbidden: {
+          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
+        },
+      },
+    ],
+  };
+
+  assert.deepEqual(
+    Object.keys(actionContracts).toSorted(),
+    Object.keys(sources).toSorted(),
+    "all 16 audited source groups must have explicit action contracts",
+  );
+  for (const [label, contracts] of Object.entries(actionContracts)) {
+    assertSourceActionContracts(sources[label], label, contracts);
+  }
+
+  const protectedSourceFacts = {
+    navbar: {
+      "Services navigation mapping":
+        /label: "Services",\s*desktopHref: "#services",\s*mobileHref: "#m-services",\s*id: "services"/,
+      "Inside the build navigation mapping":
+        /label: "Inside the build",\s*desktopHref: "#inside-build",\s*mobileHref: "#m-inside-build",\s*id: "inside-build"/,
+      "Process navigation mapping":
+        /label: "Process",\s*desktopHref: "#process",\s*mobileHref: "#m-process",\s*id: "process"/,
+      "About navigation mapping":
+        /label: "About",\s*desktopHref: "#founder",\s*mobileHref: "#m-founder",\s*id: "founder"/,
+      "mobile navigation filter":
+        /navLinks\.filter\(\(link\) => link\.id !== "inside-build"\)/,
+      "mobile logo link": /href="#m-top"[\s\S]*?aria-label="COBRYKZ, back to top"/,
+      "desktop logo link": /href="#top"[\s\S]*?aria-label="COBRYKZ, back to top"/,
+    },
+    hero: {},
+    services: {},
+    industries: {},
+    process: {},
+    founder: {},
+    contact: {
+      "exact contact label": /const CONTACT_EMAIL = "info@cobrykz\.com"/,
+      "mailto form behavior":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}/,
+      "draft-navigation behavior":
+        /window\.location\.href = `mailto:\$\{CONTACT_EMAIL\}\?subject=\$\{subject\}&body=\$\{body\}`/,
+    },
+    footer: {
+      "Services link mapping": /\{ label: "Services", href: "#services" \}/,
+      "Inside the build link mapping":
+        /\{ label: "Inside the build", href: "#inside-build" \}/,
+      "Process link mapping": /\{ label: "Process", href: "#process" \}/,
+      "About link mapping": /\{ label: "About", href: "#founder" \}/,
+      "Questions link mapping": /\{ label: "Questions", href: "#faq" \}/,
+    },
+    copyNote: {
+      "clipboard behavior": /await navigator\.clipboard\.writeText\(text\)/,
+      "copied-state behavior":
+        /setCopied\(true\)[\s\S]*?window\.setTimeout\(\(\) => setCopied\(false\), 2200\)/,
+    },
+    mobileActionBar: {
+      "bar dimensions, border, fill, and shadow":
+        /grid-cols-\[56px_56px_1fr\] gap-1 rounded-lg border border-border bg-white p-1\.5 shadow-\[0_14px_36px_rgba\(11,23,40,0\.16\)\]/,
+      "reveal behavior":
+        /show \? "translate-y-0 opacity-100" : "pointer-events-none translate-y-20 opacity-0"/,
+    },
+    mobileHero: {},
+    mobileServices: {
+      "Website tab label": /tab: "Website"/,
+      "Systems tab label": /tab: "Systems"/,
+      "Care tab label": /tab: "Care"/,
+      "tablist border, fill, and spacing":
+        /className="mt-6 grid grid-cols-3 rounded-lg border border-border bg-gray-light p-1"/,
+    },
+    mobileFit: {
+      "Good fit tab label": /tab: "Good fit"/,
+      "Not a fit tab label": /tab: "Not a fit"/,
+      "tablist border, fill, and spacing":
+        /className="mt-6 grid grid-cols-2 rounded-lg border border-border bg-gray-light p-1"/,
+    },
+    mobileFounder: {},
+    mobileContact: {
+      "exact contact label": /const CONTACT_EMAIL = "info@cobrykz\.com"/,
+      "mailto form behavior":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}/,
+      "draft-navigation behavior":
+        /window\.location\.href = `mailto:\$\{CONTACT_EMAIL\}\?subject=\$\{subject\}&body=\$\{body\}`/,
+    },
+    mobileFooter: {
+      "Services link mapping": /\{ label: "Services", href: "#m-services" \}/,
+      "Process link mapping": /\{ label: "Process", href: "#m-process" \}/,
+      "About link mapping": /\{ label: "About", href: "#m-founder" \}/,
+    },
+  };
+  assert.deepEqual(
+    Object.keys(protectedSourceFacts).toSorted(),
+    Object.keys(sources).toSorted(),
+    "all 16 audited source groups must protect their source-level mappings and behaviors",
+  );
+  for (const [label, facts] of Object.entries(protectedSourceFacts)) {
+    assertSourceFacts(sources[label], label, facts);
+  }
+
+  for (const fixture of [
+    '<a className="transition-all hover:bg-blue-dark">Start</a>',
+    '<button className="transition-colors active:translate-y-px">Start</button>',
+    '<a className="transition-transform hover:scale-105">Start</a>',
+    '<button className="transition-shadow hover:shadow-[0_0_28px_blue]">Start</button>',
+    '<a className="shimmer transition-colors">Start</a>',
+  ]) {
+    assert.throws(
+      () => assertRestrainedActionStates(fixture, "negative action fixture"),
+      /must transition only intentional state properties|must reject scale, lift, glow, and heavy shadow states|must keep action feedback quiet without shimmer/,
+    );
+  }
+
+  const fixtureContract = {
+    name: "fixture Start a project",
+    identity: /data-audited="primary"/,
+    required: {
+      href: /href="#contact"/,
+      label: />Start a project</,
+      "dimensions and spacing": /\bmin-h-11\b[\s\S]*\bgap-2\b[\s\S]*\bpx-5\b/,
+      fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
+      shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\]/,
+      states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
+    },
+  };
+  const fixtureClass =
+    "action-transition min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark";
+
+  assert.throws(
+    () =>
+      assertSourceActionContracts(
+        `<a data-audited="primary" href="#contact" className="min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark">Start a project</a>
+         <a href="#other" className="${fixtureClass}">Other</a>`,
+        "moved-transition fixture",
+        [fixtureContract],
+      ),
+    /must apply action-transition to that action instance/,
+    "moving action-transition to a neighboring action must fail",
+  );
+  assert.throws(
+    () =>
+      assertSourceActionContracts(
+        '<a data-audited="primary" href="#contact" className="min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark">Start a project</a>',
+        "missing-transition fixture",
+        [fixtureContract],
+      ),
+    /must apply action-transition to that action instance/,
+    "removing action-transition from an audited action must fail",
+  );
+  assert.throws(
+    () =>
+      assertSourceActionContracts(
+        `<a data-audited="primary" href="#wrong" className="${fixtureClass.replace("min-h-11", "min-h-10")}">Start a project</a>`,
+        "contract-drift fixture",
+        [fixtureContract],
+      ),
+    /changed its href|changed its dimensions and spacing/,
+    "href or geometry drift inside the correct transitioned action must fail",
+  );
+
+  assert.doesNotMatch(renderedActionSources, /hover:(?:scale|translate-y|shadow|drop-shadow)-/);
+});
+
+test("keeps form refinement visual and state-complete", () => {
+  const globals = read("app/globals.css");
+  const desktop = read("components/sections/FinalCTA.tsx");
+  const mobile = read("components/mobile/MobileContact.tsx");
+
+  const protectedFieldFacts = {
+    desktop: {
+      "name field identity": /name="name"[\s\S]{0,60}autoComplete="name"[\s\S]{0,60}required/,
+      "business field identity": /name="business"[\s\S]{0,60}autoComplete="organization"[\s\S]{0,60}required/,
+      "email field identity": /type="email"[\s\S]{0,60}name="email"[\s\S]{0,60}autoComplete="email"[\s\S]{0,60}required/,
+      "project type select identity": /name="projectType"[\s\S]{0,30}required[\s\S]{0,30}defaultValue=""/,
+      "select options": /<option value="" disabled>\s*Choose one\s*<\/option>\s*<option>New business website<\/option>\s*<option>Website redesign<\/option>\s*<option>Web app or client portal<\/option>\s*<option>Automation or AI tool<\/option>\s*<option>Not sure yet<\/option>/,
+      "message field identity": /name="message"[\s\S]{0,30}required[\s\S]{0,30}rows=\{5\}/,
+      "message placeholder": /placeholder="A short description of the problem, goal, or opportunity\."/,
+      "name placeholder": /placeholder="Your name"/,
+      "business placeholder": /placeholder="Your business"/,
+      "email placeholder": /placeholder="you@business\.com"/,
+      "form action, method, and handlers":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}[\s\S]*?onChange=\{\(event\) => setNote\(noteFromForm\(event\.currentTarget\)\)\}/,
+      "success status string": /Opening your email app with the project details ready\./,
+      "helper text": /This opens a drafted email to \{CONTACT_EMAIL\}\. Nothing is sent\s*until you review and send it\./,
+    },
+    mobile: {
+      "name field identity": /name="name"[\s\S]{0,60}autoComplete="name"[\s\S]{0,60}required/,
+      "email field identity": /type="email"[\s\S]{0,60}name="email"[\s\S]{0,60}autoComplete="email"[\s\S]{0,60}required/,
+      "message field identity": /name="message"[\s\S]{0,30}required[\s\S]{0,30}rows=\{5\}/,
+      "message placeholder": /placeholder="What is not working today, and what would better look like\?"/,
+      "name placeholder": /placeholder="Your name"/,
+      "email placeholder": /placeholder="you@business\.com"/,
+      "form action, method, and handlers":
+        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}[\s\S]*?onChange=\{\(event\) => setNote\(noteFromForm\(event\.currentTarget\)\)\}/,
+      "success status string": /Opening your email app with the note ready\./,
+      "helper text": /This opens a draft to \{CONTACT_EMAIL\}\. Nothing sends until you\s*review it\./,
+    },
+  };
+
+  for (const [label, source] of [
+    ["desktop", desktop],
+    ["mobile", mobile],
+  ]) {
+    for (const [detail, pattern] of Object.entries(protectedFieldFacts[label])) {
+      assert.match(source, pattern, `${label} form must keep its ${detail} unchanged`);
+    }
+
+    assert.equal(
+      (source.match(/useState\(/g) || []).length,
+      2,
+      `${label} form must not introduce new component state`,
+    );
+    assert.doesNotMatch(source, /aria-invalid/, `${label} form must not add aria-invalid handling`);
+    assert.doesNotMatch(source, /onInvalid=/, `${label} form must not add an invalid handler`);
+    assert.doesNotMatch(source, /role="alert"/, `${label} form must not add an alert role`);
+    assert.doesNotMatch(
+      source,
+      /checkValidity|reportValidity|setCustomValidity/,
+      `${label} form must not add manual validation logic`,
+    );
+    assert.doesNotMatch(source, /\berror\b/i, `${label} form must not introduce error state or copy`);
+  }
+
+  const fieldPattern = /<(?:input|select|textarea)\b[^>]*className="([^"]*)"[^>]*>/g;
+  const desktopFieldClasses = [...desktop.matchAll(fieldPattern)].map(([, className]) => className);
+  const mobileFieldClasses = [...mobile.matchAll(fieldPattern)].map(([, className]) => className);
+
+  assert.equal(desktopFieldClasses.length, 5, "desktop form must expose its five field controls");
+  assert.equal(mobileFieldClasses.length, 3, "mobile form must expose its three field controls");
+
+  for (const className of desktopFieldClasses) {
+    assert.match(className, /\bform-field\b/, "desktop field must adopt the shared form-field contract");
+    assert.match(
+      className,
+      /\bborder border-white\/14 bg-\[#071321\](?=\s|$)/,
+      "desktop field must keep its shared border and background",
+    );
+    assert.doesNotMatch(
+      className,
+      /\brounded-lg\b/,
+      "desktop field must source its radius from the shared form-field contract instead of a literal class",
+    );
+    assert.doesNotMatch(
+      className,
+      /\boutline-none\b/,
+      "desktop field must not suppress the shared focus-visible outline",
+    );
+    assert.match(
+      className,
+      /\bfocus-visible:border-\[#83B8FF\]\/70\b/,
+      "desktop field must keep its accent border on focus-visible",
+    );
+  }
+  for (const className of mobileFieldClasses) {
+    assert.match(className, /\bform-field\b/, "mobile field must adopt the shared form-field contract");
+    assert.match(
+      className,
+      /\bborder border-white\/14 bg-\[#071321\](?=\s|$)/,
+      "mobile field must keep its shared border and background",
+    );
+    assert.doesNotMatch(
+      className,
+      /\brounded-lg\b/,
+      "mobile field must source its radius from the shared form-field contract instead of a literal class",
+    );
+    assert.doesNotMatch(
+      className,
+      /\boutline-none\b/,
+      "mobile field must not suppress the shared focus-visible outline",
+    );
+    assert.match(
+      className,
+      /\bfocus-visible:border-\[#83B8FF\]\/70\b/,
+      "mobile field must keep its accent border on focus-visible",
+    );
+  }
+
+  assert.match(
+    desktop,
+    /form-field min-h-12 w-full border/,
+    "desktop name field must keep its existing 48px height literal",
+  );
+  assert.match(
+    mobile,
+    /form-field m-control w-full border/,
+    "mobile name field must keep its existing 44px compact control height",
+  );
+
+  assert.match(
+    desktop,
+    /<p className="form-helper mt-4">/,
+    "desktop helper text must use the shared helper typography class",
+  );
+  assert.match(
+    mobile,
+    /<p className="form-helper mt-3">/,
+    "mobile helper text must use the shared helper typography class",
+  );
+  assert.match(
+    desktop,
+    /<p className="form-status" role="status">/,
+    "desktop success status must use the shared status class",
+  );
+  assert.match(
+    mobile,
+    /<p className="form-status" role="status">/,
+    "mobile success status must use the shared status class",
+  );
+
+  assert.match(
+    globals,
+    /\.form-field\s*{\s*border-radius:\s*8px;\s*transition:\s*border-color var\(--control-transition\),\s*background-color var\(--control-transition\);\s*}/s,
+    "form-field must define one shared radius and transition contract reusing --control-transition",
+  );
+  assert.match(
+    globals,
+    /\.form-field:hover\s*{[^}]*border-color[^}]*}/s,
+    "form-field must define a quiet hover state",
+  );
+  assert.doesNotMatch(
+    globals,
+    /\.form-field:required\b/,
+    "required must stay visually neutral by NOT declaring a dedicated :required rule — every field carries " +
+      "the required attribute, so any such rule is an unlayered, equal-specificity selector declared after " +
+      ".form-field:hover and would permanently shadow hover, focus-visible, disabled, and user-invalid styling " +
+      "on every field regardless of source order among those other rules",
+  );
+  assert.match(
+    globals,
+    /\.form-field:disabled\s*{[^}]*cursor:\s*not-allowed[^}]*}/s,
+    "form-field disabled state must use the not-allowed cursor",
+  );
+
+  // Custom (unlayered) form-field state rules share equal specificity
+  // (one class + one pseudo-class), so when more than one pseudo-class is
+  // simultaneously true on a field, source order decides the winner. Lock
+  // in the intended precedence: hover < disabled < user-invalid, so a
+  // disabled or invalid field never reverts to plain hover styling.
+  const hoverIndex = globals.indexOf(".form-field:hover");
+  const disabledIndex = globals.indexOf(".form-field:disabled");
+  const userInvalidIndex = globals.indexOf(".form-field:user-invalid");
+  assert.ok(
+    hoverIndex > -1 && disabledIndex > hoverIndex,
+    "form-field:disabled must be declared after form-field:hover so disabled styling wins on a hovered, disabled field",
+  );
+  assert.ok(
+    userInvalidIndex > disabledIndex,
+    "form-field:user-invalid must be declared after form-field:disabled",
+  );
+
+  const supportsBlockMatch = globals.match(
+    /@supports selector\(:user-invalid\)\s*{\s*\.form-field:user-invalid\s*{[^}]*border-color[^}]*}\s*}/,
+  );
+  assert.ok(
+    supportsBlockMatch,
+    "user-invalid styling must be feature-detected via @supports so it degrades safely on unsupported browsers",
+  );
+  const globalsWithoutSupportsBlock = globals.replace(
+    /@supports selector\(:user-invalid\)\s*{[\s\S]*?}\s*}/,
+    "",
+  );
+  assert.doesNotMatch(
+    globalsWithoutSupportsBlock,
+    /:invalid\b/,
+    "invalid styling must never run outside the safe @supports fallback, or it would render prematurely",
+  );
+
+  assert.match(
+    globals,
+    /\.form-helper\s*{[^}]*font-size:\s*13px;[^}]*color:\s*rgba\(255,\s*255,\s*255,\s*0\.7\)[^}]*}/s,
+    "form-helper must define shared helper typography",
+  );
+  assert.match(
+    globals,
+    /\.form-status\s*{[^}]*color:\s*#9AE4C6[^}]*}/s,
+    "form-status must define the shared success color",
+  );
 });
 
 test("uses one accessible Lucide interface icon family", () => {
@@ -564,7 +1560,6 @@ test("avoids repeated generated-landing-page decoration", () => {
   assert.doesNotMatch(globals, /\.page-grid/);
   assert.doesNotMatch(renderedSources, /\bpage-grid\b/);
   assert.doesNotMatch(renderedSources, /Cormorant_Garamond/);
-  assert.match(globals, /:focus-visible\s*{[^}]*border-radius:\s*8px/s);
 });
 
 test("provides an honest project-note fallback", () => {

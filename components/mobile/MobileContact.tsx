@@ -80,7 +80,7 @@ export default function MobileContact() {
               name="name"
               autoComplete="name"
               required
-              className="m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none placeholder:text-white/60 focus:border-[#83B8FF]/70"
+              className="form-field m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
               placeholder="Your name"
             />
           </label>
@@ -94,7 +94,7 @@ export default function MobileContact() {
               name="email"
               autoComplete="email"
               required
-              className="m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none placeholder:text-white/60 focus:border-[#83B8FF]/70"
+              className="form-field m-control w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
               placeholder="you@business.com"
             />
           </label>
@@ -107,14 +107,14 @@ export default function MobileContact() {
               name="message"
               required
               rows={5}
-              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none placeholder:text-white/60 focus:border-[#83B8FF]/70"
+              className="form-field w-full resize-y border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
               placeholder="What is not working today, and what would better look like?"
             />
           </label>
 
           <button
             type="submit"
-            className="shimmer m-control mt-5 inline-flex w-full items-center justify-center gap-2 bg-blue px-5 text-[14px] font-semibold text-white"
+            className="action-transition m-control mt-5 inline-flex w-full items-center justify-center gap-2 bg-blue px-5 text-[14px] font-semibold text-white hover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue/60 disabled:text-white/75"
           >
             Open email draft
             <ArrowUpRight size={16} strokeWidth={2.1} aria-hidden="true" />
@@ -124,12 +124,12 @@ export default function MobileContact() {
             <CopyProjectNoteButton text={note} />
           </div>
 
-          <p className="mt-3 text-[13px] leading-5 text-white/70">
+          <p className="form-helper mt-3">
             This opens a draft to {CONTACT_EMAIL}. Nothing sends until you
             review it.
           </p>
           {status && (
-            <p className="mt-3 text-[13px] font-medium text-[#9AE4C6]" role="status">
+            <p className="form-status" role="status">
               {status}
             </p>
           )}
@@ -137,7 +137,7 @@ export default function MobileContact() {
 
         <a
           href={`mailto:${CONTACT_EMAIL}`}
-          className="mt-6 inline-flex min-h-11 items-center gap-2 text-[13px] font-semibold text-white"
+          className="action-transition mt-6 inline-flex min-h-11 items-center gap-2 text-[13px] font-semibold text-white hover:text-[#9CC8FF]"
         >
           <Mail size={15} strokeWidth={1.8} aria-hidden="true" />
           {CONTACT_EMAIL}

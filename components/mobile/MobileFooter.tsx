@@ -27,7 +27,7 @@ export default function MobileFooter() {
             <a
               key={link.href}
               href={link.href}
-              className="inline-flex min-h-11 min-w-11 items-center text-[11px] font-medium text-white/65"
+              className="action-transition inline-flex min-h-11 min-w-11 items-center text-[11px] font-medium text-white/65 hover:text-white"
             >
               {link.label}
             </a>

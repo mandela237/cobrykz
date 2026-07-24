@@ -38,7 +38,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="text-[13px] text-white/78 transition-colors hover:text-white"
+                    className="action-transition text-[13px] text-white/78 hover:text-white"
                   >
                     {link.label}
                   </a>
@@ -53,14 +53,14 @@ export default function Footer() {
             </p>
             <a
               href="mailto:info@cobrykz.com"
-              className="mt-4 inline-flex items-center gap-2 text-[13px] font-medium text-white transition-colors hover:text-[#9CC8FF]"
+              className="action-transition mt-4 inline-flex items-center gap-2 text-[13px] font-medium text-white hover:text-[#9CC8FF]"
             >
               <Mail size={15} strokeWidth={1.8} aria-hidden="true" />
               info@cobrykz.com
             </a>
             <a
               href="#contact"
-              className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/14 bg-white/[0.06] px-4 text-[13px] font-semibold text-white transition-colors hover:bg-white/[0.1]"
+              className="action-transition mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/14 bg-white/[0.06] px-4 text-[13px] font-semibold text-white hover:bg-white/[0.1] active:bg-white/[0.1]"
             >
               Start a project
               <ArrowUpRight size={15} strokeWidth={2} aria-hidden="true" />

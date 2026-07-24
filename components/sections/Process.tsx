@@ -53,7 +53,7 @@ export default function Process() {
             </p>
             <a
               href="#contact"
-              className="mt-7 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-blue transition-colors hover:text-blue-dark"
+              className="action-transition mt-7 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-blue hover:text-blue-dark"
             >
               Start with a conversation
               <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />

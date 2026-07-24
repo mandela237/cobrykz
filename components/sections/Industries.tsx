@@ -73,7 +73,7 @@ export default function Industries() {
           </p>
           <a
             href="#contact"
-            className="inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white transition-colors hover:text-[#9CC8FF]"
+            className="action-transition inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white hover:text-[#9CC8FF]"
           >
             Tell me what you do
             <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />

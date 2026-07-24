@@ -83,7 +83,7 @@ export default function FinalCTA() {
 
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="mt-9 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white transition-colors hover:text-[#9CC8FF]"
+            className="action-transition mt-9 inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-white hover:text-[#9CC8FF]"
           >
             <Mail size={17} strokeWidth={1.9} aria-hidden="true" />
             {CONTACT_EMAIL}
@@ -125,7 +125,7 @@ export default function FinalCTA() {
                 name="name"
                 autoComplete="name"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
                 placeholder="Your name"
               />
             </label>
@@ -139,7 +139,7 @@ export default function FinalCTA() {
                 name="business"
                 autoComplete="organization"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
                 placeholder="Your business"
               />
             </label>
@@ -153,7 +153,7 @@ export default function FinalCTA() {
                 name="email"
                 autoComplete="email"
                 required
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
                 placeholder="you@business.com"
               />
             </label>
@@ -166,7 +166,7 @@ export default function FinalCTA() {
                 name="projectType"
                 required
                 defaultValue=""
-                className="min-h-12 w-full rounded-lg border border-white/14 bg-[#071321] px-4 text-[14px] text-white outline-none transition-colors focus:border-[#83B8FF]/70"
+                className="form-field min-h-12 w-full border border-white/14 bg-[#071321] px-4 text-[14px] text-white focus-visible:border-[#83B8FF]/70"
               >
                 <option value="" disabled>
                   Choose one
@@ -188,14 +188,14 @@ export default function FinalCTA() {
               name="message"
               required
               rows={5}
-              className="w-full resize-y rounded-lg border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white outline-none transition-colors placeholder:text-white/60 focus:border-[#83B8FF]/70"
+              className="form-field w-full resize-y border border-white/14 bg-[#071321] px-4 py-3 text-[14px] leading-6 text-white placeholder:text-white/60 focus-visible:border-[#83B8FF]/70"
               placeholder="A short description of the problem, goal, or opportunity."
             />
           </label>
 
           <button
             type="submit"
-            className="shimmer mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.28)] transition-colors hover:bg-blue-dark"
+            className="action-transition mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue px-6 text-[14px] font-semibold text-white shadow-[0_10px_28px_rgba(31,94,255,0.28)] hover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue/60 disabled:text-white/75"
           >
             Open email draft
             <ArrowUpRight size={17} strokeWidth={2.1} aria-hidden="true" />
@@ -205,12 +205,12 @@ export default function FinalCTA() {
             <CopyProjectNoteButton text={note} />
           </div>
 
-          <p className="mt-4 text-[13px] leading-5 text-white/70">
+          <p className="form-helper mt-4">
             This opens a drafted email to {CONTACT_EMAIL}. Nothing is sent
             until you review and send it.
           </p>
           {status && (
-            <p className="mt-3 text-[13px] font-medium text-[#9AE4C6]" role="status">
+            <p className="form-status" role="status">
               {status}
             </p>
           )}

@@ -21,6 +21,11 @@
 }
 
 :root {
+  --control-transition: 0.2s ease;
+  --focus-ring-light: rgba(31, 94, 255, 0.78);
+  --focus-ring-dark: rgba(31, 94, 255, 0.78);
+  --control-height-compact: 44px;
+
   color-scheme: light;
 }
 
@@ -72,36 +77,15 @@ button {
   background: rgba(31, 94, 255, 0.62);
 }
 
-@keyframes btn-shimmer {
-  0% {
-    transform: translateX(-150%) skewX(-15deg);
-  }
-  100% {
-    transform: translateX(220%) skewX(-15deg);
-  }
+.action-transition {
+  transition:
+    color var(--control-transition),
+    background-color var(--control-transition),
+    border-color var(--control-transition);
 }
 
-.shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.16) 50%,
-    transparent 100%
-  );
-  transform: translateX(-150%) skewX(-15deg);
-}
-
-.shimmer:hover::after {
-  animation: btn-shimmer 0.55s ease-out forwards;
+.action-transition:disabled {
+  cursor: not-allowed;
 }
 
 .nav-underline {
@@ -118,9 +102,9 @@ button {
   opacity: 0;
   background: #1f5eff;
   transition:
-    left 0.2s ease,
-    right 0.2s ease,
-    opacity 0.2s ease;
+    left var(--control-transition),
+    right var(--control-transition),
+    opacity var(--control-transition);
 }
 
 .nav-underline:hover::after {
@@ -178,8 +162,45 @@ button {
 }
 
 .m-control {
-  min-height: 44px;
+  min-height: var(--control-height-compact);
   border-radius: 8px;
+}
+
+.form-field {
+  border-radius: 8px;
+  transition:
+    border-color var(--control-transition),
+    background-color var(--control-transition);
+}
+
+.form-field:hover {
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.form-field:disabled {
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.14);
+  background-color: rgba(7, 19, 33, 0.6);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@supports selector(:user-invalid) {
+  .form-field:user-invalid {
+    border-color: rgba(255, 138, 128, 0.65);
+  }
+}
+
+.form-helper {
+  font-size: 13px;
+  line-height: 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-status {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9AE4C6;
 }
 
 ::selection {
@@ -188,9 +209,13 @@ button {
 }
 
 :focus-visible {
-  border-radius: 8px;
-  outline: 2px solid rgba(31, 94, 255, 0.78);
+  outline: 2px solid var(--focus-ring-light);
   outline-offset: 3px;
+}
+
+.bg-navy :focus-visible,
+.bg-footer-bg :focus-visible {
+  outline-color: var(--focus-ring-dark);
 }
 
 @media (min-width: 768px) {
