@@ -30,12 +30,10 @@
 }
 
 html {
-  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
 body {
-  overflow-x: hidden;
   background: #ffffff;
   color: #0b1728;
   font-family:

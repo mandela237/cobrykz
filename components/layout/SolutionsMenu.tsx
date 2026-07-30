@@ -21,11 +21,11 @@ export default function SolutionsMenu() {
   };
 
   return (
-    <li className="relative" onKeyDown={handleKeyDown}>
+    <li className="relative max-w-full" onKeyDown={handleKeyDown}>
       <button
         ref={buttonRef}
         type="button"
-        className="nav-underline action-transition flex min-h-11 items-center gap-1.5 px-2 text-[13px] font-medium text-slate hover:text-navy active:text-navy md:px-3"
+        className="nav-underline action-transition flex min-h-11 max-w-full items-center gap-1.5 px-2 text-[13px] font-medium text-slate hover:text-navy active:text-navy md:px-3"
         aria-expanded={isOpen}
         aria-controls={menuId}
         onClick={() => setIsOpen((open) => !open)}
