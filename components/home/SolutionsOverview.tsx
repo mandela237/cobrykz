@@ -7,12 +7,24 @@ export default function SolutionsOverview() {
   return (
     <section aria-labelledby="solutions-heading" id="solutions">
       <div className="section-shell py-16 sm:py-20 lg:py-24">
-        <SectionIntro
-          id="solutions-heading"
-          title="Modern solutions for real business challenges."
-          description="Cobrykz combines strategy and execution to move organizations from problem to working solution."
-        />
-        <ol className="mt-12 border-t border-border">
+        <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
+          <div>
+            <SectionIntro
+              id="solutions-heading"
+              title="Modern solutions for real business challenges."
+              description="Cobrykz combines strategy and execution to move organizations from problem to working solution."
+            />
+            <div
+              data-capability-rail
+              aria-hidden="true"
+              className="mt-8 border-l border-blue pl-5 text-[11px] font-bold uppercase text-blue lg:mt-10"
+            >
+              Business challenge
+              <span className="mt-3 block text-slate">Working solution</span>
+              <span className="mt-3 block text-navy">Business outcome</span>
+            </div>
+          </div>
+          <ol className="border-t border-border lg:mt-1">
           {solutions.map((solution, index) => {
             const isWebExperience =
               solution.slug === "websites-web-applications";
@@ -44,13 +56,14 @@ export default function SolutionsOverview() {
                     size={20}
                     strokeWidth={2}
                     aria-hidden="true"
-                    className="action-transition text-xl text-blue group-hover:translate-x-1"
+                    className="action-transition text-xl text-blue group-hover:text-navy"
                   />
                 </Link>
               </li>
             );
           })}
-        </ol>
+          </ol>
+        </div>
       </div>
     </section>
   );

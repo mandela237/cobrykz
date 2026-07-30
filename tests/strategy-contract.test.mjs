@@ -197,7 +197,7 @@ test("builds semantic homepage sections from frozen shared content", () => {
       ),
     );
     assert.match(source, new RegExp(`${content}\\.map\\(\\(${item}`));
-    assert.match(source, /<(?:ul|ol)\b/);
+    assert.match(source, /<(?:ul|ol)\b|<HomeSystemThread\b/);
   }
 
   assert.match(

@@ -776,12 +776,11 @@ test("keeps mobile typography fixed and readable", () => {
 
 test("uses responsive grids only for meaningful comparison", () => {
   const comparisonContracts = {
-    "components/home/BusinessOutcomes.tsx": /\bmd:grid-cols-3\b/,
+    "components/home/BusinessOutcomes.tsx": /\bmd:grid-cols-12\b/,
     "components/home/WhyCobrykz.tsx":
-      /\bsm:grid-cols-2\b[\s\S]*\blg:grid-cols-5\b/,
+      /\bsm:grid-cols-2\b[\s\S]*\blg:grid-cols-12\b/,
     "components/home/ChallengeRouter.tsx": /\bsm:grid-cols-2\b/,
-    "components/home/ProcessOverview.tsx":
-      /\bsm:grid-cols-2\b[\s\S]*\blg:grid-cols-3\b/,
+    "components/home/HomeSystemThread.tsx": /\bmd:grid-cols-6\b/,
   };
 
   for (const [path, contract] of Object.entries(comparisonContracts)) {

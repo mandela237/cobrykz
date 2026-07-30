@@ -11,9 +11,19 @@ export default function AIPointOfView() {
             title="A practical point of view on AI."
             description="AI is valuable when it improves real work. Cobrykz evaluates it as one possible tool within a responsible business solution, never as a requirement."
           />
-          <ul className="divide-y divide-border border-y border-border">
-            {aiPrinciples.map((principle) => (
-              <li key={principle.title} className="py-6">
+          <ul
+            data-decision-artifact
+            className="grid overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2"
+          >
+            {aiPrinciples.map((principle, index) => (
+              <li
+                key={principle.title}
+                className={`bg-white p-6 sm:p-7 ${
+                  index === 0
+                    ? "sm:col-span-2"
+                    : "border-t border-border sm:border-r sm:last:border-r-0"
+                }`}
+              >
                 <h3 className="text-lg font-bold text-navy">
                   {principle.title}
                 </h3>

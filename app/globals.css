@@ -305,6 +305,14 @@ button {
   animation: atlas-flow 8s linear infinite;
 }
 
+.home-system-thread [data-thread-state="complete"] .home-system-thread__node {
+  background: var(--color-blue);
+}
+
+.home-system-thread [data-thread-state="active"] .home-system-thread__node {
+  box-shadow: 0 0 0 4px rgb(42 124 215 / 0.14);
+}
+
 .atlas-path[data-atlas-state="verified"] {
   stroke: var(--atlas-verified);
   stroke-width: 2;

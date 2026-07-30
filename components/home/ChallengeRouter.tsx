@@ -8,12 +8,32 @@ import {
   solutionBySlug,
   type SolutionSlug,
 } from "@/components/content/solutions";
+import HomeSystemThread from "@/components/home/HomeSystemThread";
 
 export default function ChallengeRouter() {
   const [selectedSlug, setSelectedSlug] =
     useState<SolutionSlug>("business-automation");
   const selectedChallenge = challengeRoutes[selectedSlug];
   const selectedSolution = solutionBySlug[selectedSlug];
+  const threadItems = [
+    {
+      id: "challenge",
+      label: selectedChallenge.label,
+      detail: selectedChallenge.description,
+      state: "complete" as const,
+    },
+    {
+      id: "assessment",
+      label: "A focused assessment confirms the right approach.",
+      state: "active" as const,
+    },
+    {
+      id: "solution",
+      label: selectedSolution.name,
+      detail: selectedSolution.outcome,
+      state: "next" as const,
+    },
+  ];
 
   return (
     <section aria-labelledby="challenge-router-title">
@@ -43,11 +63,17 @@ export default function ChallengeRouter() {
         })}
       </div>
 
-      <div aria-live="polite" className="mt-6 rounded-lg border border-border p-5">
+      <div aria-live="polite" className="mt-6 rounded-lg border border-border p-5 sm:p-7">
         <p className="text-slate">{selectedChallenge.description}</p>
         <p className="mt-3 font-medium text-navy">
           A focused assessment confirms the right approach.
         </p>
+        <div className="mt-7 border-t border-border pt-7">
+          <HomeSystemThread
+            ariaLabel="Selected challenge path"
+            items={threadItems}
+          />
+        </div>
         <div className="mt-4 flex flex-wrap gap-4">
           <Link
             href={selectedSolution.href}

@@ -10,7 +10,11 @@ export default function ProjectsEvidence() {
             title="Evidence should be useful, specific, and verifiable."
             description="Cobrykz will share completed work only when the business context and results can be represented responsibly."
           />
-          <div className="border-l-2 border-blue pl-6 sm:pl-8">
+          <div className="relative border border-border bg-gray-light p-6 sm:p-9">
+            <span
+              aria-hidden="true"
+              className="absolute left-0 top-0 h-16 w-[2px] bg-blue"
+            />
             <p className="text-lg font-semibold leading-8 text-navy">
               Case studies will be published when completed work can be shown
               with meaningful context, verified outcomes, and permission to

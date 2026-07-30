@@ -14,11 +14,17 @@ export default function BusinessOutcomes() {
           title="Technology should make the business stronger."
           description="The right system creates progress people can recognize in growth, day-to-day work, and important decisions."
         />
-        <ol className="mt-12 grid border-y border-border md:grid-cols-3">
+        <ol className="mt-12 grid border-y border-border md:grid-cols-12">
           {homeOutcomes.map((outcome, index) => (
             <li
               key={outcome.title}
-              className="border-b border-border py-7 last:border-b-0 md:border-b-0 md:border-r md:px-7 md:first:pl-0 md:last:border-r-0 md:last:pr-0"
+              className={`border-b border-border py-7 last:border-b-0 md:border-b-0 md:px-7 ${
+                index === 0
+                  ? "md:col-span-5 md:border-r md:pl-0"
+                  : index === 1
+                    ? "md:col-span-4 md:border-r"
+                    : "md:col-span-3 md:pr-0"
+              }`}
             >
               <span
                 aria-hidden="true"
@@ -26,7 +32,11 @@ export default function BusinessOutcomes() {
               >
                 0{index + 1}
               </span>
-              <h3 className="mt-4 text-xl font-bold text-navy">
+              <h3
+                className={`mt-4 font-bold text-navy ${
+                  index === 0 ? "text-2xl sm:text-3xl" : "text-xl"
+                }`}
+              >
                 {outcome.title}
               </h3>
               <p className="mt-3 text-[15px] leading-7 text-slate">

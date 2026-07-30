@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { processStages } from "@/components/content/home";
 import SectionIntro from "@/components/ui/SectionIntro";
+import HomeSystemThread from "@/components/home/HomeSystemThread";
 
 export default function ProcessOverview() {
+  const threadItems = processStages.map((stage, index) => ({
+    id: stage.title.toLowerCase(),
+    label: stage.title,
+    detail: stage.description,
+    state: index === 0 ? ("active" as const) : ("next" as const),
+  }));
+
   return (
     <section
       aria-labelledby="process-heading"
@@ -23,24 +31,12 @@ export default function ProcessOverview() {
             Explore the full process
           </Link>
         </div>
-        <ol className="mt-12 grid gap-x-8 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
-          {processStages.map((stage, index) => (
-            <li key={stage.title} className="border-t border-border pt-5">
-              <div className="flex items-baseline gap-4">
-                <span
-                  aria-hidden="true"
-                  className="text-[11px] font-bold text-blue"
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="text-xl font-bold text-navy">{stage.title}</h3>
-              </div>
-              <p className="mt-3 pl-9 text-[15px] leading-7 text-slate">
-                {stage.description}
-              </p>
-            </li>
-          ))}
-        </ol>
+        <div className="mt-12 rounded-lg border border-border bg-white p-6 sm:p-8">
+          <HomeSystemThread
+            ariaLabel="Cobrykz delivery process"
+            items={threadItems}
+          />
+        </div>
       </div>
     </section>
   );

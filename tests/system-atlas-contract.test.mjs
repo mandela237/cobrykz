@@ -135,3 +135,46 @@ test("keeps the approved homepage message and actions stable inside the new hero
   assert.match(hero, /Explore our solutions/);
   assert.doesNotMatch(hero, /["']use client["']/);
 });
+
+test("extends the homepage with one restrained explanatory system thread", () => {
+  const thread = read("components/home/HomeSystemThread.tsx");
+  const challenge = read("components/home/ChallengeRouter.tsx");
+  const process = read("components/home/ProcessOverview.tsx");
+  const homeSources = [
+    read("components/home/BusinessSystemCutaway.tsx"),
+    thread,
+    challenge,
+    process,
+  ].join("\n");
+
+  assert.ok(thread, "components/home/HomeSystemThread.tsx must exist");
+  assert.match(thread, /<ol\b/);
+  assert.match(thread, /data-thread-stage=/);
+  assert.match(thread, /data-thread-state=/);
+  assert.doesNotMatch(thread, /<svg\b|<SystemAtlas\b|components\/atlas/);
+
+  assert.match(challenge, /<HomeSystemThread\b/);
+  assert.match(challenge, /selectedSlug/);
+  assert.match(process, /<HomeSystemThread\b/);
+  assert.match(process, /processStages\.map/);
+  assert.equal(
+    (homeSources.match(/<SystemAtlas\b/g) || []).length,
+    1,
+    "the homepage must reserve the full System Atlas for the hero",
+  );
+});
+
+test("varies homepage composition without changing its approved content sources", () => {
+  const outcomes = read("components/home/BusinessOutcomes.tsx");
+  const solutions = read("components/home/SolutionsOverview.tsx");
+  const why = read("components/home/WhyCobrykz.tsx");
+  const ai = read("components/home/AIPointOfView.tsx");
+
+  assert.match(outcomes, /md:grid-cols-12/);
+  assert.match(solutions, /data-capability-rail/);
+  assert.doesNotMatch(solutions, /group-hover:translate-x/);
+  assert.match(why, /whyCobrykz\.map/);
+  assert.match(why, /lg:grid-cols-12/);
+  assert.doesNotMatch(why, /lg:grid-cols-5/);
+  assert.match(ai, /data-decision-artifact/);
+});
