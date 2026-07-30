@@ -12,12 +12,14 @@
 
 # testing
 /coverage
+/.superpowers/brainstorm/
 
 # isolated development worktrees
 /.worktrees/
 
 # next.js
 /.next/
+/.next-*/
 /out/
 
 # production

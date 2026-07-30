@@ -1,164 +1,207 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { join, posix } from "node:path";
 import test from "node:test";
 
 const root = process.cwd();
 const read = (path) => readFileSync(join(root, path), "utf8");
-// `next/image` is the only non-icon, bare-package PascalCase JSX component in tracked TSX.
-const allowedExternalJsxModules = new Set(["next/image"]);
-const isBareExternalModule = (moduleName) =>
-  !moduleName.startsWith(".") && !moduleName.startsWith("@/");
 
-function collectTsx(directory) {
+function collectFiles(directory, extension) {
   return readdirSync(join(root, directory), { withFileTypes: true }).flatMap(
     (entry) => {
-      const path = join(directory, entry.name);
-      return entry.isDirectory() ? collectTsx(path) : path.endsWith(".tsx") ? [path] : [];
+      const path = join(directory, entry.name).replaceAll("\\", "/");
+      return entry.isDirectory()
+        ? collectFiles(path, extension)
+        : path.endsWith(extension)
+          ? [path]
+          : [];
     },
   );
 }
 
-function collectTrackedTsx() {
-  return execFileSync("git", ["ls-files", "--", "*.tsx"], {
+const liveTsxPaths = () => [
+  ...collectFiles("app", ".tsx"),
+  ...collectFiles("components", ".tsx"),
+];
+
+const trackedTsxPaths = () =>
+  execFileSync("git", ["ls-files", "--", "*.tsx"], {
     cwd: root,
     encoding: "utf8",
   })
     .trim()
-    .split("\n")
-    .filter(Boolean);
-}
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((path) => path.replaceAll("\\", "/"));
 
-function actionBlocks(source) {
-  return [...source.matchAll(/<(a|button)\b[\s\S]*?<\/\1>/g)].map(
-    ([block]) => block,
-  );
-}
+const liveTsxSource = () =>
+  liveTsxPaths()
+    .map((path) => read(path))
+    .join("\n");
 
-function assertRestrainedActionStates(source, label) {
-  const actions = actionBlocks(source);
-  assert.ok(actions.length > 0, `${label} must contain an action fixture`);
-
-  for (const action of actions) {
-    assert.doesNotMatch(
-      action,
-      /\btransition-all\b/,
-      `${label} must transition only intentional state properties`,
+function resolveLocalImport(importerPath, specifier, sourceExists) {
+  let basePath;
+  if (specifier.startsWith("@/")) {
+    basePath = specifier.slice(2);
+  } else if (specifier.startsWith(".")) {
+    basePath = posix.normalize(
+      posix.join(posix.dirname(importerPath), specifier),
     );
-    assert.doesNotMatch(
-      action,
-      /\b(?:hover|active):(?:scale|translate-y|shadow|drop-shadow|brightness)-/,
-      `${label} must reject scale, lift, glow, and heavy shadow states`,
-    );
-    assert.doesNotMatch(
-      action,
-      /\bshimmer\b/,
-      `${label} must keep action feedback quiet without shimmer`,
-    );
-  }
-}
-
-function testPattern(pattern, value) {
-  pattern.lastIndex = 0;
-  return pattern.test(value);
-}
-
-function assertActionContract(source, sourceLabel, contract) {
-  const matches = actionBlocks(source).filter((action) =>
-    testPattern(contract.identity, action),
-  );
-  const contractLabel = `${sourceLabel} ${contract.name}`;
-
-  assert.equal(
-    matches.length,
-    1,
-    `${contractLabel} must resolve to exactly one action instance`,
-  );
-
-  const [action] = matches;
-  assert.match(
-    action,
-    /\baction-transition\b/,
-    `${contractLabel} must apply action-transition to that action instance`,
-  );
-
-  for (const [detail, pattern] of Object.entries(contract.required)) {
-    assert.match(action, pattern, `${contractLabel} changed its ${detail}`);
-  }
-  for (const [detail, pattern] of Object.entries(contract.forbidden || {})) {
-    assert.doesNotMatch(action, pattern, `${contractLabel} gained ${detail}`);
+  } else {
+    return null;
   }
 
-  return action;
+  const candidates = /\.[cm]?[jt]sx?$/.test(basePath)
+    ? [basePath]
+    : [
+        `${basePath}.ts`,
+        `${basePath}.tsx`,
+        posix.join(basePath, "index.ts"),
+        posix.join(basePath, "index.tsx"),
+      ];
+
+  return candidates.find(sourceExists) || null;
 }
 
-function assertSourceActionContracts(source, sourceLabel, contracts) {
-  const contractedActions = contracts.map((contract) =>
-    assertActionContract(source, sourceLabel, contract),
-  );
-  const transitionedActions = actionBlocks(source).filter((action) =>
-    /\baction-transition\b/.test(action),
-  );
+function collectImportClosure(
+  entryPath,
+  sourceReader = read,
+  sourceExists = (path) => existsSync(join(root, path)),
+) {
+  const queue = [entryPath];
+  const closure = new Map();
 
-  assert.equal(
-    transitionedActions.length,
-    contracts.length,
-    `${sourceLabel} must transition exactly its audited action instances`,
-  );
-  assert.deepEqual(
-    transitionedActions.toSorted(),
-    contractedActions.toSorted(),
-    `${sourceLabel} must not move action-transition to a different action`,
-  );
-}
+  while (queue.length > 0) {
+    const path = queue.shift();
+    if (closure.has(path)) continue;
 
-function assertSourceFacts(source, sourceLabel, facts) {
-  for (const [detail, pattern] of Object.entries(facts)) {
-    assert.match(source, pattern, `${sourceLabel} changed its ${detail}`);
+    const source = sourceReader(path);
+    closure.set(path, source);
+
+    const specifiers = [
+      ...source.matchAll(/\bfrom\s+["']([^"']+)["']/g),
+      ...source.matchAll(/^\s*import\s+["']([^"']+)["'];?\s*$/gm),
+    ].map((match) => match[1]);
+
+    for (const specifier of specifiers) {
+      const resolved = resolveLocalImport(path, specifier, sourceExists);
+      if (resolved && !closure.has(resolved)) queue.push(resolved);
+    }
   }
+
+  return closure;
 }
 
-function assertIconSystem(source, path) {
-  const namedImportSources = new Map();
-  const namespaceImportSources = new Map();
+function assertSingleResponsiveHomepageTree(
+  entryPath,
+  sourceReader = read,
+  sourceExists = (path) => existsSync(join(root, path)),
+) {
+  const closure = collectImportClosure(entryPath, sourceReader, sourceExists);
+  const paths = [...closure.keys()];
+  const sources = [...closure.values()].join("\n");
+
+  assert.doesNotMatch(
+    paths.join("\n"),
+    /(?:^|\/)components\/mobile(?:\/|$)/,
+    "the homepage import closure must not reach a parallel mobile tree",
+  );
+  assert.doesNotMatch(
+    sources,
+    /MobileExperience|["']@\/components\/mobile\/|["']\.\.?(?:\/[^"']*)*\/mobile\//,
+    "the homepage and its transitive imports must not reference mobile-only modules",
+  );
+  assert.doesNotMatch(
+    sources,
+    /(?:^|[\s"'`])(?:sm|md|lg|xl|2xl):hidden(?=$|[\s"'`])|(?:^|[\s"'`])hidden(?=$|[\s"'`])[^"\n]*\b(?:sm|md|lg|xl|2xl):(?:block|flex|grid|inline|inline-block|inline-flex)\b/,
+    "the homepage closure must not switch duplicate content trees at breakpoints",
+  );
+
+  return closure;
+}
+
+function jsxTags(source) {
+  const tags = [];
+  let cursor = 0;
+
+  while (cursor < source.length) {
+    const start = source.indexOf("<", cursor);
+    if (start === -1) break;
+    if (!/[A-Za-z/]/.test(source[start + 1] || "")) {
+      cursor = start + 1;
+      continue;
+    }
+
+    let quote = "";
+    let braces = 0;
+    let end = start + 1;
+    for (; end < source.length; end += 1) {
+      const character = source[end];
+      if (quote) {
+        if (character === quote && source[end - 1] !== "\\") quote = "";
+        continue;
+      }
+      if (`'"\``.includes(character)) {
+        quote = character;
+      } else if (character === "{") {
+        braces += 1;
+      } else if (character === "}") {
+        braces -= 1;
+      } else if (character === ">" && braces === 0) {
+        break;
+      }
+    }
+
+    const match = source
+      .slice(start, end + 1)
+      .match(/^<(\/?)([A-Za-z][\w.]*)\b([\s\S]*?)(\/?)>$/);
+    if (match) {
+      tags.push({
+        closing: match[1] === "/",
+        name: match[2],
+        attributes: match[3],
+        selfClosing: match[4] === "/",
+      });
+    }
+    cursor = end + 1;
+  }
+
+  return tags;
+}
+
+const prohibitedIconMotion =
+  /(?:^|[\s"'`{])(?:[\w-]+:)*(?:-?(?:rotate|scale|translate-y)-[^\s"`}]+|animate-(?!none\b)[^\s"`}]+)/;
+
+function assertLucideOnlyIcons(source, path) {
+  const imports = new Map();
 
   for (const [, importClause, moduleName] of source.matchAll(
     /^\s*import\s+([\s\S]*?)\s+from\s*["']([^"']+)["'];?\s*$/gm,
   )) {
     const defaultImport = importClause.match(/^([A-Z][A-Za-z0-9_]*)\b/);
-    if (defaultImport) {
-      namedImportSources.set(defaultImport[1], moduleName);
-    }
+    if (defaultImport) imports.set(defaultImport[1], moduleName);
 
-    const namespaceImport = importClause.match(/\*\s+as\s+([A-Z][A-Za-z0-9_]*)/);
-    if (namespaceImport) {
-      namespaceImportSources.set(namespaceImport[1], moduleName);
-    }
+    const namespaceImport = importClause.match(
+      /\*\s+as\s+([A-Z][A-Za-z0-9_]*)/,
+    );
+    if (namespaceImport) imports.set(namespaceImport[1], moduleName);
 
     const namedImport = importClause.match(/\{([\s\S]*?)\}/);
     if (!namedImport) continue;
 
     for (const specifier of namedImport[1].split(",")) {
-      const [, importedName, localName] = specifier
-        .trim()
-        .match(/^(?:type\s+)?(\w+)(?:\s+as\s+(\w+))?$/) || [];
-      if (importedName) {
-        namedImportSources.set(localName || importedName, moduleName);
-      }
+      const [, importedName, localName] =
+        specifier
+          .trim()
+          .match(/^(?:type\s+)?(\w+)(?:\s+as\s+(\w+))?$/) || [];
+      if (importedName) imports.set(localName || importedName, moduleName);
     }
-  }
-
-  const inlineSvgCount = (source.match(/<svg\b/g) || []).length;
-  if (path === "components/CobrykzLogo.tsx") {
-    assert.equal(inlineSvgCount, 1, "the COBRYKZ brand mark must retain its SVG");
-  } else {
-    assert.equal(inlineSvgCount, 0, `${path} contains a non-brand inline SVG`);
   }
 
   const iconPropertySources = new Set(
     [...source.matchAll(/\bicon\s*:\s*([A-Z][A-Za-z0-9_]*)\b/g)]
-      .map(([, identifier]) => namedImportSources.get(identifier))
+      .map(([, identifier]) => imports.get(identifier))
       .filter(Boolean),
   );
   const dynamicIconAliases = new Map(
@@ -166,1506 +209,974 @@ function assertIconSystem(source, path) {
       ([, alias]) => [alias, iconPropertySources],
     ),
   );
-
-  for (const [, componentName, attributes] of source.matchAll(
-    /<([A-Z][A-Za-z0-9_]*(?:\.[A-Z][A-Za-z0-9_]*)?)\b([^>]*)\/?\s*>/g,
+  for (const [, alias, importedIdentifier] of source.matchAll(
+    /\bconst\s+(\w+)\s*=\s*([A-Z][A-Za-z0-9_]*)\s*;/g,
   )) {
-    const [rootName] = componentName.split(".");
-    const directImportSource = componentName.includes(".")
-      ? namespaceImportSources.get(rootName)
-      : namedImportSources.get(componentName);
-    const aliasSources = dynamicIconAliases.get(componentName);
+    const importSource = imports.get(importedIdentifier);
+    if (importSource) dynamicIconAliases.set(alias, new Set([importSource]));
+  }
+  for (const [, alias] of source.matchAll(
+    /\bconst\s*{\s*icon\s*:\s*(\w+)\s*}\s*=/g,
+  )) {
+    dynamicIconAliases.set(alias, iconPropertySources);
+  }
 
-    if (directImportSource && isBareExternalModule(directImportSource)) {
-      assert.ok(
-        directImportSource === "lucide-react" ||
-          allowedExternalJsxModules.has(directImportSource),
-        `${path} imports PascalCase JSX component ${componentName} from ${directImportSource}; it must come from lucide-react or an approved framework module`,
-      );
+  const inlineSvgCount = (source.match(/<svg\b/g) || []).length;
+  if (path === "components/CobrykzLogo.tsx") {
+    assert.equal(inlineSvgCount, 1, "the Cobrykz brand mark must retain its SVG");
+  } else if (path === "components/atlas/SystemAtlas.tsx") {
+    assert.equal(
+      inlineSvgCount,
+      1,
+      "the semantic System Atlas must render one explanatory SVG",
+    );
+    assert.match(source, /<svg\b[^>]*role=["']img["']/s);
+    assert.match(source, /<title\b/);
+    assert.match(source, /<desc\b/);
+  } else {
+    assert.equal(inlineSvgCount, 0, `${path} contains a non-brand inline SVG`);
+  }
+
+  const stack = [];
+  for (const tag of jsxTags(source)) {
+    if (tag.closing) {
+      const openIndex = stack.map(({ name }) => name).lastIndexOf(tag.name);
+      if (openIndex !== -1) stack.splice(openIndex);
+      continue;
     }
 
-    for (const aliasSource of aliasSources || []) {
-      assert.equal(
-        aliasSource,
-        "lucide-react",
-        `${path} renders interface icon ${componentName} from ${aliasSource}; it must come from lucide-react`,
-      );
+    const [rootName] = tag.name.split(".");
+    const directSource = imports.get(rootName);
+    const aliasSources = dynamicIconAliases.get(tag.name) || new Set();
+    const componentSources = new Set(
+      [directSource, ...aliasSources].filter(Boolean),
+    );
+
+    for (const importSource of componentSources) {
+      const isExternal =
+        !importSource.startsWith(".") && !importSource.startsWith("@/");
+      const isApprovedFrameworkComponent = [
+        "next/image",
+        "next/link",
+      ].includes(importSource);
+
+      if (isExternal && !isApprovedFrameworkComponent) {
+        assert.equal(
+          importSource,
+          "lucide-react",
+          `${path} imports interface component ${tag.name} from ${importSource}; interface icons must come from lucide-react`,
+        );
+      }
     }
 
-    if (
-      directImportSource === "lucide-react" ||
-      [...(aliasSources || [])].includes("lucide-react")
-    ) {
+    if (componentSources.has("lucide-react")) {
+      assert.match(
+        tag.attributes,
+        /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
+        `${path} must hide adjacent-text decorative ${tag.name} icons`,
+      );
+      assert.doesNotMatch(
+        tag.attributes,
+        prohibitedIconMotion,
+        `${path} must not add continuous or attention-seeking motion to ${tag.name}`,
+      );
+      for (const ancestor of stack) {
+        assert.doesNotMatch(
+          ancestor.attributes,
+          prohibitedIconMotion,
+          `${path} must not add lift, rotate, bounce, or scale motion to an icon ancestor`,
+        );
+      }
+    }
+
+    if (!tag.selfClosing) stack.push(tag);
+  }
+}
+
+function assertHeroMediaAccessible(source, label) {
+  const videoTags = [...source.matchAll(/<video\b([^>]*)>/gs)];
+  assert.ok(videoTags.length <= 1, `${label} must not duplicate hero video`);
+
+  for (const [, attributes] of videoTags) {
+    assert.match(attributes, /\bmuted\b/, `${label} video must be muted`);
+    assert.match(
+      attributes,
+      /\bplaysInline\b/,
+      `${label} video must play inline`,
+    );
+    assert.match(attributes, /\bposter=/, `${label} video must have a poster`);
+    assert.doesNotMatch(
+      attributes,
+      /\bpreload="auto"/,
+      `${label} video must not block on eager preload`,
+    );
+    assert.match(
+      attributes,
+      /\baria-hidden=(?:"true"|\{true\})/,
+      `${label} decorative video must be hidden from assistive technology`,
+    );
+  }
+
+  const imageAliases = new Set(["img"]);
+  for (const [, alias] of source.matchAll(
+    /^\s*import\s+([A-Z][A-Za-z0-9_]*)\s+from\s+["']next\/image["'];?\s*$/gm,
+  )) {
+    imageAliases.add(alias);
+  }
+
+  for (const tag of jsxTags(source).filter(
+    ({ closing, name }) => !closing && imageAliases.has(name),
+  )) {
+    const attributes = tag.attributes;
+    assert.match(attributes, /\balt=/, `${label} image must define alt text`);
+    if (/\balt=""/.test(attributes)) {
       assert.match(
         attributes,
-        /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
-        `${path} must hide adjacent-text decorative ${componentName} icons from assistive technology`,
+        /\baria-hidden=(?:"true"|\{true\})/,
+        `${label} empty-alt image must be explicitly decorative`,
       );
     }
   }
 }
 
+function assertReadableExplanatoryText(source, label) {
+  const blocks = [...source.matchAll(/<(p|span)\b([^>]*)>([\s\S]*?)<\/\1>/g)]
+    .filter(([, tag, attributes, body]) => {
+      if (tag === "p" && !/\buppercase\b/.test(attributes)) return true;
+      return (
+        /\b(?:leading-[5-9]|opacity-\d+)\b/.test(attributes) ||
+        /\b(?:description|navOutcome|outcome|tagline|selectedChallenge)\b/.test(
+          body,
+        )
+      );
+    });
+
+  for (const [, , attributes] of blocks) {
+    assert.doesNotMatch(
+      attributes,
+      /\btext-xs\b/,
+      `${label} explanatory text must be at least 13px`,
+    );
+    for (const [, value, unit] of attributes.matchAll(
+      /\btext-\[(\d*\.?\d+)(px|rem)\]/g,
+    )) {
+      const pixels = Number(value) * (unit === "rem" ? 16 : 1);
+      assert.ok(
+        pixels >= 13,
+        `${label} explanatory text must be at least 13px; received ${value}${unit}`,
+      );
+    }
+  }
+}
+
+function contrastRatio(foreground, background) {
+  const luminance = (hex) => {
+    const channels = hex
+      .slice(1)
+      .match(/.{2}/g)
+      .map((channel) => Number.parseInt(channel, 16) / 255)
+      .map((channel) =>
+        channel <= 0.04045
+          ? channel / 12.92
+          : ((channel + 0.055) / 1.055) ** 2.4,
+      );
+    return (
+      channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+    );
+  };
+  const values = [luminance(foreground), luminance(background)].sort(
+    (a, b) => b - a,
+  );
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+function assertMinimalAuthoredMotion(source, label) {
+  const sourceWithoutApprovedAtlasMotion = source
+    .replace(/@keyframes\s+atlas-flow\s*{[\s\S]*?}\s*/g, "")
+    .replace(
+      /\.atlas-path\[data-atlas-state=["']active["']\]\s*{[^}]*}\s*/g,
+      "",
+    )
+    .replace(
+      /\.atlas-path\s*{[^}]*animation:\s*none\s*!important;[^}]*}\s*/g,
+      "",
+    );
+  assert.doesNotMatch(
+    sourceWithoutApprovedAtlasMotion,
+    /@keyframes\b|(?:^|[;{]\s*)animation(?:-name)?\s*:|(?:^|[;{]\s*)transform\s*:|transition[^;{}]*\btransform\b|\banimate-(?!none\b)[^\s"'`}]*/m,
+    `${label} must not author continuous animation or transform motion`,
+  );
+}
+
+function assertApprovedPresentationUtilities(source, label) {
+  const approvedColorValues = new Set([
+    "navy",
+    "blue",
+    "blue-dark",
+    "white",
+    "gray-light",
+    "gray-100",
+    "slate",
+    "slate-light",
+    "border",
+    "charcoal",
+    "footer-bg",
+    "blue-tint",
+    "navy-subtle",
+    "evergreen",
+  ]);
+  const tailwindDefaultColorRoots = new Set([
+    "inherit",
+    "current",
+    "transparent",
+    "black",
+    "white",
+    "slate",
+    "gray",
+    "zinc",
+    "neutral",
+    "stone",
+    "red",
+    "orange",
+    "amber",
+    "yellow",
+    "lime",
+    "green",
+    "emerald",
+    "teal",
+    "cyan",
+    "sky",
+    "blue",
+    "indigo",
+    "violet",
+    "purple",
+    "fuchsia",
+    "pink",
+    "rose",
+  ]);
+
+  assert.doesNotMatch(
+    source,
+    /(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-\[(?:#|rgba?\(|hsla?\(|oklch\(|color:|var\()/,
+    `${label} must use approved palette utilities instead of arbitrary colors`,
+  );
+  for (const [, value] of source.matchAll(
+    /(?:^|[\s"'`])(?:(?:[\w-]+):)*(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-([a-z][a-z0-9-]*)(?:\/[0-9.]+)?(?=$|[\s"'`}])/gm,
+  )) {
+    const root = value.split("-")[0];
+    if (
+      tailwindDefaultColorRoots.has(root) ||
+      approvedColorValues.has(value)
+    ) {
+      assert.ok(
+        approvedColorValues.has(value),
+        `${label} uses ${value}, a Tailwind color outside the approved palette`,
+      );
+    }
+  }
+  assert.doesNotMatch(
+    source,
+    /\bfont-(?:serif|mono|\[(?![1-9]\d{2}\]))/,
+    `${label} must use only the approved sans font utility`,
+  );
+}
+
 test("uses platform-native font rasterization", () => {
   const globals = read("app/globals.css");
+  const trackedMarkup = trackedTsxPaths()
+    .map((path) => read(path))
+    .join("\n");
+  const presentationSource = `${globals}\n${trackedMarkup}`;
 
-  assert.doesNotMatch(globals, /text-rendering:\s*geometricPrecision/);
-  assert.doesNotMatch(globals, /-webkit-font-smoothing:\s*antialiased/);
-  assert.doesNotMatch(globals, /-moz-osx-font-smoothing:\s*grayscale/);
+  assert.doesNotMatch(presentationSource, /\b(?:subpixel-)?antialiased\b/);
+  assert.doesNotMatch(presentationSource, /\btext-rendering\s*:/);
+  assert.doesNotMatch(presentationSource, /-webkit-font-smoothing\s*:/);
+  assert.doesNotMatch(presentationSource, /-moz-osx-font-smoothing\s*:/);
 });
 
-test("keeps the premium component token layer small and intentional", () => {
+test("keeps the premium token layer small and intentional", () => {
   const globals = read("app/globals.css");
-  const candidateTokens = [
-    "--control-transition",
-    "--focus-ring-light",
-    "--focus-ring-dark",
-    "--control-height-compact",
-    "--control-height-standard",
-    "--radius-control",
-    "--shadow-quiet",
-    "--shadow-elevated",
-    "--border-control-light",
-    "--border-control-dark",
-  ];
+  const rootBlock = globals.match(/:root\s*{(?<body>[^}]*)}/s);
   const acceptedTokens = [
     "--control-transition",
     "--focus-ring-light",
     "--focus-ring-dark",
-    "--control-height-compact",
+    "--section-gutter",
   ];
-  const rootBlock = globals.match(/:root\s*{(?<body>[^}]*)}/s);
 
   assert.ok(rootBlock, "globals.css must retain a :root token scope");
 
-  const declaredCandidates = [
-    ...globals.matchAll(/(--[\w-]+)\s*:/g),
+  const componentTokens = [
+    ...rootBlock.groups.body.matchAll(
+      /(--(?:control|focus|section|radius|shadow|border)-[\w-]+)\s*:/g,
+    ),
   ]
     .map(([, token]) => token)
-    .filter((token) => candidateTokens.includes(token))
-    .sort();
-  const rootCandidates = [
-    ...rootBlock.groups.body.matchAll(/(--[\w-]+)\s*:/g),
-  ]
-    .map(([, token]) => token)
-    .filter((token) => candidateTokens.includes(token))
     .sort();
 
   assert.deepEqual(
-    declaredCandidates,
+    componentTokens,
     acceptedTokens.toSorted(),
-    "only the audited component-token allowlist may be declared",
-  );
-  assert.deepEqual(
-    rootCandidates,
-    acceptedTokens.toSorted(),
-    "accepted component tokens must be declared once in :root",
+    "the responsive presentation must keep one audited token layer",
   );
 
   for (const token of acceptedTokens) {
-    const uses = globals.match(new RegExp(`var\\(${token}\\)`, "g")) || [];
-    assert.ok(uses.length > 0, `${token} must be consumed by shared CSS`);
+    assert.match(
+      globals,
+      new RegExp(`var\\(${token}\\)`),
+      `${token} must be consumed by shared CSS`,
+    );
   }
 });
 
-test("keeps equivalent actions and links behaviorally consistent", () => {
+test("preserves the frozen palette and font tokens", () => {
   const globals = read("app/globals.css");
-  const sources = {
-    navbar: read("components/Navbar.tsx"),
-    hero: read("components/sections/Hero.tsx"),
-    services: read("components/sections/Services.tsx"),
-    industries: read("components/sections/Industries.tsx"),
-    process: read("components/sections/Process.tsx"),
-    founder: read("components/sections/Founder.tsx"),
-    contact: read("components/sections/FinalCTA.tsx"),
-    footer: read("components/Footer.tsx"),
-    copyNote: read("components/CopyProjectNoteButton.tsx"),
-    mobileActionBar: read("components/mobile/MobileActionBar.tsx"),
-    mobileHero: read("components/mobile/MobileHero.tsx"),
-    mobileServices: read("components/mobile/MobileServices.tsx"),
-    mobileFit: read("components/mobile/MobileFit.tsx"),
-    mobileFounder: read("components/mobile/MobileFounder.tsx"),
-    mobileContact: read("components/mobile/MobileContact.tsx"),
-    mobileFooter: read("components/mobile/MobileFooter.tsx"),
+  const frozenTheme = {
+    "--color-navy": "#0b1728",
+    "--color-blue": "#1f5eff",
+    "--color-blue-dark": "#1748cc",
+    "--color-white": "#ffffff",
+    "--color-gray-light": "#f7faff",
+    "--color-gray-100": "#eef4fb",
+    "--color-slate": "#53647a",
+    "--color-slate-light": "#7a899c",
+    "--color-border": "#dce5f0",
+    "--color-charcoal": "#132136",
+    "--color-footer-bg": "#081321",
+    "--color-blue-tint": "#eaf2ff",
+    "--color-navy-subtle": "#17263a",
+    "--color-evergreen": "#177b57",
   };
-  const renderedActionSources = Object.entries(sources)
-    .map(([label, source]) => {
-      assertRestrainedActionStates(source, label);
-      return source;
-    })
+
+  const declaredColors = new Map(
+    [...globals.matchAll(/(--color-[\w-]+):\s*([^;]+);/g)].map(
+      ([, token, value]) => [token, value.trim()],
+    ),
+  );
+  assert.deepEqual(
+    Object.fromEntries(declaredColors),
+    frozenTheme,
+    "Task 5 must not drift or extend the frozen light-first palette",
+  );
+  assert.match(globals, /--font-sans:\s*var\(--font-geist-sans\);/);
+  assert.match(globals, /--font-serif:\s*var\(--font-playfair\);/);
+  assert.deepEqual(
+    [...globals.matchAll(/(--font-[\w-]+)\s*:/g)].map(([, token]) => token),
+    ["--font-sans", "--font-serif"],
+    "the theme must not introduce extra font-family tokens",
+  );
+
+  for (const path of trackedTsxPaths()) {
+    assertApprovedPresentationUtilities(read(path), path);
+  }
+  for (const fixture of [
+    '<p className="text-[#9CC8FF]">Arbitrary color</p>',
+    '<p className="text-red-500">Tailwind family</p>',
+    '<p className="text-blue-500">Default blue shade</p>',
+    '<p className="text-black">Default black</p>',
+    '<div className="border-blue-border">Fabricated semantic token</div>',
+    '<p className="font-serif">Unapproved family</p>',
+  ]) {
+    assert.throws(
+      () => assertApprovedPresentationUtilities(fixture, "utility fixture"),
+      /approved palette utilities|outside the approved palette|approved sans font utility/,
+    );
+  }
+  assert.doesNotThrow(() =>
+    assertApprovedPresentationUtilities(
+      '<div className="bg-navy text-blue hover:text-blue-dark border-border ring-blue-tint" />',
+      "approved semantic utilities",
+    ),
+  );
+});
+
+test("keeps the dark focus token distinct on every approved dark surface", () => {
+  const globals = read("app/globals.css");
+  const focusColor = "#9cc8ff";
+
+  assert.match(globals, /--focus-ring-dark:\s*#9cc8ff;/);
+  for (const [surface, color] of Object.entries({
+    navy: "#0b1728",
+    "footer void": "#081321",
+    charcoal: "#132136",
+  })) {
+    assert.ok(
+      contrastRatio(focusColor, color) >= 3,
+      `dark focus ring must reach 3:1 against ${surface}`,
+    );
+  }
+  assert.match(
+    globals,
+    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible,\s*\.bg-charcoal :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
+  );
+});
+
+test("uses one responsive section shell from 320px upward", () => {
+  const globals = read("app/globals.css");
+  const homepageClosure = assertSingleResponsiveHomepageTree("app/page.tsx");
+
+  assert.match(
+    globals,
+    /:root\s*{[^}]*--section-gutter:\s*1\.25rem;/s,
+    "the 320px presentation must retain a fixed 20px page gutter",
+  );
+  assert.match(
+    globals,
+    /\.section-shell\s*{\s*width:\s*min\(calc\(100% - \(var\(--section-gutter\) \* 2\)\),\s*1200px\);\s*margin-inline:\s*auto;\s*}/s,
+  );
+  assert.match(
+    globals,
+    /@media \(min-width:\s*768px\)\s*{[\s\S]*?:root\s*{[^}]*--section-gutter:\s*2\.5rem;[^}]*}[\s\S]*?}/,
+    "larger viewports must widen the same shared shell rather than switch trees",
+  );
+
+  for (const path of collectFiles("components/home", ".tsx")) {
+    assert.ok(
+      homepageClosure.has(path),
+      `${path} must remain inside the audited homepage import closure`,
+    );
+  }
+  assert.equal(
+    (read("app/page.tsx").match(/<ChallengeRouter\s*\/>/g) || []).length,
+    1,
+    "the challenge router must appear in the single homepage tree",
+  );
+
+  const transitiveMobileFixture = {
+    "app/page.tsx":
+      'import HomeSection from "@/components/home/HomeSection"; export default HomeSection;',
+    "components/home/HomeSection.tsx":
+      'import MobileExperience from "@/components/mobile/MobileExperience"; export default MobileExperience;',
+    "components/mobile/MobileExperience.tsx":
+      "export default function MobileExperience() { return null; }",
+  };
+  assert.throws(
+    () =>
+      assertSingleResponsiveHomepageTree(
+        "app/page.tsx",
+        (path) => transitiveMobileFixture[path],
+        (path) => Object.hasOwn(transitiveMobileFixture, path),
+      ),
+    /must not (?:reach a parallel mobile tree|reference mobile-only modules)/,
+  );
+
+  const breakpointSplitFixture = {
+    "app/page.tsx":
+      'import Split from "@/components/home/Split"; export default Split;',
+    "components/home/Split.tsx":
+      'export default function Split() { return <><div className="md:hidden">Mobile copy</div><div className="hidden md:block">Desktop copy</div></>; }',
+  };
+  assert.throws(
+    () =>
+      assertSingleResponsiveHomepageTree(
+        "app/page.tsx",
+        (path) => breakpointSplitFixture[path],
+        (path) => Object.hasOwn(breakpointSplitFixture, path),
+      ),
+    /must not switch duplicate content trees at breakpoints/,
+  );
+});
+
+test("bounds the shared header within the 320px viewport", () => {
+  const globals = read("app/globals.css");
+  const header = read("components/layout/SiteHeader.tsx");
+  const solutionsMenu = read("components/layout/SolutionsMenu.tsx");
+  const shellWidthAt320 = 320 - 2 * 20;
+
+  assert.equal(shellWidthAt320, 280);
+  assert.doesNotMatch(
+    globals,
+    /(?:html|body)\s*{[^}]*overflow-x:\s*hidden/s,
+    "the page must not conceal horizontal header overflow",
+  );
+  assert.match(
+    header,
+    /className="section-shell min-w-0 flex min-h-16 flex-wrap items-center/,
+  );
+  assert.doesNotMatch(
+    header,
+    /\b(?:sm:|md:|lg:|xl:|2xl:)?order-(?:none|first|last|\d+)\b/,
+    "header visual order must match DOM and keyboard order",
+  );
+  assert.match(header, /<nav\s+className="min-w-0 w-full border-t border-border/);
+  assert.match(
+    header,
+    /<ul\s+className="flex max-w-full flex-wrap items-center justify-start gap-x-2 gap-y-1 py-1 lg:flex-nowrap lg:gap-0 lg:py-0"/,
+  );
+  assert.doesNotMatch(header, /<ul className="[^"]*\bjustify-between\b/);
+  assert.match(header, /<li key=\{item\.href\} className="max-w-full">/);
+  assert.match(
+    header,
+    /className="nav-underline action-transition flex min-h-11 max-w-full items-center/,
+  );
+  assert.match(
+    header,
+    /className="mb-2 w-full max-w-full basis-full lg:mb-0 lg:w-auto lg:basis-auto"/,
+    "the exact primary CTA must occupy its own bounded mobile row",
+  );
+  assert.ok(
+    header.indexOf('href="/"') < header.indexOf("<nav") &&
+      header.indexOf("<nav") < header.indexOf("<PrimaryLink"),
+    "header DOM/tab order must be logo, navigation, then primary CTA",
+  );
+
+  assert.match(
+    solutionsMenu,
+    /<li className="relative max-w-full" onKeyDown=\{handleKeyDown\}>/,
+  );
+  assert.match(
+    solutionsMenu,
+    /className="nav-underline action-transition flex min-h-11 max-w-full items-center/,
+  );
+  assert.match(
+    solutionsMenu,
+    /w-\[min\(22rem,calc\(100vw-2rem\)\)\]/,
+    "the Solutions disclosure must remain bounded by the viewport",
+  );
+  assert.match(solutionsMenu, /aria-expanded=\{isOpen\}/);
+  assert.match(solutionsMenu, /event\.key === "Escape"/);
+});
+
+test("keeps mobile typography fixed and readable", () => {
+  const globals = read("app/globals.css");
+  const homeHero = read("components/home/HomeHero.tsx");
+  const sectionIntro = read("components/ui/SectionIntro.tsx");
+  const homepageSources = [
+    homeHero,
+    sectionIntro,
+    ...collectFiles("components/home", ".tsx").map((path) => read(path)),
+  ].join("\n");
+
+  assert.doesNotMatch(
+    `${globals}\n${homepageSources}`,
+    /font-size:\s*(?:clamp|min|max)\(|text-\[(?:clamp|min|max)\(/,
+    "mobile type must use fixed sizes at explicit breakpoints",
+  );
+  assert.match(
+    homeHero,
+    /\btext-\[2\.625rem\][^"]*\bsm:text-\[3\.5rem\][^"]*\blg:text-\[4\.25rem\]/,
+  );
+  assert.match(
+    sectionIntro,
+    /\btext-\[2rem\][^"]*\bsm:text-\[2\.5rem\][^"]*\blg:text-5xl/,
+  );
+
+  assertReadableExplanatoryText(liveTsxSource(), "tracked presentation");
+  for (const value of ["12px", "12.5px", "0.75rem"]) {
+    assert.throws(
+      () =>
+        assertReadableExplanatoryText(
+          `<p className="text-[${value}]">Important explanation</p>`,
+          `fixture-${value}`,
+        ),
+      /at least 13px/,
+    );
+  }
+});
+
+test("uses responsive grids only for meaningful comparison", () => {
+  const comparisonContracts = {
+    "components/home/BusinessOutcomes.tsx": /\bmd:grid-cols-12\b/,
+    "components/home/WhyCobrykz.tsx":
+      /\bsm:grid-cols-2\b[\s\S]*\blg:grid-cols-12\b/,
+    "components/home/ChallengeRouter.tsx": /\bsm:grid-cols-2\b/,
+    "components/home/HomeSystemThread.tsx": /\bmd:grid-cols-6\b/,
+  };
+
+  for (const [path, contract] of Object.entries(comparisonContracts)) {
+    assert.match(read(path), contract, `${path} changed its comparison grid`);
+  }
+
+  const editorialSources = [
+    read("components/home/HomeHero.tsx"),
+    read("components/home/ProjectsEvidence.tsx"),
+    read("components/home/AuthorityBand.tsx"),
+  ].join("\n");
+  assert.ok(
+    (editorialSources.match(/\bblur-3xl\b/g) || []).length <= 1,
+    "editorial depth must remain selective",
+  );
+  assert.doesNotMatch(editorialSources, /\bshadow-(?:xl|2xl)\b/);
+});
+
+test("keeps the Architectural Editorial homepage frozen and differentiated", () => {
+  const compositions = {
+    "components/home/BusinessOutcomes.tsx": "terminal-states",
+    "components/home/SolutionsOverview.tsx": "capability-index",
+    "components/home/WhyCobrykz.tsx": "accountability",
+    "components/home/AIPointOfView.tsx": "decision-artifact",
+    "components/home/ProjectsEvidence.tsx": "evidence-frame",
+  };
+
+  for (const [path, composition] of Object.entries(compositions)) {
+    assert.match(
+      read(path),
+      new RegExp(`data-home-composition=["']${composition}["']`),
+      `${path} must retain its distinctive composition`,
+    );
+  }
+
+  const serverEditorialSources = [
+    "HomeHero.tsx",
+    "BusinessOutcomes.tsx",
+    "SolutionsOverview.tsx",
+    "WhyCobrykz.tsx",
+    "AIPointOfView.tsx",
+    "ProcessOverview.tsx",
+    "ProjectsEvidence.tsx",
+    "AuthorityBand.tsx",
+    "HomeFinalCTA.tsx",
+  ]
+    .map((name) => read(`components/home/${name}`))
     .join("\n");
+
+  assert.doesNotMatch(serverEditorialSources, /["']use client["']/);
+  assert.doesNotMatch(
+    serverEditorialSources,
+    /\bshadow-(?:xl|2xl)\b|backdrop-blur|transition-all/,
+  );
+});
+
+test("keeps actions, focus, and reduced motion restrained", () => {
+  const globals = read("app/globals.css");
+  const sources = liveTsxSource();
 
   assert.match(
     globals,
     /\.action-transition\s*{\s*transition:\s*color var\(--control-transition\),\s*background-color var\(--control-transition\),\s*border-color var\(--control-transition\);\s*}/s,
-    "equivalent actions must transition only color, background-color, and border-color with --control-transition",
   );
   assert.match(
     globals,
     /\.action-transition:disabled\s*{[^}]*cursor:\s*not-allowed/s,
-    "native disabled actions must override the global pointer cursor",
   );
-  assert.doesNotMatch(globals, /@keyframes\s+btn-shimmer|\.shimmer\b/);
+  assert.doesNotMatch(`${globals}\n${sources}`, /\btransition-all\b/);
+  assert.doesNotMatch(
+    sources,
+    /\b(?:hover|active|group-hover):(?:-?(?:scale|translate-y)|shadow|drop-shadow|brightness)-/,
+  );
+  assert.doesNotMatch(`${globals}\n${sources}`, /\bshimmer\b/);
+  assert.doesNotMatch(`${globals}\n${sources}`, /\bscroll-hidden\b/);
+  assert.doesNotMatch(
+    sources,
+    /\b(?:hover|group-hover):opacity-\d+[^"]*\bopacity-0\b|\bopacity-0[^"]*\b(?:hover|group-hover):opacity-\d+/,
+    "critical content must not be a hover-only disclosure",
+  );
+
   assert.doesNotMatch(
     globals,
     /:focus-visible\s*{[^}]*border-radius\s*:/s,
-    "shared focus must preserve each action or link's own geometry",
+    "focus treatment must preserve each control's geometry",
   );
   assert.match(
     globals,
     /:focus-visible\s*{\s*outline:\s*2px solid var\(--focus-ring-light\);\s*outline-offset:\s*3px;\s*}/s,
-    "shared focus must retain the exact light outline width and offset",
   );
   assert.match(
     globals,
-    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
+    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible,\s*\.bg-charcoal :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
+  );
+  assert.match(
+    globals,
+    /@media \(prefers-reduced-motion:\s*reduce\)\s*{[\s\S]*?animation-duration:\s*0\.01ms !important;[\s\S]*?transition-duration:\s*0\.01ms !important;/,
   );
 
-  const actionContracts = {
-    navbar: [
-      {
-        name: "desktop navigation template",
-        identity: /href=\{link\.desktopHref\}/,
-        required: {
-          "dynamic href": /href=\{link\.desktopHref\}/,
-          label: /\{link\.label\}/,
-          "dimensions and spacing": /\bblock px-4 py-2 text-\[13px\] font-medium\b/,
-          "navigation fill and active behavior":
-            /active \? "text-navy" : "text-slate hover:text-navy"/,
-          "underline behavior": /\bnav-underline action-transition\b/,
-        },
-        forbidden: {
-          "button border, fill, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-      {
-        name: "desktop Start a project",
-        identity: /href="#contact"[\s\S]*?Start a project/,
-        required: {
-          href: /href="#contact"/,
-          label: />\s*Start a project\s*</,
-          "dimensions and spacing": /\bhidden min-h-11 items-center gap-2\b[\s\S]*\bpx-5\b/,
-          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
-          shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\]/,
-          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
-          border: /\brounded-lg\b/,
-        },
-      },
-      {
-        name: "mobile menu toggle",
-        identity: /aria-controls="mobile-menu"/,
-        required: {
-          behavior: /onClick=\{\(\) => setMobileOpen\(\(open\) => !open\)\}/,
-          label: /aria-label=\{mobileOpen \? "Close menu" : "Open menu"\}/,
-          "expanded state": /aria-expanded=\{mobileOpen\}/,
-          "dimensions and spacing": /\bmin-h-11 min-w-11 items-center justify-center\b/,
-          "border and fill": /\brounded-lg border border-border bg-white text-navy\b/,
-          states: /\bhover:bg-gray-light active:bg-gray-100\b/,
-        },
-      },
-      {
-        name: "mobile navigation template",
-        identity: /href=\{link\.mobileHref\}/,
-        required: {
-          "dynamic href": /href=\{link\.mobileHref\}/,
-          label: /\{link\.label\}/,
-          behavior: /onClick=\{closeMenu\}/,
-          "dimensions and spacing": /\bflex min-h-14 items-center justify-between\b/,
-          fill: /\btext-navy hover:text-blue-dark\b/,
-        },
-        forbidden: {
-          "button border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-      {
-        name: "mobile menu Start a project",
-        identity: /href="#m-contact"[\s\S]*?onClick=\{closeMenu\}[\s\S]*?Start a project/,
-        required: {
-          href: /href="#m-contact"/,
-          label: />\s*Start a project\s*</,
-          behavior: /onClick=\{closeMenu\}/,
-          "dimensions and spacing":
-            /\bflex min-h-12 w-full items-center justify-center gap-2\b[\s\S]*\bpx-5\b/,
-          "border and fill": /\brounded-lg bg-blue\b[\s\S]*\btext-white\b/,
-          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
-        },
-        forbidden: {
-          shadow: /\bshadow-\S+/,
-        },
-      },
-    ],
-    hero: [
-      {
-        name: "Start a project",
-        identity: /href="#contact"[\s\S]*?Start a project/,
-        required: {
-          href: /href="#contact"/,
-          label: />\s*Start a project\s*</,
-          "dimensions and spacing":
-            /\binline-flex min-h-12 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
-          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
-          shadow: /\bshadow-\[0_10px_28px_rgba\(31,94,255,0\.26\)\]/,
-          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
-        },
-      },
-      {
-        name: "See how I work",
-        identity: /href="#process"[\s\S]*?See how I work/,
-        required: {
-          href: /href="#process"/,
-          label: />\s*See how I work\s*</,
-          "dimensions and spacing":
-            /\binline-flex min-h-12 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
-          "border and fill": /\bborder border-border bg-white\b[\s\S]*\btext-navy\b/,
-          shadow: /\bshadow-\[0_8px_24px_rgba\(11,23,40,0\.05\)\]/,
-          states:
-            /\bhover:border-blue\/30 hover:bg-blue-tint active:border-blue\/30 active:bg-blue-tint\b/,
-        },
-      },
-    ],
-    services: [
-      {
-        name: "Talk through your project",
-        identity: /Talk through your project/,
-        required: {
-          href: /href="#contact"/,
-          label: />\s*Talk through your project\s*</,
-          "dimensions and spacing": /\binline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[14px\] font-semibold text-blue\b/,
-          states: /\bhover:text-blue-dark\b/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-    industries: [
-      {
-        name: "Tell me what you do",
-        identity: /Tell me what you do/,
-        required: {
-          href: /href="#contact"/,
-          label: />\s*Tell me what you do\s*</,
-          "dimensions and spacing": /\binline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[14px\] font-semibold text-white\b/,
-          states: /\bhover:text-\[#9CC8FF\]/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-    process: [
-      {
-        name: "Start with a conversation",
-        identity: /Start with a conversation/,
-        required: {
-          href: /href="#contact"/,
-          label: />\s*Start with a conversation\s*</,
-          "dimensions and spacing": /\bmt-7 inline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[14px\] font-semibold text-blue\b/,
-          states: /\bhover:text-blue-dark\b/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-    founder: [
-      {
-        name: "Tell me about your business",
-        identity: /Tell me about your business/,
-        required: {
-          href: /href="#contact"/,
-          label: />\s*Tell me about your business\s*</,
-          "dimensions and spacing": /\bmt-8 inline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[14px\] font-semibold text-white\b/,
-          states: /\bhover:text-\[#9CC8FF\]/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-    contact: [
-      {
-        name: "email link",
-        identity: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
-        required: {
-          href: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
-          label: /\{CONTACT_EMAIL\}/,
-          "dimensions and spacing": /\bmt-9 inline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[14px\] font-semibold text-white\b/,
-          states: /\bhover:text-\[#9CC8FF\]/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-      {
-        name: "Open email draft submit",
-        identity: /type="submit"[\s\S]*?Open email draft/,
-        required: {
-          behavior: /type="submit"/,
-          label: />\s*Open email draft\s*</,
-          "dimensions and spacing":
-            /\bmt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-6\b/,
-          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
-          shadow: /\bshadow-\[0_10px_28px_rgba\(31,94,255,0\.28\)\]/,
-          states:
-            /\bhover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue\/60 disabled:text-white\/75\b/,
-        },
-      },
-    ],
-    footer: [
-      {
-        name: "Explore link template",
-        identity: /href=\{link\.href\}/,
-        required: {
-          "dynamic href": /href=\{link\.href\}/,
-          label: /\{link\.label\}/,
-          "dimensions and spacing": /\btext-\[13px\]/,
-          fill: /\btext-white\/78\b/,
-          states: /\bhover:text-white\b/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-      {
-        name: "info email link",
-        identity: /href="mailto:info@cobrykz\.com"/,
-        required: {
-          href: /href="mailto:info@cobrykz\.com"/,
-          label: /info@cobrykz\.com/,
-          "dimensions and spacing": /\bmt-4 inline-flex items-center gap-2\b/,
-          fill: /\btext-\[13px\] font-medium text-white\b/,
-          states: /\bhover:text-\[#9CC8FF\]/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-      {
-        name: "Start a project",
-        identity: /href="#contact"[\s\S]*?Start a project/,
-        required: {
-          href: /href="#contact"/,
-          label: />\s*Start a project\s*</,
-          "dimensions and spacing": /\bmt-5 inline-flex min-h-11 items-center gap-2\b[\s\S]*\bpx-4\b/,
-          "border and fill":
-            /\brounded-lg border border-white\/14 bg-white\/\[0\.06\][\s\S]*\btext-white\b/,
-          states: /\bhover:bg-white\/\[0\.1\] active:bg-white\/\[0\.1\]/,
-        },
-        forbidden: {
-          shadow: /\bshadow-\S+/,
-        },
-      },
-    ],
-    copyNote: [
-      {
-        name: "Copy project note",
-        identity: /onClick=\{copyNote\}/,
-        required: {
-          behavior: /type="button" onClick=\{copyNote\}/,
-          labels: /"Project note copied" : "Copy project note"/,
-          "dimensions and spacing":
-            /\binline-flex min-h-11 items-center justify-center gap-2 rounded-lg\b[\s\S]*\bpx-4\b/,
-          border: /\bborder border-current\/20\b/,
-          fill: /\btext-\[13px\] font-semibold\b/,
-          states: /\bhover:bg-white\/10 active:bg-white\/10\b/,
-        },
-        forbidden: {
-          shadow: /\bshadow-\S+/,
-        },
-      },
-    ],
-    mobileActionBar: [
-      {
-        name: "Services",
-        identity: /aria-label="Services"/,
-        required: {
-          href: /href="#m-services"/,
-          label: /aria-label="Services"/,
-          "dimensions and spacing": /\bm-control flex items-center justify-center\b/,
-          fill: /\btext-slate\b/,
-          states: /\bhover:bg-gray-light hover:text-navy active:bg-gray-100\b/,
-          icon: /<LayoutGrid size=\{18\} strokeWidth=\{1\.9\}/,
-        },
-        forbidden: {
-          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
-        },
-      },
-      {
-        name: "Process",
-        identity: /aria-label="Process"/,
-        required: {
-          href: /href="#m-process"/,
-          label: /aria-label="Process"/,
-          "dimensions and spacing": /\bm-control flex items-center justify-center\b/,
-          fill: /\btext-slate\b/,
-          states: /\bhover:bg-gray-light hover:text-navy active:bg-gray-100\b/,
-          icon: /<Route size=\{18\} strokeWidth=\{1\.9\}/,
-        },
-        forbidden: {
-          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
-        },
-      },
-      {
-        name: "Start a project",
-        identity: /href="#m-contact"[\s\S]*?Start a project/,
-        required: {
-          href: /href="#m-contact"/,
-          label: />\s*Start a project\s*</,
-          "dimensions and spacing":
-            /\bm-control flex items-center justify-center gap-2\b[\s\S]*\bpx-4\b/,
-          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
-          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
-        },
-        forbidden: {
-          "border or shadow": /\b(?:border(?:-\w+)?|shadow-\S+)/,
-        },
-      },
-    ],
-    mobileHero: [
-      {
-        name: "Start a project",
-        identity: /href="#m-contact"[\s\S]*?Start a project/,
-        required: {
-          href: /href="#m-contact"/,
-          label: />\s*Start a project\s*</,
-          "dimensions and spacing":
-            /\bmx-auto inline-flex min-h-12 w-full max-w-\[390px\] items-center justify-center gap-1\.5 rounded-lg\b[\s\S]*\bpx-4\b/,
-          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
-          shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.18\)\]/,
-          states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
-        },
-      },
-    ],
-    mobileServices: [
-      {
-        name: "service tab template",
-        identity: /aria-controls="mobile-service-panel"/,
-        required: {
-          labels: /\{service\.tab\}/,
-          behavior:
-            /role="tab"[\s\S]*?aria-selected=\{activeIndex === index\}[\s\S]*?onClick=\{\(\) => setActiveIndex\(index\)\}/,
-          "dimensions and spacing": /\bm-control px-2 text-\[12px\] font-semibold\b/,
-          "border and fill behavior":
-            /activeIndex === index[\s\S]*?"bg-white text-navy shadow-\[0_5px_16px_rgba\(11,23,40,0\.08\)\]"[\s\S]*?: "text-slate"/,
-        },
-      },
-      {
-        name: "Talk through your project",
-        identity: /Talk through your project/,
-        required: {
-          href: /href="#m-contact"/,
-          label: />\s*Talk through your project\s*</,
-          "dimensions and spacing": /\bmt-5 inline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[13px\] font-semibold text-blue\b/,
-          states: /\bhover:text-blue-dark\b/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-    mobileFit: [
-      {
-        name: "project-fit tab template",
-        identity: /aria-controls="mobile-fit-panel"/,
-        required: {
-          labels: /\{list\.tab\}/,
-          behavior:
-            /role="tab"[\s\S]*?aria-selected=\{activeIndex === index\}[\s\S]*?onClick=\{\(\) => setActiveIndex\(index\)\}/,
-          "dimensions and spacing": /\bm-control text-\[12px\] font-semibold\b/,
-          "border and fill behavior":
-            /activeIndex === index[\s\S]*?"bg-white text-navy shadow-\[0_5px_16px_rgba\(11,23,40,0\.08\)\]"[\s\S]*?: "text-slate"/,
-        },
-      },
-    ],
-    mobileFounder: [
-      {
-        name: "Tell Mandela what you need",
-        identity: /Tell Mandela what you need/,
-        required: {
-          href: /href="#m-contact"/,
-          label: />\s*Tell Mandela what you need\s*</,
-          "dimensions and spacing": /\bmt-6 inline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[13px\] font-semibold text-white\b/,
-          states: /\bhover:text-\[#9CC8FF\]/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-    mobileContact: [
-      {
-        name: "Open email draft submit",
-        identity: /type="submit"[\s\S]*?Open email draft/,
-        required: {
-          behavior: /type="submit"/,
-          label: />\s*Open email draft\s*</,
-          "dimensions and spacing":
-            /\bm-control mt-5 inline-flex w-full items-center justify-center gap-2\b[\s\S]*\bpx-5\b/,
-          fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
-          states:
-            /\bhover:bg-blue-dark active:bg-blue-dark disabled:cursor-not-allowed disabled:bg-blue\/60 disabled:text-white\/75\b/,
-        },
-        forbidden: {
-          shadow: /\bshadow-\S+/,
-        },
-      },
-      {
-        name: "email link",
-        identity: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
-        required: {
-          href: /href=\{`mailto:\$\{CONTACT_EMAIL\}`\}/,
-          label: /\{CONTACT_EMAIL\}/,
-          "dimensions and spacing": /\bmt-6 inline-flex min-h-11 items-center gap-2\b/,
-          fill: /\btext-\[13px\] font-semibold text-white\b/,
-          states: /\bhover:text-\[#9CC8FF\]/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-    mobileFooter: [
-      {
-        name: "footer link template",
-        identity: /href=\{link\.href\}/,
-        required: {
-          "dynamic href": /href=\{link\.href\}/,
-          label: /\{link\.label\}/,
-          "dimensions and spacing": /\binline-flex min-h-11 min-w-11 items-center\b/,
-          fill: /\btext-\[11px\] font-medium text-white\/65\b/,
-          states: /\bhover:text-white\b/,
-        },
-        forbidden: {
-          "border, background, or shadow": /\b(?:border(?:-\w+)?|bg-\w+|shadow-\S+)/,
-        },
-      },
-    ],
-  };
-
-  assert.deepEqual(
-    Object.keys(actionContracts).toSorted(),
-    Object.keys(sources).toSorted(),
-    "all 16 audited source groups must have explicit action contracts",
-  );
-  for (const [label, contracts] of Object.entries(actionContracts)) {
-    assertSourceActionContracts(sources[label], label, contracts);
-  }
-
-  const protectedSourceFacts = {
-    navbar: {
-      "Services navigation mapping":
-        /label: "Services",\s*desktopHref: "#services",\s*mobileHref: "#m-services",\s*id: "services"/,
-      "Inside the build navigation mapping":
-        /label: "Inside the build",\s*desktopHref: "#inside-build",\s*mobileHref: "#m-inside-build",\s*id: "inside-build"/,
-      "Process navigation mapping":
-        /label: "Process",\s*desktopHref: "#process",\s*mobileHref: "#m-process",\s*id: "process"/,
-      "About navigation mapping":
-        /label: "About",\s*desktopHref: "#founder",\s*mobileHref: "#m-founder",\s*id: "founder"/,
-      "mobile navigation filter":
-        /navLinks\.filter\(\(link\) => link\.id !== "inside-build"\)/,
-      "mobile logo link": /href="#m-top"[\s\S]*?aria-label="COBRYKZ, back to top"/,
-      "desktop logo link": /href="#top"[\s\S]*?aria-label="COBRYKZ, back to top"/,
-    },
-    hero: {},
-    services: {},
-    industries: {},
-    process: {},
-    founder: {},
-    contact: {
-      "exact contact label": /const CONTACT_EMAIL = "info@cobrykz\.com"/,
-      "mailto form behavior":
-        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}/,
-      "draft-navigation behavior":
-        /window\.location\.href = `mailto:\$\{CONTACT_EMAIL\}\?subject=\$\{subject\}&body=\$\{body\}`/,
-    },
-    footer: {
-      "Services link mapping": /\{ label: "Services", href: "#services" \}/,
-      "Inside the build link mapping":
-        /\{ label: "Inside the build", href: "#inside-build" \}/,
-      "Process link mapping": /\{ label: "Process", href: "#process" \}/,
-      "About link mapping": /\{ label: "About", href: "#founder" \}/,
-      "Questions link mapping": /\{ label: "Questions", href: "#faq" \}/,
-    },
-    copyNote: {
-      "clipboard behavior": /await navigator\.clipboard\.writeText\(text\)/,
-      "copied-state behavior":
-        /setCopied\(true\)[\s\S]*?window\.setTimeout\(\(\) => setCopied\(false\), 2200\)/,
-    },
-    mobileActionBar: {
-      "bar dimensions, border, fill, and shadow":
-        /grid-cols-\[56px_56px_1fr\] gap-1 rounded-lg border border-border bg-white p-1\.5 shadow-\[0_14px_36px_rgba\(11,23,40,0\.16\)\]/,
-      "reveal behavior":
-        /show \? "translate-y-0 opacity-100" : "pointer-events-none translate-y-20 opacity-0"/,
-    },
-    mobileHero: {},
-    mobileServices: {
-      "Website tab label": /tab: "Website"/,
-      "Systems tab label": /tab: "Systems"/,
-      "Care tab label": /tab: "Care"/,
-      "tablist border, fill, and spacing":
-        /className="mt-6 grid grid-cols-3 rounded-lg border border-border bg-gray-light p-1"/,
-    },
-    mobileFit: {
-      "Good fit tab label": /tab: "Good fit"/,
-      "Not a fit tab label": /tab: "Not a fit"/,
-      "tablist border, fill, and spacing":
-        /className="mt-6 grid grid-cols-2 rounded-lg border border-border bg-gray-light p-1"/,
-    },
-    mobileFounder: {},
-    mobileContact: {
-      "exact contact label": /const CONTACT_EMAIL = "info@cobrykz\.com"/,
-      "mailto form behavior":
-        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}/,
-      "draft-navigation behavior":
-        /window\.location\.href = `mailto:\$\{CONTACT_EMAIL\}\?subject=\$\{subject\}&body=\$\{body\}`/,
-    },
-    mobileFooter: {
-      "Services link mapping": /\{ label: "Services", href: "#m-services" \}/,
-      "Process link mapping": /\{ label: "Process", href: "#m-process" \}/,
-      "About link mapping": /\{ label: "About", href: "#m-founder" \}/,
-    },
-  };
-  assert.deepEqual(
-    Object.keys(protectedSourceFacts).toSorted(),
-    Object.keys(sources).toSorted(),
-    "all 16 audited source groups must protect their source-level mappings and behaviors",
-  );
-  for (const [label, facts] of Object.entries(protectedSourceFacts)) {
-    assertSourceFacts(sources[label], label, facts);
-  }
-
-  for (const fixture of [
-    '<a className="transition-all hover:bg-blue-dark">Start</a>',
-    '<button className="transition-colors active:translate-y-px">Start</button>',
-    '<a className="transition-transform hover:scale-105">Start</a>',
-    '<button className="transition-shadow hover:shadow-[0_0_28px_blue]">Start</button>',
-    '<a className="shimmer transition-colors">Start</a>',
-  ]) {
-    assert.throws(
-      () => assertRestrainedActionStates(fixture, "negative action fixture"),
-      /must transition only intentional state properties|must reject scale, lift, glow, and heavy shadow states|must keep action feedback quiet without shimmer/,
-    );
-  }
-
-  const fixtureContract = {
-    name: "fixture Start a project",
-    identity: /data-audited="primary"/,
-    required: {
-      href: /href="#contact"/,
-      label: />Start a project</,
-      "dimensions and spacing": /\bmin-h-11\b[\s\S]*\bgap-2\b[\s\S]*\bpx-5\b/,
-      fill: /\bbg-blue\b[\s\S]*\btext-white\b/,
-      shadow: /\bshadow-\[0_8px_22px_rgba\(31,94,255,0\.24\)\]/,
-      states: /\bhover:bg-blue-dark active:bg-blue-dark\b/,
-    },
-  };
-  const fixtureClass =
-    "action-transition min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark";
-
+  const negativeLiftFixture =
+    '<button className="action-transition hover:-translate-y-1">Lift</button>';
   assert.throws(
     () =>
-      assertSourceActionContracts(
-        `<a data-audited="primary" href="#contact" className="min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark">Start a project</a>
-         <a href="#other" className="${fixtureClass}">Other</a>`,
-        "moved-transition fixture",
-        [fixtureContract],
+      assert.doesNotMatch(
+        negativeLiftFixture,
+        /\b(?:hover|active|group-hover):(?:-?(?:scale|translate-y)|shadow|drop-shadow|brightness)-/,
       ),
-    /must apply action-transition to that action instance/,
-    "moving action-transition to a neighboring action must fail",
-  );
-  assert.throws(
-    () =>
-      assertSourceActionContracts(
-        '<a data-audited="primary" href="#contact" className="min-h-11 gap-2 bg-blue px-5 text-white shadow-[0_8px_22px_rgba(31,94,255,0.24)] hover:bg-blue-dark active:bg-blue-dark">Start a project</a>',
-        "missing-transition fixture",
-        [fixtureContract],
-      ),
-    /must apply action-transition to that action instance/,
-    "removing action-transition from an audited action must fail",
-  );
-  assert.throws(
-    () =>
-      assertSourceActionContracts(
-        `<a data-audited="primary" href="#wrong" className="${fixtureClass.replace("min-h-11", "min-h-10")}">Start a project</a>`,
-        "contract-drift fixture",
-        [fixtureContract],
-      ),
-    /changed its href|changed its dimensions and spacing/,
-    "href or geometry drift inside the correct transitioned action must fail",
-  );
-
-  assert.doesNotMatch(renderedActionSources, /hover:(?:scale|translate-y|shadow|drop-shadow)-/);
-});
-
-test("keeps form refinement visual and state-complete", () => {
-  const globals = read("app/globals.css");
-  const desktop = read("components/sections/FinalCTA.tsx");
-  const mobile = read("components/mobile/MobileContact.tsx");
-
-  const protectedFieldFacts = {
-    desktop: {
-      "name field identity": /name="name"[\s\S]{0,60}autoComplete="name"[\s\S]{0,60}required/,
-      "business field identity": /name="business"[\s\S]{0,60}autoComplete="organization"[\s\S]{0,60}required/,
-      "email field identity": /type="email"[\s\S]{0,60}name="email"[\s\S]{0,60}autoComplete="email"[\s\S]{0,60}required/,
-      "project type select identity": /name="projectType"[\s\S]{0,30}required[\s\S]{0,30}defaultValue=""/,
-      "select options": /<option value="" disabled>\s*Choose one\s*<\/option>\s*<option>New business website<\/option>\s*<option>Website redesign<\/option>\s*<option>Web app or client portal<\/option>\s*<option>Automation or AI tool<\/option>\s*<option>Not sure yet<\/option>/,
-      "message field identity": /name="message"[\s\S]{0,30}required[\s\S]{0,30}rows=\{5\}/,
-      "message placeholder": /placeholder="A short description of the problem, goal, or opportunity\."/,
-      "name placeholder": /placeholder="Your name"/,
-      "business placeholder": /placeholder="Your business"/,
-      "email placeholder": /placeholder="you@business\.com"/,
-      "form action, method, and handlers":
-        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}[\s\S]*?onChange=\{\(event\) => setNote\(noteFromForm\(event\.currentTarget\)\)\}/,
-      "success status string": /Opening your email app with the project details ready\./,
-      "helper text": /This opens a drafted email to \{CONTACT_EMAIL\}\. Nothing is sent\s*until you review and send it\./,
-    },
-    mobile: {
-      "name field identity": /name="name"[\s\S]{0,60}autoComplete="name"[\s\S]{0,60}required/,
-      "email field identity": /type="email"[\s\S]{0,60}name="email"[\s\S]{0,60}autoComplete="email"[\s\S]{0,60}required/,
-      "message field identity": /name="message"[\s\S]{0,30}required[\s\S]{0,30}rows=\{5\}/,
-      "message placeholder": /placeholder="What is not working today, and what would better look like\?"/,
-      "name placeholder": /placeholder="Your name"/,
-      "email placeholder": /placeholder="you@business\.com"/,
-      "form action, method, and handlers":
-        /action=\{`mailto:\$\{CONTACT_EMAIL\}`\}[\s\S]*?method="post"[\s\S]*?encType="text\/plain"[\s\S]*?onSubmit=\{handleSubmit\}[\s\S]*?onChange=\{\(event\) => setNote\(noteFromForm\(event\.currentTarget\)\)\}/,
-      "success status string": /Opening your email app with the note ready\./,
-      "helper text": /This opens a draft to \{CONTACT_EMAIL\}\. Nothing sends until you\s*review it\./,
-    },
-  };
-
-  for (const [label, source] of [
-    ["desktop", desktop],
-    ["mobile", mobile],
-  ]) {
-    for (const [detail, pattern] of Object.entries(protectedFieldFacts[label])) {
-      assert.match(source, pattern, `${label} form must keep its ${detail} unchanged`);
-    }
-
-    assert.equal(
-      (source.match(/useState\(/g) || []).length,
-      2,
-      `${label} form must not introduce new component state`,
-    );
-    assert.doesNotMatch(source, /aria-invalid/, `${label} form must not add aria-invalid handling`);
-    assert.doesNotMatch(source, /onInvalid=/, `${label} form must not add an invalid handler`);
-    assert.doesNotMatch(source, /role="alert"/, `${label} form must not add an alert role`);
-    assert.doesNotMatch(
-      source,
-      /checkValidity|reportValidity|setCustomValidity/,
-      `${label} form must not add manual validation logic`,
-    );
-    assert.doesNotMatch(source, /\berror\b/i, `${label} form must not introduce error state or copy`);
-  }
-
-  const fieldPattern = /<(?:input|select|textarea)\b[^>]*className="([^"]*)"[^>]*>/g;
-  const desktopFieldClasses = [...desktop.matchAll(fieldPattern)].map(([, className]) => className);
-  const mobileFieldClasses = [...mobile.matchAll(fieldPattern)].map(([, className]) => className);
-
-  assert.equal(desktopFieldClasses.length, 5, "desktop form must expose its five field controls");
-  assert.equal(mobileFieldClasses.length, 3, "mobile form must expose its three field controls");
-
-  for (const className of desktopFieldClasses) {
-    assert.match(className, /\bform-field\b/, "desktop field must adopt the shared form-field contract");
-    assert.match(
-      className,
-      /\bborder border-white\/14 bg-\[#071321\](?=\s|$)/,
-      "desktop field must keep its shared border and background",
-    );
-    assert.doesNotMatch(
-      className,
-      /\brounded-lg\b/,
-      "desktop field must source its radius from the shared form-field contract instead of a literal class",
-    );
-    assert.doesNotMatch(
-      className,
-      /\boutline-none\b/,
-      "desktop field must not suppress the shared focus-visible outline",
-    );
-    assert.match(
-      className,
-      /\bfocus-visible:border-\[#83B8FF\]\/70\b/,
-      "desktop field must keep its accent border on focus-visible",
-    );
-  }
-  for (const className of mobileFieldClasses) {
-    assert.match(className, /\bform-field\b/, "mobile field must adopt the shared form-field contract");
-    assert.match(
-      className,
-      /\bborder border-white\/14 bg-\[#071321\](?=\s|$)/,
-      "mobile field must keep its shared border and background",
-    );
-    assert.doesNotMatch(
-      className,
-      /\brounded-lg\b/,
-      "mobile field must source its radius from the shared form-field contract instead of a literal class",
-    );
-    assert.doesNotMatch(
-      className,
-      /\boutline-none\b/,
-      "mobile field must not suppress the shared focus-visible outline",
-    );
-    assert.match(
-      className,
-      /\bfocus-visible:border-\[#83B8FF\]\/70\b/,
-      "mobile field must keep its accent border on focus-visible",
-    );
-  }
-
-  assert.match(
-    desktop,
-    /form-field min-h-12 w-full border/,
-    "desktop name field must keep its existing 48px height literal",
-  );
-  assert.match(
-    mobile,
-    /form-field m-control w-full border/,
-    "mobile name field must keep its existing 44px compact control height",
-  );
-
-  assert.match(
-    desktop,
-    /<p className="form-helper mt-4">/,
-    "desktop helper text must use the shared helper typography class",
-  );
-  assert.match(
-    mobile,
-    /<p className="form-helper mt-3">/,
-    "mobile helper text must use the shared helper typography class",
-  );
-  assert.match(
-    desktop,
-    /<p className="form-status" role="status">/,
-    "desktop success status must use the shared status class",
-  );
-  assert.match(
-    mobile,
-    /<p className="form-status" role="status">/,
-    "mobile success status must use the shared status class",
-  );
-
-  assert.match(
-    globals,
-    /\.form-field\s*{\s*border-radius:\s*8px;\s*transition:\s*border-color var\(--control-transition\),\s*background-color var\(--control-transition\);\s*}/s,
-    "form-field must define one shared radius and transition contract reusing --control-transition",
-  );
-  assert.match(
-    globals,
-    /\.form-field:hover\s*{[^}]*border-color[^}]*}/s,
-    "form-field must define a quiet hover state",
-  );
-  assert.doesNotMatch(
-    globals,
-    /\.form-field:required\b/,
-    "required must stay visually neutral by NOT declaring a dedicated :required rule — every field carries " +
-      "the required attribute, so any such rule is an unlayered, equal-specificity selector declared after " +
-      ".form-field:hover and would permanently shadow hover, focus-visible, disabled, and user-invalid styling " +
-      "on every field regardless of source order among those other rules",
-  );
-  assert.match(
-    globals,
-    /\.form-field:disabled\s*{[^}]*cursor:\s*not-allowed[^}]*}/s,
-    "form-field disabled state must use the not-allowed cursor",
-  );
-
-  // Custom (unlayered) form-field state rules share equal specificity
-  // (one class + one pseudo-class), so when more than one pseudo-class is
-  // simultaneously true on a field, source order decides the winner. Lock
-  // in the intended precedence: hover < disabled < user-invalid, so a
-  // disabled or invalid field never reverts to plain hover styling.
-  const hoverIndex = globals.indexOf(".form-field:hover");
-  const disabledIndex = globals.indexOf(".form-field:disabled");
-  const userInvalidIndex = globals.indexOf(".form-field:user-invalid");
-  assert.ok(
-    hoverIndex > -1 && disabledIndex > hoverIndex,
-    "form-field:disabled must be declared after form-field:hover so disabled styling wins on a hovered, disabled field",
-  );
-  assert.ok(
-    userInvalidIndex > disabledIndex,
-    "form-field:user-invalid must be declared after form-field:disabled",
-  );
-
-  const supportsBlockMatch = globals.match(
-    /@supports selector\(:user-invalid\)\s*{\s*\.form-field:user-invalid\s*{[^}]*border-color[^}]*}\s*}/,
-  );
-  assert.ok(
-    supportsBlockMatch,
-    "user-invalid styling must be feature-detected via @supports so it degrades safely on unsupported browsers",
-  );
-  const globalsWithoutSupportsBlock = globals.replace(
-    /@supports selector\(:user-invalid\)\s*{[\s\S]*?}\s*}/,
-    "",
-  );
-  assert.doesNotMatch(
-    globalsWithoutSupportsBlock,
-    /:invalid\b/,
-    "invalid styling must never run outside the safe @supports fallback, or it would render prematurely",
-  );
-
-  assert.match(
-    globals,
-    /\.form-helper\s*{[^}]*font-size:\s*13px;[^}]*color:\s*rgba\(255,\s*255,\s*255,\s*0\.7\)[^}]*}/s,
-    "form-helper must define shared helper typography",
-  );
-  assert.match(
-    globals,
-    /\.form-status\s*{[^}]*color:\s*#9AE4C6[^}]*}/s,
-    "form-status must define the shared success color",
+    /expected to not match/i,
   );
 });
 
 test("uses one accessible Lucide interface icon family", () => {
-  for (const path of collectTrackedTsx()) {
-    assertIconSystem(read(path), path);
-  }
-});
-
-test("keeps service and industry icons semantically paired", () => {
-  const serviceSources = [
-    read("components/sections/Services.tsx"),
-    read("components/mobile/MobileServices.tsx"),
-  ];
-  const industrySources = [
-    read("components/sections/Industries.tsx"),
-    read("components/mobile/MobileIndustries.tsx"),
-  ];
-  const iconMappings = (source) =>
-    [...source.matchAll(/\bicon:\s*([A-Z][A-Za-z0-9_]*)/g)].map(
-      ([, icon]) => icon,
-    );
-  const assertAuditedIconTreatment = (source, label, component, size, strokeWidth) => {
-    const renderedTags = [...source.matchAll(new RegExp(`<${component}\\b([^>]*)\\/?>`, "g"))];
-    const message = `${label} must render ${component} at ${size}px with stroke ${strokeWidth}`;
-    assert.equal(renderedTags.length, 1, message);
-
-    const sizePattern = new RegExp(`\\bsize\\s*=\\s*\\{${size}\\}`);
-    const strokePattern = new RegExp(
-      `\\bstrokeWidth\\s*=\\s*\\{${String(strokeWidth).replace(".", "\\.")}\\}`,
-    );
-    assert.ok(
-      renderedTags.every(([, attributes]) =>
-        sizePattern.test(attributes) && strokePattern.test(attributes)),
-      message,
-    );
-  };
-  const auditedTreatments = [
-    [
-      "desktop Services",
-      serviceSources[0],
-      [["Icon", 19, 1.9], ["Check", 16, 2.1], ["ArrowUpRight", 17, 2]],
-    ],
-    [
-      "mobile Services",
-      serviceSources[1],
-      [["ActiveIcon", 21, 1.8], ["Check", 15, 2.2], ["ArrowUpRight", 16, 2]],
-    ],
-    [
-      "desktop Industries",
-      industrySources[0],
-      [["Icon", 21, 1.7], ["ArrowUpRight", 17, 2]],
-    ],
-    ["mobile Industries", industrySources[1], [["Icon", 19, 1.7]]],
-  ];
-
-  for (const source of serviceSources) {
-    assert.deepEqual(iconMappings(source), [
-      "MonitorSmartphone",
-      "Workflow",
-      "Wrench",
-    ]);
-    assert.doesNotMatch(source, /\bBlocks\b/);
+  for (const path of liveTsxPaths()) {
+    assertLucideOnlyIcons(read(path), path);
   }
 
-  for (const source of industrySources) {
-    assert.deepEqual(iconMappings(source), [
-      "Cross",
-      "HardHat",
-      "BriefcaseBusiness",
-      "Utensils",
-      "Scissors",
-      "Building2",
-    ]);
-  }
-
-  for (const [label, source, treatments] of auditedTreatments) {
-    for (const [component, size, strokeWidth] of treatments) {
-      assertAuditedIconTreatment(source, label, component, size, strokeWidth);
-
-      for (const [property, fixtureSize, fixtureStroke] of [
-        ["size", size + 1, strokeWidth],
-        ["stroke", size, strokeWidth + 0.1],
-      ]) {
-        const fixture = `<${component} size={${fixtureSize}} strokeWidth={${fixtureStroke}} aria-hidden="true" />`;
-        assert.throws(
-          () =>
-            assertAuditedIconTreatment(
-              fixture,
-              `${label} ${property} fixture`,
-              component,
-              size,
-              strokeWidth,
-            ),
-          new RegExp(`must render ${component} at ${size}px with stroke ${strokeWidth}`),
-        );
-      }
-    }
-  }
-});
-
-test("keeps supporting interface icons restrained and consistent", () => {
-  const retainedGlyphs = {
-    "components/Navbar.tsx": ["ArrowUpRight", "Menu", "X"],
-    "components/sections/Hero.tsx": ["ArrowDownRight", "ArrowUpRight"],
-    "components/mobile/MobileHero.tsx": ["ArrowUpRight"],
-    "components/sections/Services.tsx": ["ArrowUpRight", "Check", "MonitorSmartphone", "Workflow", "Wrench"],
-    "components/mobile/MobileServices.tsx": ["ArrowUpRight", "Check", "MonitorSmartphone", "Workflow", "Wrench"],
-    "components/sections/Industries.tsx": ["ArrowUpRight", "BriefcaseBusiness", "Building2", "Cross", "HardHat", "Scissors", "Utensils"],
-    "components/mobile/MobileIndustries.tsx": ["BriefcaseBusiness", "Building2", "Cross", "HardHat", "Scissors", "Utensils"],
-    "components/sections/SocialProof.tsx": ["CodeXml", "MessagesSquare", "ShieldCheck", "Waypoints"],
-    "components/mobile/MobileTrust.tsx": ["CodeXml", "MessageCircle", "Route", "ShieldCheck"],
-    "components/sections/OurStandard.tsx": ["Accessibility", "Check", "Gauge", "LayoutTemplate", "Smartphone"],
-    "components/mobile/MobileStandard.tsx": ["Accessibility", "Check", "Gauge", "LayoutTemplate", "Smartphone"],
-    "components/sections/WhyCOBRYKZ.tsx": ["Eye", "Handshake", "MessageCircleMore"],
-    "components/mobile/MobileWhy.tsx": ["Eye", "Handshake", "MessageCircleMore"],
-    "components/sections/GoodFit.tsx": ["Check", "Minus"],
-    "components/mobile/MobileFit.tsx": ["Check", "Minus"],
-    "components/sections/Process.tsx": ["ArrowUpRight"],
-    "components/mobile/MobileProcess.tsx": ["Minus", "Plus"],
-    "components/sections/FAQ.tsx": ["Minus", "Plus"],
-    "components/mobile/MobileFAQ.tsx": ["Minus", "Plus"],
-    "components/sections/Founder.tsx": ["ArrowUpRight", "Check"],
-    "components/mobile/MobileFounder.tsx": ["ArrowUpRight", "Check"],
-    "components/sections/FinalCTA.tsx": ["ArrowUpRight", "Check", "Mail", "MessageSquareText"],
-    "components/mobile/MobileContact.tsx": ["ArrowUpRight", "Check", "Mail"],
-    "components/CopyProjectNoteButton.tsx": ["Check", "Copy"],
-    "components/mobile/MobileActionBar.tsx": ["ArrowUpRight", "LayoutGrid", "Route"],
-    "components/Footer.tsx": ["ArrowUpRight", "Mail"],
-  };
-  const iconImports = (source) =>
-    [...source.matchAll(/import\s*\{([^}]*)\}\s*from\s*["']lucide-react["']/g)]
-      .flatMap(([, names]) => names.split(","))
-      .map((name) => name.trim().split(/\s+as\s+/)[0])
-      .filter(Boolean)
-      .sort();
-  const noIconMotion = /(?:^|[\s"'`{])(?:[\w-]+:)*(?:-?rotate|scale|animate-(?:bounce|pulse|spin))[^\s"`}]*/;
-  const jsxTags = (source) => {
-    const tags = [];
-    let cursor = 0;
-
-    while (cursor < source.length) {
-      const start = source.indexOf("<", cursor);
-      if (start === -1) break;
-      if (!/[A-Za-z/]/.test(source[start + 1] || "")) {
-        cursor = start + 1;
-        continue;
-      }
-
-      let quote = "";
-      let braces = 0;
-      let end = start + 1;
-      for (; end < source.length; end += 1) {
-        const character = source[end];
-        if (quote) {
-          if (character === quote && source[end - 1] !== "\\") quote = "";
-          continue;
-        }
-        if (`'"\``.includes(character)) {
-          quote = character;
-        } else if (character === "{") {
-          braces += 1;
-        } else if (character === "}") {
-          braces -= 1;
-        } else if (character === ">" && braces === 0) {
-          break;
-        }
-      }
-
-      const match = source
-        .slice(start, end + 1)
-        .match(/^<(\/?)([A-Za-z][\w.]*)\b([\s\S]*?)(\/?)>$/);
-      if (match) {
-        tags.push({
-          closing: match[1] === "/",
-          name: match[2],
-          attributes: match[3],
-          selfClosing: match[4] === "/",
-        });
-      }
-      cursor = end + 1;
-    }
-
-    return tags;
-  };
-  const assertIconPresentation = (source, path, glyphs) => {
-    const renderedIconNames = new Set([...glyphs, "Icon", "ActiveIcon"]);
-    const stack = [];
-
-    for (const tag of jsxTags(source)) {
-      if (tag.closing) {
-        const openIndex = stack.map(({ name }) => name).lastIndexOf(tag.name);
-        if (openIndex !== -1) stack.splice(openIndex);
-        continue;
-      }
-
-      if (renderedIconNames.has(tag.name)) {
-        assert.doesNotMatch(
-          tag.attributes,
-          noIconMotion,
-          `${path} must not add rotate, bounce, or scale motion to ${tag.name}`,
-        );
-        assert.match(
-          tag.attributes,
-          /\baria-hidden\s*=\s*(?:"true"|\{true\})/,
-          `${path} must hide its adjacent-text ${tag.name} icon`,
-        );
-        for (const ancestor of stack) {
-          if (!/^(?:a|article|button|div|span)$/.test(ancestor.name)) continue;
-          assert.doesNotMatch(
-            ancestor.attributes,
-            noIconMotion,
-            `${path} must not add rotate, bounce, or scale motion to an icon ancestor`,
-          );
-        }
-      }
-
-      if (!tag.selfClosing) stack.push(tag);
-    }
-  };
-  const assertFaqControls = (source, label, size, control) => {
-    const controlSizeTokens = control.split(" ");
-    const controlClasses = [...source.matchAll(/<span\b[^>]*className="([^"]*)"[^>]*>/g)]
-      .map(([, className]) => className.split(/\s+/))
-      .find((classes) => controlSizeTokens.every((token) => classes.includes(token)));
-    assert.ok(controlClasses, `${label} must retain its ${control} state control`);
-    for (const className of ["rounded-lg", "border", "border-border"]) {
-      assert.ok(
-        controlClasses.includes(className),
-        `${label} must retain its restrained bordered state control`,
-      );
-    }
-    for (const className of ["flex", "items-center", "justify-center"]) {
-      assert.ok(
-        controlClasses.includes(className),
-        `${label} must optically center its state glyph with flex, items-center, and justify-center`,
-      );
-    }
-    assert.match(
-      source,
-      new RegExp(`\\{\\s*isOpen\\s*\\?\\s*\\(\\s*<Minus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"\\s*\\/>\\s*\\)\\s*:\\s*\\(\\s*<Plus size=\\{${size}\\} strokeWidth=\\{2\\} aria-hidden="true"`),
-      `${label} must render Minus while open and Plus while closed`,
-    );
-  };
-
-  for (const [path, glyphs] of Object.entries(retainedGlyphs)) {
-    const source = read(path);
-    assert.deepEqual(iconImports(source), glyphs, `${path} must retain its audited Lucide glyphs`);
-    for (const glyph of glyphs) {
-      assert.match(
-        source,
-        new RegExp(`(?:<${glyph}\\b|\\bicon:\\s*${glyph}\\b)`),
-        `${path} must continue rendering ${glyph}`,
-      );
-    }
-
-    assertIconPresentation(source, path, glyphs);
-  }
-
-  const desktopFaq = read("components/sections/FAQ.tsx");
-  const mobileFaq = read("components/mobile/MobileFAQ.tsx");
-  for (const [source, label, size, control] of [
-    [desktopFaq, "desktop FAQ", 17, "h-9 w-9"],
-    [mobileFaq, "mobile FAQ", 15, "h-8 w-8"],
-  ]) {
-    assertFaqControls(source, label, size, control);
-  }
-
-  const retainedContainers = {
-    "components/sections/Services.tsx": "flex h-10 w-10 items-center justify-center rounded-lg border",
-    "components/mobile/MobileServices.tsx": "flex h-11 w-11 items-center justify-center rounded-lg",
-    "components/sections/SocialProof.tsx": "flex h-10 w-10 flex-none items-center justify-center rounded-lg border",
-    "components/sections/OurStandard.tsx": [
-      "hidden h-12 w-12 items-center justify-center rounded-lg bg-navy",
-      "flex h-10 w-10 items-center justify-center rounded-lg bg-blue-tint text-blue",
-    ],
-    "components/mobile/MobileStandard.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-navy",
-    "components/sections/WhyCOBRYKZ.tsx": "flex h-11 w-11 items-center justify-center rounded-lg border",
-    "components/mobile/MobileWhy.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-white",
-    "components/sections/GoodFit.tsx": "flex h-6 w-6 flex-none items-center justify-center rounded-full",
-    "components/mobile/MobileFit.tsx": "flex h-6 w-6 flex-none items-center justify-center rounded-full",
-    "components/sections/FinalCTA.tsx": "flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]",
-    "components/mobile/MobileProcess.tsx": "flex h-8 w-8 items-center justify-center rounded-lg border",
-  };
-  const assertRetainedContainers = (containers, readSource = read) => {
-    for (const [path, required] of Object.entries(containers)) {
-      for (const container of Array.isArray(required) ? required : [required]) {
-        assert.ok(readSource(path).includes(container), `${path} must retain its audited icon container`);
-      }
-    }
-  };
-  assertRetainedContainers(retainedContainers);
-
-  const invertedFaqFixture = `
-    <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-border">
-      {isOpen ? (
-        <Plus size={17} strokeWidth={2} aria-hidden="true" />
-      ) : (
-        <Minus size={17} strokeWidth={2} aria-hidden="true" />
-      )}
-    </span>
-  `;
-  assert.throws(
-    () => assertFaqControls(invertedFaqFixture, "fixture FAQ", 17, "h-9 w-9"),
-    /must render Minus while open and Plus while closed/,
+  assert.doesNotMatch(
+    liveTsxSource(),
+    /&(?:larr|rarr|uarr|darr);|[←→↑↓]/,
+    "directional interface icons must not bypass Lucide with text glyphs",
   );
-  for (const [offCenterClass, size, control] of [
-    ["flex h-9 w-9 justify-center rounded-lg border border-border", 17, "h-9 w-9"],
-    ["flex h-8 w-8 items-center rounded-lg border border-border", 15, "h-8 w-8"],
+});
+
+test("keeps authored animation and transforms out of the presentation", () => {
+  for (const path of [
+    ...trackedTsxPaths(),
+    ...collectFiles("app", ".css"),
   ]) {
-    const offCenterFaqFixture = `
-      <span className="${offCenterClass}">
-        {isOpen ? (
-          <Minus size={${size}} strokeWidth={2} aria-hidden="true" />
-        ) : (
-          <Plus size={${size}} strokeWidth={2} aria-hidden="true" />
-        )}
-      </span>
-    `;
+    assertMinimalAuthoredMotion(read(path), path);
+  }
+  for (const fixture of [
+    ".pulse { animation: pulse 1s infinite; }",
+    "@keyframes pulse { to { opacity: .5; } }",
+    ".lift { transform: translateY(-2px); }",
+    '<span className="animate-ping" />',
+  ]) {
     assert.throws(
-      () => assertFaqControls(offCenterFaqFixture, "off-center FAQ fixture", size, control),
-      /must optically center its state glyph/,
+      () => assertMinimalAuthoredMotion(fixture, "motion fixture"),
+      /must not author continuous animation or transform motion/,
     );
   }
-  assert.throws(
-    () => assertRetainedContainers(
-      { "fixture-standard.tsx": retainedContainers["components/sections/OurStandard.tsx"] },
-      () => "hidden h-12 w-12 items-center justify-center rounded-lg bg-navy",
-    ),
-    /must retain its audited icon container/,
-  );
-  const buttonMotionFixture = `
-    <button className="transition-transform hover:scale-105">
-      <Plus size={15} strokeWidth={2} aria-hidden="true" />
-    </button>
-  `;
-  const wrapperMotionFixture = `
-    <article className="group-hover:rotate-3">
-      <div><span><Plus size={15} strokeWidth={2} aria-hidden="true" /></span></div>
-    </article>
-  `;
-  assert.throws(
-    () => assertIconPresentation(buttonMotionFixture, "fixture-button.tsx", ["Plus"]),
-    /must not add rotate, bounce, or scale motion to an icon ancestor/,
-  );
-  assert.throws(
-    () => assertIconPresentation(wrapperMotionFixture, "fixture-wrapper.tsx", ["Plus"]),
-    /must not add rotate, bounce, or scale motion to an icon ancestor/,
-  );
-
-  const mobileActionBar = read("components/mobile/MobileActionBar.tsx");
-  assert.match(mobileActionBar, /href="#m-services"\s+aria-label="Services"/s);
-  assert.match(mobileActionBar, /href="#m-process"\s+aria-label="Process"/s);
-  assert.match(mobileActionBar, /<LayoutGrid size=\{18\} strokeWidth=\{1\.9\} aria-hidden="true"/);
-  assert.match(mobileActionBar, /<Route size=\{18\} strokeWidth=\{1\.9\} aria-hidden="true"/);
 });
 
-test("rejects interface icon bypasses in source strings", () => {
+test("rejects inaccessible or third-party icon fixtures", () => {
   const thirdPartyIcon = `
-    import { Menu } from "@fixture/interface-icons";
-    export const Fixture = () => <Menu size={16} strokeWidth={2} aria-hidden="true" />;
+    import { Menu } from "arbitrary-interface-icons";
+    export const Fixture = () => <Menu aria-hidden="true" />;
   `;
-  const classOnlyThirdPartyIcon = `
-    import { Menu } from "arbitrary-third-party-package";
-    export const Fixture = () => <Menu className="h-4 w-4" aria-hidden="true" />;
+  const defaultThirdPartyIcon = `
+    import Menu from "arbitrary-interface-icons";
+    export const Fixture = () => <Menu aria-hidden="true" />;
   `;
-  const lucideNamespaceWithoutAriaHidden = `
-    import * as Lucide from "lucide-react";
-    export const Fixture = () => <Lucide.Menu size={16} strokeWidth={2} />;
+  const lucideWithoutAriaHidden = `
+    import { Menu } from "lucide-react";
+    export const Fixture = () => <Menu size={16} strokeWidth={2} />;
   `;
-  const normalDependency = `
-    import Image from "next/image";
-    export const Fixture = () => <Image alt="" fill src="/brand.jpg" />;
+  const dynamicLucideAlias = `
+    import { Menu } from "lucide-react";
+    const actions = [{ icon: Menu }];
+    const action = actions[0];
+    const Icon = action.icon;
+    export const Fixture = () => <Icon size={16} strokeWidth={2} aria-hidden="true" />;
+  `;
+  const dynamicAliasWithoutAriaHidden = dynamicLucideAlias.replace(
+    ' aria-hidden="true"',
+    "",
+  );
+  const dynamicThirdPartyAlias = dynamicLucideAlias.replace(
+    '"lucide-react"',
+    '"arbitrary-interface-icons"',
+  );
+  const ancestorLiftFixture = `
+    import { Menu } from "lucide-react";
+    export const Fixture = () => (
+      <button className="hover:-translate-y-1">
+        <Menu size={16} strokeWidth={2} aria-hidden="true" />
+      </button>
+    );
+  `;
+  const directNegativeLiftFixture = `
+    import { Menu } from "lucide-react";
+    export const Fixture = () => (
+      <Menu className="-translate-y-px" size={16} strokeWidth={2} aria-hidden="true" />
+    );
+  `;
+  const directAlias = `
+    import { Menu } from "lucide-react";
+    const Icon = Menu;
+    export const Fixture = () => <Icon aria-hidden="true" />;
+  `;
+  const destructuredAlias = `
+    import { Menu } from "lucide-react";
+    const actions = [{ icon: Menu }];
+    const { icon: Icon } = actions[0];
+    export const Fixture = () => <Icon aria-hidden="true" />;
   `;
 
   assert.throws(
-    () => assertIconSystem(thirdPartyIcon, "fixture-third-party.tsx"),
+    () => assertLucideOnlyIcons(thirdPartyIcon, "fixture-third-party.tsx"),
     /must come from lucide-react/,
   );
   assert.throws(
-    () => assertIconSystem(classOnlyThirdPartyIcon, "fixture-class-only.tsx"),
+    () =>
+      assertLucideOnlyIcons(defaultThirdPartyIcon, "fixture-default-icon.tsx"),
     /must come from lucide-react/,
   );
   assert.throws(
-    () => assertIconSystem(lucideNamespaceWithoutAriaHidden, "fixture-namespace.tsx"),
-    /must hide adjacent-text decorative Lucide\.Menu icons/,
+    () =>
+      assertLucideOnlyIcons(lucideWithoutAriaHidden, "fixture-lucide.tsx"),
+    /must hide adjacent-text decorative Menu icons/,
   );
-  assert.doesNotThrow(() => assertIconSystem(normalDependency, "fixture-image.tsx"));
+  assert.doesNotThrow(() =>
+    assertLucideOnlyIcons(dynamicLucideAlias, "fixture-dynamic-lucide.tsx"),
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        dynamicAliasWithoutAriaHidden,
+        "fixture-dynamic-missing-aria.tsx",
+      ),
+    /must hide adjacent-text decorative Icon icons/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        dynamicThirdPartyAlias,
+        "fixture-dynamic-third-party.tsx",
+      ),
+    /must come from lucide-react/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(ancestorLiftFixture, "fixture-ancestor-lift.tsx"),
+    /must not add lift, rotate, bounce, or scale motion to an icon ancestor/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        directNegativeLiftFixture,
+        "fixture-direct-lift.tsx",
+      ),
+    /must not add continuous or attention-seeking motion to Menu/,
+  );
+  assert.doesNotThrow(() =>
+    assertLucideOnlyIcons(directAlias, "fixture-direct-alias.tsx"),
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        directAlias.replace(' aria-hidden="true"', ""),
+        "fixture-direct-alias-missing-aria.tsx",
+      ),
+    /must hide adjacent-text decorative Icon icons/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        directAlias.replace('"lucide-react"', '"other-icons"'),
+        "fixture-direct-alias-third-party.tsx",
+      ),
+    /must come from lucide-react/,
+  );
+  assert.doesNotThrow(() =>
+    assertLucideOnlyIcons(destructuredAlias, "fixture-destructured-alias.tsx"),
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        destructuredAlias.replace(' aria-hidden="true"', ""),
+        "fixture-destructured-missing-aria.tsx",
+      ),
+    /must hide adjacent-text decorative Icon icons/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        destructuredAlias.replace('"lucide-react"', '"other-icons"'),
+        "fixture-destructured-third-party.tsx",
+      ),
+    /must come from lucide-react/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        directAlias.replace(
+          'aria-hidden="true"',
+          'aria-hidden="true" className="animate-ping"',
+        ),
+        "fixture-pinging-icon.tsx",
+      ),
+    /must not add continuous or attention-seeking motion/,
+  );
 });
 
 test("keeps navigation text on crisp surfaces", () => {
   const navSurfaces = [
-    read("components/Navbar.tsx"),
-    read("components/mobile/MobileActionBar.tsx"),
+    read("components/layout/SiteHeader.tsx"),
+    read("components/layout/SolutionsMenu.tsx"),
+    read("components/layout/SiteFooter.tsx"),
   ].join("\n");
 
   assert.doesNotMatch(navSurfaces, /backdrop-blur/);
-});
-
-test("keeps explanatory paragraphs at 13px or larger", () => {
-  const readableMarkup = collectTsx("components")
-    .map((path) => read(path))
-    .join("\n");
-  const undersizedParagraph =
-    /<p\b[^>]*className="(?![^"]*uppercase)[^"]*text-\[(?:10|11|12)px\][^"]*"[^>]*>/gs;
-
-  assert.doesNotMatch(readableMarkup, undersizedParagraph);
-});
-
-test("renders first-party proof instead of repeated reassurance sections", () => {
-  const desktopArtifactPath = join(root, "components/sections/BuildArtifact.tsx");
-  assert.equal(existsSync(desktopArtifactPath), true, "desktop artifact is missing");
-
-  const pageSource = read("app/page.tsx");
-  const mobileExperience = read("components/mobile/MobileExperience.tsx");
-  const pageAndExperiences = `${pageSource}\n${mobileExperience}`;
-
-  assert.match(pageAndExperiences, /BuildArtifact/);
-  assert.doesNotMatch(mobileExperience, /MobileBuildArtifact/);
-  assert.doesNotMatch(pageSource, /<SocialProof \/>/);
-  assert.doesNotMatch(
-    pageAndExperiences,
-    /<OurStandard \/>|<MobileStandard \/>|<WhyCOBRYKZ \/>|<MobileWhy \/>/,
-  );
-
-  const proofSources = `${read("components/sections/BuildArtifact.tsx")}\n${read("components/content/buildArtifact.ts")}`;
-  assert.match(proofSources, /Lead with reputation/);
-  assert.match(proofSources, /Compose mobile separately/);
-  assert.match(proofSources, /Create one conversion path/);
 });
 
 test("avoids repeated generated-landing-page decoration", () => {
   const globals = read("app/globals.css");
   const renderedSources = [
     read("app/page.tsx"),
-    read("components/mobile/MobileExperience.tsx"),
-    ...collectTsx("components/sections").map((path) => read(path)),
-    ...collectTsx("components/mobile").map((path) => read(path)),
+    ...collectFiles("components/home", ".tsx").map((path) => read(path)),
   ].join("\n");
 
   assert.doesNotMatch(globals, /\.page-grid/);
   assert.doesNotMatch(renderedSources, /\bpage-grid\b/);
   assert.doesNotMatch(renderedSources, /Cormorant_Garamond/);
+  assert.doesNotMatch(renderedSources, /\b(?:from|via|to)-(?:purple|violet|cyan|fuchsia)-/);
+  assert.doesNotMatch(renderedSources, /\b(?:robot|brain|circuit)\b/i);
 });
 
-test("provides an honest project-note fallback", () => {
-  const contactSources = [
-    read("components/sections/FinalCTA.tsx"),
-    read("components/mobile/MobileContact.tsx"),
-  ].join("\n");
+test("keeps retained hero media accessible and non-blocking", () => {
+  const hero = read("components/home/HomeHero.tsx");
+  assertHeroMediaAccessible(hero, "HomeHero");
 
-  assert.match(contactSources, /CopyProjectNoteButton/g);
-  assert.match(contactSources, /info@cobrykz\.com/);
-  assert.doesNotMatch(contactSources, /hello@cobrykz\.com/);
-  assert.match(contactSources, /mailto:/);
-  assert.doesNotMatch(contactSources, /message (?:was|has been) sent/i);
-  assert.doesNotMatch(
-    contactSources,
-    /placeholder:text-white\/(?:[0-5]?\d)(?!\d)/,
+  const attributesOutsideMedia = `
+    <div muted playsInline poster="/poster.jpg" aria-hidden="true">
+      <video src="/brand.mp4" />
+    </div>
+  `;
+  assert.throws(
+    () =>
+      assertHeroMediaAccessible(
+        attributesOutsideMedia,
+        "out-of-scope fixture",
+      ),
+    /video must be muted/,
+    "media attributes elsewhere in the hero must not satisfy the video contract",
+  );
+  assert.throws(
+    () => assertHeroMediaAccessible('<img src="/hero.jpg" />', "native image"),
+    /image must define alt text/,
+  );
+  assert.throws(
+    () =>
+      assertHeroMediaAccessible(
+        'import HeroImage from "next/image";\n<HeroImage src="/hero.jpg" />',
+        "aliased Next image",
+      ),
+    /image must define alt text/,
+  );
+  assert.doesNotThrow(() =>
+    assertHeroMediaAccessible(
+      'import HeroImage from "next/image";\n<HeroImage src="/hero.jpg" alt="" aria-hidden="true" />',
+      "decorative aliased Next image",
+    ),
   );
 });
 
-test("uses the brand film as accessible, non-blocking hero media", () => {
-  const heroSources = [
-    read("components/sections/Hero.tsx"),
-    read("components/mobile/MobileHero.tsx"),
-  ].join("\n");
+test("retires the duplicated website-agency homepage files", () => {
+  const retiredPaths = [
+    "components/Navbar.tsx",
+    "components/Footer.tsx",
+    "components/CopyProjectNoteButton.tsx",
+    "components/TrustField.tsx",
+    "components/content/buildArtifact.ts",
+    "components/mobile/MobileActionBar.tsx",
+    "components/mobile/MobileContact.tsx",
+    "components/mobile/MobileExperience.tsx",
+    "components/mobile/MobileFAQ.tsx",
+    "components/mobile/MobileFit.tsx",
+    "components/mobile/MobileFooter.tsx",
+    "components/mobile/MobileFounder.tsx",
+    "components/mobile/MobileHero.tsx",
+    "components/mobile/MobileIndustries.tsx",
+    "components/mobile/MobileProcess.tsx",
+    "components/mobile/MobileServices.tsx",
+    "components/mobile/MobileStandard.tsx",
+    "components/mobile/MobileTrust.tsx",
+    "components/mobile/MobileWhy.tsx",
+    "components/sections/BuildArtifact.tsx",
+    "components/sections/FAQ.tsx",
+    "components/sections/FinalCTA.tsx",
+    "components/sections/Founder.tsx",
+    "components/sections/GoodFit.tsx",
+    "components/sections/Hero.tsx",
+    "components/sections/Industries.tsx",
+    "components/sections/OurStandard.tsx",
+    "components/sections/Process.tsx",
+    "components/sections/Services.tsx",
+    "components/sections/SocialProof.tsx",
+    "components/sections/WhyCOBRYKZ.tsx",
+  ];
 
-  assert.equal((heroSources.match(/<video/g) || []).length, 2);
-  assert.equal((heroSources.match(/autoPlay/g) || []).length, 2);
-  assert.equal((heroSources.match(/muted/g) || []).length, 2);
-  assert.equal((heroSources.match(/playsInline/g) || []).length, 2);
-  assert.equal((heroSources.match(/poster="\/hero-video-poster\.jpg"/g) || []).length, 2);
-  assert.equal((heroSources.match(/src="\/hero-video\.mp4"/g) || []).length, 2);
-});
-
-test("composes the mobile hero as a full-bleed video overlay", () => {
-  const mobileHero = read("components/mobile/MobileHero.tsx");
-
-  assert.match(mobileHero, /pt-16/);
-  assert.match(mobileHero, /data-mobile-hero-backdrop/);
-  assert.match(mobileHero, /data-mobile-video-stage/);
-  assert.match(mobileHero, /data-mobile-text-overlay/);
-  assert.match(mobileHero, /data-mobile-hero-copy/);
-  assert.match(mobileHero, /data-mobile-hero-cta/);
-  assert.match(mobileHero, /absolute inset-0/);
-  assert.match(mobileHero, /object-contain object-\[center_top\]/);
-  assert.match(mobileHero, /aspect-video/);
-  assert.match(mobileHero, /bg-white/);
-  assert.match(mobileHero, /rgba\(11,23,40,.78\)/);
-  assert.doesNotMatch(mobileHero, /scale-\[|object-cover|data-mobile-hero-ambient/);
-  assert.doesNotMatch(mobileHero, /blur-|brightness-|contrast-|saturate-/);
-  assert.doesNotMatch(mobileHero, /bg-gradient-to-r from-navy\/70/);
-  assert.equal((mobileHero.match(/href="#m-contact"/g) || []).length, 1);
-  assert.doesNotMatch(mobileHero, /grid-cols-\[46%_54%\]|data-mobile-portrait-stage/);
-
-  const copyEnd = mobileHero.indexOf("data-mobile-hero-cta");
-  const ctaLink = mobileHero.indexOf('href="#m-contact"');
-  assert.ok(copyEnd > -1 && ctaLink > copyEnd, "CTA must render outside the copy overlay");
-});
-
-test("uses selective editorial depth on desktop", () => {
-  const desktopSections = {
-    services: read("components/sections/Services.tsx"),
-    industries: read("components/sections/Industries.tsx"),
-    process: read("components/sections/Process.tsx"),
-    founder: read("components/sections/Founder.tsx"),
-    fit: read("components/sections/GoodFit.tsx"),
-    faq: read("components/sections/FAQ.tsx"),
-    contact: read("components/sections/FinalCTA.tsx"),
-  };
-  const desktopSource = Object.values(desktopSections).join("\n");
-  const surfaceValues = [
-    ...desktopSource.matchAll(/data-editorial-surface="([^"]+)"/g),
-  ].map((match) => match[1]);
-
-  assert.equal(surfaceValues.length, 4);
-  assert.deepEqual(surfaceValues.sort(), ["faq", "fit", "process", "services"]);
-
-  for (const anchor of ["industries", "founder", "contact"]) {
-    assert.doesNotMatch(desktopSections[anchor], /data-editorial-surface/);
-    assert.match(desktopSections[anchor], /\bbg-navy\b/);
+  for (const path of retiredPaths) {
+    assert.equal(
+      existsSync(join(root, path)),
+      false,
+      `${path} must be retired after its replacement is live`,
+    );
   }
-
-  assert.match(desktopSections.founder, /data-founder-glow/);
-});
-
-test("composes selective editorial depth independently on mobile", () => {
-  const mobileSections = {
-    services: read("components/mobile/MobileServices.tsx"),
-    industries: read("components/mobile/MobileIndustries.tsx"),
-    process: read("components/mobile/MobileProcess.tsx"),
-    founder: read("components/mobile/MobileFounder.tsx"),
-    fit: read("components/mobile/MobileFit.tsx"),
-    faq: read("components/mobile/MobileFAQ.tsx"),
-    contact: read("components/mobile/MobileContact.tsx"),
-  };
-  const mobileSource = Object.values(mobileSections).join("\n");
-  const surfaceValues = [
-    ...mobileSource.matchAll(/data-editorial-surface="([^"]+)"/g),
-  ].map((match) => match[1]);
-
-  assert.equal(surfaceValues.length, 4);
-  assert.deepEqual(surfaceValues.sort(), ["faq", "fit", "process", "services"]);
-
-  for (const anchor of ["industries", "founder", "contact"]) {
-    assert.doesNotMatch(mobileSections[anchor], /data-editorial-surface/);
-    assert.match(mobileSections[anchor], /\bbg-navy\b/);
-  }
-
-  assert.match(mobileSections.founder, /data-founder-glow/);
 });

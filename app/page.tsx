@@ -1,39 +1,39 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/sections/Hero";
-import BuildArtifact from "@/components/sections/BuildArtifact";
-import Services from "@/components/sections/Services";
-import Industries from "@/components/sections/Industries";
-import Process from "@/components/sections/Process";
-import Founder from "@/components/sections/Founder";
-import GoodFit from "@/components/sections/GoodFit";
-import FAQ from "@/components/sections/FAQ";
-import FinalCTA from "@/components/sections/FinalCTA";
-import Footer from "@/components/Footer";
-import MobileExperience from "@/components/mobile/MobileExperience";
+import HomeHero from "@/components/home/HomeHero";
+import BusinessOutcomes from "@/components/home/BusinessOutcomes";
+import SolutionsOverview from "@/components/home/SolutionsOverview";
+import WhyCobrykz from "@/components/home/WhyCobrykz";
+import AIPointOfView from "@/components/home/AIPointOfView";
+import ChallengeRouter from "@/components/home/ChallengeRouter";
+import ProcessOverview from "@/components/home/ProcessOverview";
+import ProjectsEvidence from "@/components/home/ProjectsEvidence";
+import AuthorityBand from "@/components/home/AuthorityBand";
+import HomeFinalCTA from "@/components/home/HomeFinalCTA";
+import { buildPageMetadata } from "@/lib/seo/site";
+
+export const metadata = buildPageMetadata({
+  title: "Cobrykz | AI, Automation, Software & Digital Systems",
+  description:
+    "Cobrykz helps businesses grow and operate more effectively through AI, automation, custom software, websites, and connected digital systems.",
+  path: "/",
+});
 
 export default function Home() {
   return (
     <>
-      <Navbar />
-      <main>
-        <div className="md:hidden">
-          <MobileExperience />
+      <HomeHero />
+      <BusinessOutcomes />
+      <SolutionsOverview />
+      <WhyCobrykz />
+      <AIPointOfView />
+      <div className="border-y border-border bg-white">
+        <div className="section-shell py-16 sm:py-20 lg:py-24">
+          <ChallengeRouter />
         </div>
-        <div className="hidden md:block">
-          <Hero />
-          <BuildArtifact />
-          <Services />
-          <Industries />
-          <Process />
-          <Founder />
-          <GoodFit />
-          <FAQ />
-          <FinalCTA />
-        </div>
-      </main>
-      <div className="hidden md:block">
-        <Footer />
       </div>
+      <ProcessOverview />
+      <ProjectsEvidence />
+      <AuthorityBand />
+      <HomeFinalCTA />
     </>
   );
 }
