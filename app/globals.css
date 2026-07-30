@@ -132,6 +132,53 @@ button {
   text-wrap: balance;
 }
 
+.home-hero-atlas__field {
+  background:
+    linear-gradient(rgba(156, 200, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 200, 255, 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 76% 44%, rgba(31, 94, 255, 0.16), transparent 38%);
+  background-size:
+    64px 64px,
+    64px 64px,
+    auto;
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.72) 78%, transparent 100%);
+}
+
+.business-system-cutaway {
+  position: relative;
+}
+
+.business-system-cutaway::before {
+  position: absolute;
+  z-index: -1;
+  inset: 9% -6% -7% 9%;
+  border: 1px solid rgba(156, 200, 255, 0.12);
+  border-radius: 22px;
+  content: "";
+}
+
+.business-system-cutaway .system-atlas__heading {
+  position: relative;
+  z-index: 1;
+}
+
+.business-system-cutaway .system-atlas__viewport {
+  background:
+    linear-gradient(90deg, transparent, rgba(31, 94, 255, 0.055), transparent);
+}
+
+@media (max-width: 639px) {
+  .business-system-cutaway .system-atlas__svg {
+    min-height: 15.5rem;
+  }
+
+  .business-system-cutaway .atlas-layer__label,
+  .business-system-cutaway .atlas-node__label,
+  .business-system-cutaway .atlas-path__label {
+    font-size: 12px;
+  }
+}
+
 .system-atlas {
   min-width: 0;
   overflow: hidden;
@@ -173,7 +220,7 @@ button {
 
 .system-atlas__title {
   max-width: 30rem;
-  font-size: clamp(1.15rem, 2.1vw, 1.65rem);
+  font-size: 1.15rem;
   font-weight: 750;
   line-height: 1.12;
   letter-spacing: -0.025em;
@@ -362,6 +409,12 @@ button {
 
   .atlas-legend__item:last-child {
     border-right: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .system-atlas__title {
+    font-size: 1.65rem;
   }
 }
 

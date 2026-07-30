@@ -224,6 +224,15 @@ function assertLucideOnlyIcons(source, path) {
   const inlineSvgCount = (source.match(/<svg\b/g) || []).length;
   if (path === "components/CobrykzLogo.tsx") {
     assert.equal(inlineSvgCount, 1, "the Cobrykz brand mark must retain its SVG");
+  } else if (path === "components/atlas/SystemAtlas.tsx") {
+    assert.equal(
+      inlineSvgCount,
+      1,
+      "the semantic System Atlas must render one explanatory SVG",
+    );
+    assert.match(source, /<svg\b[^>]*role=["']img["']/s);
+    assert.match(source, /<title\b/);
+    assert.match(source, /<desc\b/);
   } else {
     assert.equal(inlineSvgCount, 0, `${path} contains a non-brand inline SVG`);
   }
@@ -382,8 +391,18 @@ function contrastRatio(foreground, background) {
 }
 
 function assertMinimalAuthoredMotion(source, label) {
+  const sourceWithoutApprovedAtlasMotion = source
+    .replace(/@keyframes\s+atlas-flow\s*{[\s\S]*?}\s*/g, "")
+    .replace(
+      /\.atlas-path\[data-atlas-state=["']active["']\]\s*{[^}]*}\s*/g,
+      "",
+    )
+    .replace(
+      /\.atlas-path\s*{[^}]*animation:\s*none\s*!important;[^}]*}\s*/g,
+      "",
+    );
   assert.doesNotMatch(
-    source,
+    sourceWithoutApprovedAtlasMotion,
     /@keyframes\b|(?:^|[;{]\s*)animation(?:-name)?\s*:|(?:^|[;{]\s*)transform\s*:|transition[^;{}]*\btransform\b|\banimate-(?!none\b)[^\s"'`}]*/m,
     `${label} must not author continuous animation or transform motion`,
   );

@@ -84,3 +84,54 @@ test("defines restrained Atlas material and reduced-motion tokens", () => {
     /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.atlas-path[\s\S]*animation:\s*none\s*!important/,
   );
 });
+
+test("turns the homepage hero into a meaningful business-system cutaway", () => {
+  const hero = read("components/home/HomeHero.tsx");
+  const cutaway = read("components/home/BusinessSystemCutaway.tsx");
+
+  assert.match(
+    hero,
+    /import BusinessSystemCutaway from ["']@\/components\/home\/BusinessSystemCutaway["']/,
+  );
+  assert.match(hero, /<BusinessSystemCutaway\s*\/>/);
+  assert.match(cutaway, /<SystemAtlas\b/);
+  assert.match(cutaway, /tone=["']dark["']/);
+
+  for (const label of [
+    "Business challenge",
+    "People and information",
+    "Existing tools",
+    "Assessment",
+    "Relevant capabilities",
+    "Connected delivery",
+    "Growth and efficiency",
+    "Clarity",
+    "Continued improvement",
+  ]) {
+    assert.match(cutaway, new RegExp(label));
+  }
+
+  for (const flow of ["understand", "choose", "deliver", "improve"]) {
+    assert.match(cutaway, new RegExp(`flowLabel:\\s*["']${flow}["']`));
+  }
+
+  assert.doesNotMatch(
+    cutaway,
+    /orb|particle|random|dashboard|performance score|pointermove|mousemove/i,
+  );
+});
+
+test("keeps the approved homepage message and actions stable inside the new hero", () => {
+  const hero = read("components/home/HomeHero.tsx");
+
+  assert.equal((hero.match(/<h1\b/g) || []).length, 1);
+  assert.match(hero, /\{homeMessage\.headline\}/);
+  assert.match(hero, /\{homeMessage\.description\}/);
+  assert.match(
+    hero,
+    /<PrimaryLink\s+href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,
+  );
+  assert.match(hero, /href=["']\/solutions["']/);
+  assert.match(hero, /Explore our solutions/);
+  assert.doesNotMatch(hero, /["']use client["']/);
+});
