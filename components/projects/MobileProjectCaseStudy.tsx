@@ -3,8 +3,7 @@ import type { PublishedProjectDefinition } from "@/components/content/projects";
 import MobileChapter from "@/components/mobile/MobileChapter";
 import MobileDisclosureGroup from "@/components/mobile/MobileDisclosureGroup";
 import {
-  getProjectMobileChapters,
-  getProjectTransformationStages,
+  getMobileProjectCaseStudy,
   type ProjectMobileChapterField,
 } from "@/components/projects/projectMobileModel";
 import PrimaryLink from "@/components/ui/PrimaryLink";
@@ -16,8 +15,9 @@ type MobileProjectCaseStudyProps = {
 export default function MobileProjectCaseStudy({
   project,
 }: MobileProjectCaseStudyProps) {
-  const chapters = getProjectMobileChapters(project);
-  const transformationStages = getProjectTransformationStages(project);
+  const view = getMobileProjectCaseStudy(project);
+  const chapters = view.chapters;
+  const transformationStages = view.transformationStages;
   const chapterIndex = (field: ProjectMobileChapterField) =>
     chapters.findIndex((chapter) => chapter.field === field) + 3;
 

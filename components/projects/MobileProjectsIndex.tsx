@@ -3,6 +3,7 @@ import type { PublishedProjectDefinition } from "@/components/content/projects";
 import MobileChapter from "@/components/mobile/MobileChapter";
 import MobileDisclosureGroup from "@/components/mobile/MobileDisclosureGroup";
 import { evidenceGroups } from "@/components/projects/EvidenceStandard";
+import { getMobileProjectLedger } from "@/components/projects/projectMobileModel";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 
 type MobileProjectsIndexProps = {
@@ -15,6 +16,8 @@ const itemId = (value: string) =>
 export default function MobileProjectsIndex({
   projects,
 }: MobileProjectsIndexProps) {
+  const ledger = getMobileProjectLedger(projects);
+
   return (
     <div data-mobile-projects-index>
       <MobileChapter
@@ -104,14 +107,12 @@ export default function MobileProjectsIndex({
               Published business case studies
             </h2>
             <ol>
-              {projects.map((project, index) => (
-                <li key={project.slug}>
-                  <Link href={`/projects/${project.slug}`}>
-                    <span aria-hidden="true">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <strong>{project.title}</strong>
-                    <p>{project.summary}</p>
+              {ledger.map((entry) => (
+                <li key={entry.href}>
+                  <Link href={entry.href}>
+                    <span aria-hidden="true">{entry.index}</span>
+                    <strong>{entry.title}</strong>
+                    <p>{entry.summary}</p>
                   </Link>
                 </li>
               ))}

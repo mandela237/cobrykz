@@ -133,6 +133,102 @@ test("derives every optional mobile case-study chapter from one typed fixture", 
   );
 });
 
+test("builds the published mobile index ledger from the complete fixture", () => {
+  assert.equal(
+    typeof mobileModelModule.exports.getMobileProjectLedger,
+    "function",
+  );
+
+  assert.deepEqual(
+    mobileModelModule.exports.getMobileProjectLedger([
+      completePublishedProject,
+    ]),
+    [
+      {
+        href: "/projects/fixture-complete-project",
+        index: "01",
+        summary: "A fixture used only to verify the complete renderer.",
+        title: "Fixture complete project",
+      },
+    ],
+  );
+});
+
+test("builds a complete render model with every published-project sentinel", () => {
+  assert.equal(
+    typeof mobileModelModule.exports.getMobileProjectCaseStudy,
+    "function",
+  );
+
+  const view =
+    mobileModelModule.exports.getMobileProjectCaseStudy(
+      completePublishedProject,
+    );
+
+  assert.equal(view.title, "Fixture complete project");
+  assert.equal(
+    view.summary,
+    "A fixture used only to verify the complete renderer.",
+  );
+  assert.deepEqual(view.context, ["Context sentinel"]);
+  assert.deepEqual(view.challenge, ["Challenge sentinel"]);
+  assert.deepEqual(view.strategy, ["Strategy sentinel"]);
+  assert.deepEqual(view.solution, ["Solution sentinel"]);
+  assert.deepEqual(view.howItWorks, [
+    {
+      title: "Workflow sentinel",
+      description: "Workflow description sentinel",
+    },
+  ]);
+  assert.deepEqual(view.capabilities, [
+    {
+      name: "Linked capability sentinel",
+      href: "/solutions/ai",
+    },
+    {
+      name: "Unlinked capability sentinel",
+    },
+  ]);
+  assert.deepEqual(view.implementation, ["Implementation sentinel"]);
+  assert.deepEqual(view.verifiedOutcomes, [
+    {
+      result: "Outcome sentinel",
+      evidence: "Evidence sentinel",
+      verifiedAt: "2026-07-30",
+    },
+  ]);
+  assert.deepEqual(view.authorizedQuote, {
+    quote: "Quote sentinel",
+    attribution: "Attribution sentinel",
+    role: "Role sentinel",
+    organization: "Organization sentinel",
+    authorizationConfirmed: true,
+  });
+  assert.deepEqual(view.nextStage, ["Next-stage sentinel"]);
+  assert.deepEqual(view.relatedContent, [
+    {
+      title: "Related-content sentinel",
+      href: "/insights",
+    },
+  ]);
+  assert.deepEqual(
+    view.chapters.map(({ field, id }) => ({ field, id })),
+    [
+      { field: "context", id: "project-context" },
+      { field: "challenge", id: "project-challenge" },
+      { field: "strategy", id: "project-strategy" },
+      { field: "solution", id: "project-solution" },
+      { field: "howItWorks", id: "project-how" },
+      { field: "capabilities", id: "project-capabilities" },
+      { field: "implementation", id: "project-implementation" },
+      { field: "verifiedOutcomes", id: "project-outcomes" },
+      { field: "authorizedQuote", id: "project-perspective" },
+      { field: "nextStage", id: "project-next-stage" },
+      { field: "relatedContent", id: "project-related" },
+    ],
+  );
+});
+
 test("wraps the honest Projects index in one responsive presentation", () => {
   const wrapper = read("components/projects/ProjectsIndex.tsx");
   const desktop = read("components/projects/DesktopProjectsIndex.tsx");
@@ -152,6 +248,8 @@ test("wraps the honest Projects index in one responsive presentation", () => {
   }
 
   assert.match(mobile, /data-mobile-projects-index/);
+  assert.match(mobile, /getMobileProjectLedger\(projects\)/);
+  assert.match(mobile, /ledger\.map/);
   assert.match(mobile, /evidenceGroups\.map/);
   assert.match(mobile, /<MobileDisclosureGroup/);
   assert.doesNotMatch(mobile, /"use client"|useState|onClick/);
@@ -237,14 +335,36 @@ test("renders every optional fixture field in the conditional mobile case study"
   assert.match(mobile, /project\.authorizedQuote\.role/);
   assert.match(mobile, /project\.authorizedQuote\.organization/);
   assert.match(mobile, /relatedContent\.map|project\.relatedContent\.map/);
-  assert.match(mobile, /getProjectMobileChapters\(project\)/);
-  assert.match(mobile, /getProjectTransformationStages\(project\)/);
+  assert.match(mobile, /getMobileProjectCaseStudy\(project\)/);
+  assert.match(mobile, /view\.chapters/);
+  assert.match(mobile, /view\.transformationStages/);
   assert.ok(
     (mobile.match(/<MobileDisclosureGroup/g) || []).length >= 2,
     "How it works and verified outcomes require focused disclosure",
   );
   assert.match(mobile, /data-mobile-project-case-study/);
   assert.doesNotMatch(mobile, /"use client"|useState|onClick/);
+
+  const mobileConditionalOrder = [
+    'id="project-context"',
+    'id="project-challenge"',
+    'id="project-strategy"',
+    'id="project-solution"',
+    'id="project-how"',
+    'id="project-capabilities"',
+    'id="project-implementation"',
+    'id="project-outcomes"',
+    'id="project-perspective"',
+    'id="project-next-stage"',
+    'id="project-related"',
+  ];
+  for (let index = 1; index < mobileConditionalOrder.length; index += 1) {
+    assert.ok(
+      mobile.indexOf(mobileConditionalOrder[index - 1]) <
+        mobile.indexOf(mobileConditionalOrder[index]),
+      `${mobileConditionalOrder[index - 1]} must precede ${mobileConditionalOrder[index]}`,
+    );
+  }
 
   assert.match(route, /project\.metadata\?\.title/);
   assert.match(route, /project\.metadata\?\.description/);

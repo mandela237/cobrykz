@@ -137,3 +137,33 @@ export const getProjectTransformationStages = (
       present: Boolean(project.nextStage?.length),
     },
   ].filter((stage) => stage.present);
+
+export const getMobileProjectLedger = (
+  projects: readonly PublishedProjectDefinition[],
+) =>
+  projects.map((project, index) => ({
+    href: `/projects/${project.slug}` as const,
+    index: String(index + 1).padStart(2, "0"),
+    summary: project.summary,
+    title: project.title,
+  }));
+
+export const getMobileProjectCaseStudy = (
+  project: PublishedProjectDefinition,
+) => ({
+  title: project.title,
+  summary: project.summary,
+  context: project.context,
+  challenge: project.challenge,
+  strategy: project.strategy,
+  solution: project.solution,
+  howItWorks: project.howItWorks,
+  capabilities: project.capabilities,
+  implementation: project.implementation,
+  verifiedOutcomes: project.verifiedOutcomes,
+  authorizedQuote: project.authorizedQuote,
+  nextStage: project.nextStage,
+  relatedContent: project.relatedContent,
+  chapters: getProjectMobileChapters(project),
+  transformationStages: getProjectTransformationStages(project),
+});
