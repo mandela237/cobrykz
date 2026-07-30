@@ -193,6 +193,11 @@ test("adds contained touch-first styling for the mobile solution family", () => 
   );
   assert.match(css, /\.mobile-solution-atlas-stage\s*\{/);
   assert.match(css, /\.mobile-solution-deliverable-ledger\s*\{/);
+  assert.match(
+    css,
+    /\.mobile-solution-deliverable-ledger\s+li:last-child:nth-child\(odd\)\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/s,
+    "an odd final deliverable must span the ledger instead of leaving an empty cell",
+  );
   assert.match(css, /\.mobile-solution-final\s*\{/);
   assert.doesNotMatch(
     css,

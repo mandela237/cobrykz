@@ -2912,6 +2912,11 @@ button {
       white;
   }
 
+  .mobile-solution-deliverable-ledger li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    min-height: 5.75rem;
+  }
+
   .mobile-solution-deliverable-ledger span {
     color: var(--color-blue);
     font-size: 0.6875rem;
