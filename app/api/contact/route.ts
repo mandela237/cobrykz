@@ -39,8 +39,20 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin");
   const host = request.headers.get("host");
-  if (origin && host && new URL(origin).host !== host) {
-    return NextResponse.json({ message: "Invalid request origin." }, { status: 403 });
+  if (origin && host) {
+    try {
+      if (new URL(origin).host !== host) {
+        return NextResponse.json(
+          { message: "Invalid request origin." },
+          { status: 403 },
+        );
+      }
+    } catch {
+      return NextResponse.json(
+        { message: "Invalid request origin." },
+        { status: 403 },
+      );
+    }
   }
 
   const identifier =
