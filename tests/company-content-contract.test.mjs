@@ -5,6 +5,10 @@ import test from "node:test";
 import ts from "typescript";
 
 const root = process.cwd();
+const read = (relativePath) => {
+  const path = join(root, relativePath);
+  return existsSync(path) ? readFileSync(path, "utf8") : "";
+};
 
 const loadTypeScriptModule = async (relativePath) => {
   const path = join(root, relativePath);
@@ -262,4 +266,154 @@ test("gives Process and About complete, unique route metadata and a shared CTA",
   assert.equal(aboutPage.cta.label, "Discuss a business challenge");
   assert.equal(processPage.cta.href, "/contact");
   assert.equal(aboutPage.cta.href, "/contact");
+});
+
+test("builds thin server-rendered Process and About routes from company page content", () => {
+  const routes = [
+    {
+      path: "app/process/page.tsx",
+      component: "ProcessPage",
+      content: "processPage",
+      canonical: "/process",
+    },
+    {
+      path: "app/about/page.tsx",
+      component: "AboutPage",
+      content: "aboutPage",
+      canonical: "/about",
+    },
+  ];
+
+  for (const route of routes) {
+    const source = read(route.path);
+    assert.ok(source, `${route.path} must exist`);
+    assert.doesNotMatch(source, /["']use client["']/);
+    assert.match(
+      source,
+      new RegExp(
+        `import \\{ ${route.content} \\} from ["']@/components/content/companyPages["']`,
+      ),
+    );
+    assert.match(
+      source,
+      new RegExp(
+        `import ${route.component} from ["']@/components/company/${route.component}["']`,
+      ),
+    );
+    assert.match(
+      source,
+      new RegExp(
+        `export const metadata:\\s*Metadata\\s*=\\s*${route.content}\\.metadata`,
+      ),
+    );
+    assert.match(
+      source,
+      new RegExp(
+        `<${route.component}\\s+content=\\{${route.content}\\}\\s*/>`,
+      ),
+    );
+    assert.doesNotMatch(
+      source,
+      /A clear path from business challenge|Technology should make businesses stronger/,
+      `${route.path} must not duplicate page copy`,
+    );
+    assert.equal(
+      companyPagesModule.exports[route.content].metadata.alternates.canonical,
+      route.canonical,
+    );
+  }
+});
+
+test("renders one H1 per company page through one responsive server component tree", () => {
+  const pages = [
+    {
+      path: "components/company/ProcessPage.tsx",
+      contentType: "ProcessPageDefinition",
+    },
+    {
+      path: "components/company/AboutPage.tsx",
+      contentType: "AboutPageDefinition",
+    },
+  ];
+
+  for (const page of pages) {
+    const source = read(page.path);
+    assert.ok(source, `${page.path} must exist`);
+    assert.doesNotMatch(source, /["']use client["']/);
+    assert.match(
+      source,
+      new RegExp(
+        `import type \\{ ${page.contentType} \\} from ["']@/components/content/companyPages["']`,
+      ),
+    );
+    assert.match(source, new RegExp(`content:\\s*${page.contentType}`));
+    assert.equal(
+      (source.match(/<h1\b/g) || []).length,
+      1,
+      `${page.path} must render exactly one H1`,
+    );
+    assert.doesNotMatch(
+      source,
+      /\b(?:sm|md|lg|xl|2xl):hidden\b|\bhidden\b[^"\n]*\b(?:sm|md|lg|xl|2xl):(?:block|flex|grid)\b/,
+      `${page.path} must not swap duplicate content trees by breakpoint`,
+    );
+  }
+});
+
+test("renders the exact progressive process, both decision gates, and the complete operating model", () => {
+  const source = read("components/company/ProcessPage.tsx");
+
+  assert.match(source, /<ol\b[\s\S]*content\.stages\.map\(\(stage,\s*index\)/);
+  assert.match(source, /\{stage\.name\}/);
+  assert.match(source, /\{stage\.summary\}/);
+  assert.match(source, /\{stage\.description\}/);
+  assert.match(source, /stage\.decisions\.map\(\(decision\)/);
+  assert.match(source, /stage\.outputs\.map\(\(output\)/);
+  assert.match(
+    source,
+    /content\.decisionGates\.find\([\s\S]*gate\.after === stage\.name[\s\S]*gate\.before === content\.stages\[index \+ 1\]\?\.name/,
+  );
+  assert.match(source, /\{gate\.title\}/);
+  assert.match(source, /\{gate\.question\}/);
+  assert.match(source, /gate\.criteria\.map\(\(criterion\)/);
+  assert.match(source, /Decision gate between \$\{gate\.after\} and \$\{gate\.before\}/);
+
+  assert.match(source, /\{content\.scaling\.title\}/);
+  assert.match(source, /\{content\.scaling\.description\}/);
+  assert.match(source, /content\.scaling\.paths\.map\(\(path\)/);
+  assert.match(source, /content\.operatingModel\.map\(\(item\)/);
+  assert.match(source, /\{content\.postLaunch\.title\}/);
+  assert.match(source, /\{content\.postLaunch\.description\}/);
+  assert.match(source, /content\.postLaunch\.options\.map\(\(option\)/);
+});
+
+test("renders the approved About narrative, founder portrait, standards, and shared CTA", () => {
+  const source = read("components/company/AboutPage.tsx");
+
+  assert.match(source, /\{content\.foundingTension\}/);
+  assert.match(source, /\{content\.purpose\.title\}/);
+  assert.match(source, /\{content\.purpose\.description\}/);
+  assert.match(source, /content\.principles\.map\(\(principle,\s*index\)/);
+  assert.match(source, /\{content\.partnership\.title\}/);
+  assert.match(source, /\{content\.partnership\.description\}/);
+  assert.match(source, /import Image from ["']next\/image["']/);
+  assert.match(source, /src=["']\/mandela-portrait-sharp\.jpg["']/);
+  assert.match(source, /\{content\.leadership\.title\}/);
+  assert.match(source, /\{content\.leadership\.name\}/);
+  assert.match(source, /\{content\.leadership\.role\}/);
+  assert.match(source, /\{content\.leadership\.description\}/);
+  assert.match(source, /content\.standards\.map\(\(standard,\s*index\)/);
+
+  for (const path of [
+    "components/company/ProcessPage.tsx",
+    "components/company/AboutPage.tsx",
+  ]) {
+    const page = read(path);
+    assert.match(
+      page,
+      /<PrimaryLink\s+href=\{content\.cta\.href\}[^>]*>\s*\{content\.cta\.label\}\s*<\/PrimaryLink>/s,
+    );
+    assert.match(page, /\{content\.cta\.title\}/);
+    assert.match(page, /\{content\.cta\.description\}/);
+  }
 });
