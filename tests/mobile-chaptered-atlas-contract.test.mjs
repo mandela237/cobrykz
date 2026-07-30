@@ -23,9 +23,11 @@ test("defines a semantic Chaptered Atlas mobile grammar", () => {
   assert.match(disclosure, /min-h-11/);
   assert.match(
     disclosure,
-    /items: readonly T\[\]/,
-    "shared frozen content arrays must pass directly into disclosures",
+    /summary: ReactNode/,
+    "server-rendered disclosure summaries must cross the client boundary as nodes",
   );
+  assert.match(disclosure, /panel: ReactNode/);
+  assert.doesNotMatch(disclosure, /renderSummary|renderPanel|getId/);
   assert.match(disclosure, /<div\s+role="group"\s+aria-label=\{ariaLabel\}/);
   assert.match(
     css,
@@ -91,6 +93,7 @@ test("requires a selection callback for interactive mobile Atlas controls", () =
 
 test("builds the mobile Homepage from the frozen content source", () => {
   const mobile = read("components/home/MobileHomePage.tsx");
+  const challenge = read("components/home/MobileChallengeRouter.tsx");
   const page = read("app/page.tsx");
   const home = read("components/content/home.ts");
   const site = read("components/content/site.ts");
@@ -100,12 +103,12 @@ test("builds the mobile Homepage from the frozen content source", () => {
     "homeOutcomes",
     "whyCobrykz",
     "aiPrinciples",
-    "challengeRoutes",
     "processStages",
     "solutions",
   ]) {
     assert.match(mobile, new RegExp(model));
   }
+  assert.match(challenge, /challengeRoutes/);
 
   assert.match(mobile, /primaryCta/);
   assert.match(mobile, /solutionsCta/);
@@ -165,6 +168,8 @@ test("keeps the approved Homepage chapter order", () => {
 
 test("uses disclosure and selection patterns for dense Homepage chapters", () => {
   const mobile = read("components/home/MobileHomePage.tsx");
+  const atlas = read("components/home/MobileHomeAtlas.tsx");
+  const challenge = read("components/home/MobileChallengeRouter.tsx");
   const desktopAtlas = read("components/home/BusinessSystemCutaway.tsx");
 
   assert.ok(
@@ -173,12 +178,53 @@ test("uses disclosure and selection patterns for dense Homepage chapters", () =>
   );
   assert.match(mobile, /defaultOpenId="grow-more-effectively"/);
   assert.match(mobile, /ariaLabel="Business outcomes"/);
-  assert.match(mobile, /Object\.values\(challengeRoutes\)\.map/);
-  assert.match(mobile, /aria-pressed=\{isSelected\}/);
-  assert.match(mobile, /aria-live="polite"/);
-  assert.match(mobile, /<MobileAtlasPath/);
+  assert.match(challenge, /Object\.values\(challengeRoutes\)\.map/);
+  assert.match(challenge, /aria-pressed=\{isSelected\}/);
+  assert.match(challenge, /aria-live="polite"/);
+  assert.match(atlas, /<MobileAtlasPath/);
   assert.match(mobile, /businessSystemCutaway/);
   assert.match(desktopAtlas, /export const businessSystemCutaway/);
+});
+
+test("keeps only interactive mobile regions inside focused client islands", () => {
+  const mobile = read("components/home/MobileHomePage.tsx");
+  const atlas = read("components/home/MobileHomeAtlas.tsx");
+  const challenge = read("components/home/MobileChallengeRouter.tsx");
+  const boundary = read("components/home/ResponsiveHomePage.tsx");
+  const page = read("app/page.tsx");
+
+  assert.doesNotMatch(mobile, /"use client"|useState|onClick/);
+  assert.match(mobile, /<MobileHomeAtlas/);
+  assert.match(mobile, /<MobileChallengeRouter/);
+  assert.doesNotMatch(mobile, /<MobileAtlasPath|challengeRoutes|solutionBySlug/);
+
+  assert.match(atlas, /"use client"/);
+  assert.match(atlas, /useState/);
+  assert.match(atlas, /<MobileAtlasPath/);
+  assert.match(challenge, /"use client"/);
+  assert.match(challenge, /useState/);
+
+  assert.doesNotMatch(
+    boundary,
+    /from ["'][^"']*(?:MobileHomePage|HomeHero|ProjectsEvidence)["']/,
+  );
+  assert.match(boundary, /mobile: ReactNode/);
+  assert.match(boundary, /desktop: ReactNode/);
+  assert.match(boundary, /return isMobile \? mobile : desktop/);
+  assert.match(page, /mobile=\{<MobileHomePage closing=\{closing\} \/>\}/);
+  assert.match(page, /desktop=\{desktop\}/);
+});
+
+test("keeps both desktop-parity actions inside the mobile recommendation panel", () => {
+  const challenge = read("components/home/MobileChallengeRouter.tsx");
+  const panel = challenge.match(
+    /<section[\s\S]*?className="mobile-home-recommendation"[\s\S]*?<\/section>/,
+  )?.[0];
+
+  assert.ok(panel, "the mobile recommendation panel must exist");
+  assert.match(panel, /href=\{selectedSolution\.href\}/);
+  assert.match(panel, /href=\{primaryCta\.href\}/);
+  assert.match(panel, /\{primaryCta\.label\}/);
 });
 
 test("renders exactly one runtime-selected Homepage composition with canonical anchors", () => {

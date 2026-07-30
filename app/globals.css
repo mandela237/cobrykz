@@ -1103,6 +1103,24 @@ button {
     line-height: 1.65;
   }
 
+  .mobile-home-recommendation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .mobile-home-recommendation-primary {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--color-border);
+    color: var(--color-navy);
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
   .mobile-home-challenge-thread {
     position: relative;
     display: grid;

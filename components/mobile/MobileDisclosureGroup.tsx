@@ -3,23 +3,23 @@
 import { useId, useState } from "react";
 import type { ReactNode } from "react";
 
-type MobileDisclosureGroupProps<T> = {
-  items: readonly T[];
-  getId: (item: T) => string;
-  renderSummary: (item: T, index: number, isOpen: boolean) => ReactNode;
-  renderPanel: (item: T, index: number) => ReactNode;
+export type MobileDisclosureItem = {
+  id: string;
+  summary: ReactNode;
+  panel: ReactNode;
+};
+
+type MobileDisclosureGroupProps = {
+  items: readonly MobileDisclosureItem[];
   defaultOpenId?: string;
   ariaLabel: string;
 };
 
-export default function MobileDisclosureGroup<T>({
+export default function MobileDisclosureGroup({
   items,
-  getId,
-  renderSummary,
-  renderPanel,
   defaultOpenId,
   ariaLabel,
-}: MobileDisclosureGroupProps<T>) {
+}: MobileDisclosureGroupProps) {
   const groupId = useId();
   const [openId, setOpenId] = useState<string | null>(defaultOpenId ?? null);
 
@@ -29,8 +29,8 @@ export default function MobileDisclosureGroup<T>({
       aria-label={ariaLabel}
       className="mobile-disclosure-group"
     >
-      {items.map((item, index) => {
-        const itemId = getId(item);
+      {items.map((item) => {
+        const itemId = item.id;
         const isOpen = itemId === openId;
         const panelId = `${groupId}-${itemId}-panel`;
 
@@ -43,14 +43,14 @@ export default function MobileDisclosureGroup<T>({
               aria-controls={panelId}
               onClick={() => setOpenId(isOpen ? null : itemId)}
             >
-              {renderSummary(item, index, isOpen)}
+              {item.summary}
             </button>
             <div
               id={panelId}
               hidden={!isOpen}
               className="mobile-disclosure-panel"
             >
-              {renderPanel(item, index)}
+              {item.panel}
             </div>
           </div>
         );
