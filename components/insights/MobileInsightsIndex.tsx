@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { PublishedInsightDefinition } from "@/components/content/insights";
 import { editorialMethod } from "@/components/insights/EditorialMethod";
+import { getMobileInsightLedger } from "@/components/insights/insightsMobileModel";
 import MobileChapter from "@/components/mobile/MobileChapter";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 
@@ -9,6 +10,8 @@ export default function MobileInsightsIndex({
 }: {
   insights: readonly PublishedInsightDefinition[];
 }) {
+  const ledger = getMobileInsightLedger(insights);
+
   return (
     <div data-mobile-insights-index>
       <MobileChapter id="insights-opening" index={1} eyebrow="Insights">
@@ -59,12 +62,12 @@ export default function MobileInsightsIndex({
           <div className="mobile-insights-ledger">
             <h2 id="published-insights-heading">Published guidance</h2>
             <ol>
-              {insights.map((insight, index) => (
-                <li key={insight.slug}>
-                  <Link href={`/insights/${insight.slug}`}>
-                    <span>{String(index + 1).padStart(2, "0")} · {insight.topic}</span>
-                    <strong>{insight.title}</strong>
-                    <p>{insight.summary}</p>
+              {ledger.map((entry) => (
+                <li key={entry.href}>
+                  <Link href={entry.href}>
+                    <span>{entry.index} · {entry.topic}</span>
+                    <strong>{entry.title}</strong>
+                    <p>{entry.summary}</p>
                   </Link>
                 </li>
               ))}

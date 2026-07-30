@@ -3,12 +3,14 @@ import type { PublishedInsightDefinition } from "@/components/content/insights";
 import MobileAtlasExplorer from "@/components/mobile/MobileAtlasExplorer";
 import MobileChapter from "@/components/mobile/MobileChapter";
 import PrimaryLink from "@/components/ui/PrimaryLink";
+import { getMobileInsightArticle } from "@/components/insights/insightsMobileModel";
 
 export default function MobileInsightArticle({
   insight,
 }: {
   insight: PublishedInsightDefinition;
 }) {
+  const view = getMobileInsightArticle(insight);
   let chapter = 3;
   return (
     <div data-mobile-insight-article>
@@ -81,9 +83,9 @@ export default function MobileInsightArticle({
       </MobileChapter>
       <MobileChapter id="insight-cta" index={chapter} eyebrow="Apply the thinking" tone="dark">
         <div className="mobile-insight-cta">
-          <h2 id="insight-cta-heading">Apply the thinking to a real business challenge.</h2>
-          <p>Start with the outcome you need. Cobrykz can help assess the challenge, identify the right path, and build what creates value.</p>
-          <PrimaryLink href="/contact">Discuss a business challenge</PrimaryLink>
+          <h2 id="insight-cta-heading">{view.cta.heading}</h2>
+          <p>{view.cta.body}</p>
+          <PrimaryLink href={view.cta.href}>{view.cta.label}</PrimaryLink>
         </div>
       </MobileChapter>
     </div>

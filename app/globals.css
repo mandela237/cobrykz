@@ -3668,6 +3668,11 @@ button {
     min-width: 0;
   }
 
+  [data-mobile-insights-index] .mobile-chapter__marker + *,
+  [data-mobile-insight-article] .mobile-chapter__marker + * {
+    margin-top: 1.75rem;
+  }
+
   .mobile-insights-opening,
   .mobile-insight-opening,
   .mobile-insight-section,
@@ -3686,7 +3691,7 @@ button {
     font-size: 2.75rem;
     line-height: 0.98;
     letter-spacing: -0.055em;
-    color: var(--navy);
+    color: var(--color-navy);
   }
 
   .mobile-insights-opening p,
@@ -3694,7 +3699,7 @@ button {
   .mobile-insight-section p,
   .mobile-insight-author p,
   .mobile-insight-cta p {
-    color: var(--slate);
+    color: var(--color-slate);
     font-size: 1rem;
     line-height: 1.75;
   }
@@ -3731,7 +3736,7 @@ button {
   .mobile-insights-method li span,
   .mobile-insight-steps li span,
   .mobile-insights-ledger a > span {
-    color: var(--blue-tint);
+    color: var(--color-blue-tint);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -3749,7 +3754,7 @@ button {
     display: inline-flex;
     min-height: 2.75rem;
     align-items: center;
-    color: var(--blue);
+    color: var(--color-blue);
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 0.25rem;
@@ -3761,7 +3766,7 @@ button {
   }
 
   .mobile-insights-ledger li {
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .mobile-insights-ledger a {
@@ -3769,15 +3774,15 @@ button {
     gap: 0.6rem;
     min-height: 2.75rem;
     padding: 1.25rem 0;
-    color: var(--navy);
+    color: var(--color-navy);
   }
 
   .mobile-insights-ledger a > span {
-    color: var(--blue);
+    color: var(--color-blue);
   }
 
   .mobile-insights-ledger a > p {
-    color: var(--slate);
+    color: var(--color-slate);
     line-height: 1.6;
   }
 
@@ -3785,7 +3790,7 @@ button {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
-    color: var(--slate);
+    color: var(--color-slate);
     font-size: 0.84rem;
   }
 
@@ -3799,7 +3804,7 @@ button {
   .mobile-insight-steps h2,
   .mobile-insight-related h2,
   .mobile-insight-author h2 {
-    color: var(--navy);
+    color: var(--color-navy);
     font-size: 1.75rem;
     line-height: 1.08;
   }
@@ -3809,20 +3814,24 @@ button {
   }
 
   .mobile-insight-steps li {
-    border-color: var(--border);
+    border-color: var(--color-border);
   }
 
   .mobile-insight-steps li span {
-    color: var(--blue);
+    color: var(--color-blue);
   }
 
   .mobile-insight-steps li p {
-    color: var(--slate);
+    color: var(--color-slate);
     line-height: 1.65;
   }
 
   .mobile-insight-cta .primary-link {
     justify-self: start;
+  }
+
+  .mobile-insight-cta p {
+    color: rgb(255 255 255 / 0.76);
   }
 }
 
