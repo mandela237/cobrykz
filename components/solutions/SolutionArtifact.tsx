@@ -21,7 +21,7 @@ function WorkflowComparison({
             className={
               workflowIndex === 0
                 ? "border border-border bg-gray-light p-6 sm:p-8"
-                : "border border-blue-border bg-blue-tint p-6 sm:p-8"
+                : "border border-border bg-blue-tint p-6 sm:p-8"
             }
           >
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue">
@@ -35,7 +35,7 @@ function WorkflowComparison({
                 >
                   <span
                     aria-hidden="true"
-                    className="font-mono text-xs font-bold text-blue"
+                    className="text-xs font-bold text-blue"
                   >
                     {String(stepIndex + 1).padStart(2, "0")}
                   </span>
@@ -86,7 +86,7 @@ function SystemMap({
           ))}
         </div>
 
-        <div className="flex min-h-44 items-center justify-center border-y border-blue-border bg-blue-tint p-8 text-center lg:border-x lg:border-y-0">
+        <div className="flex min-h-44 items-center justify-center border-y border-border bg-blue-tint p-8 text-center lg:border-x lg:border-y-0">
           <p className="max-w-48 text-balance text-xl font-extrabold leading-tight text-navy">
             {artifact.centerLabel}
           </p>

@@ -555,6 +555,7 @@ test("preserves the frozen palette and font tokens", () => {
     '<p className="text-red-500">Tailwind family</p>',
     '<p className="text-blue-500">Default blue shade</p>',
     '<p className="text-black">Default black</p>',
+    '<div className="border-blue-border">Fabricated semantic token</div>',
     '<p className="font-serif">Unapproved family</p>',
   ]) {
     assert.throws(
