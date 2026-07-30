@@ -133,6 +133,16 @@ Motion remains explanatory and optional:
 - Tests, TypeScript, lint, and the production build pass.
 - Desktop and mobile visual review is completed when the preview browser is available.
 
+## Refinement Stopping Rule
+
+Refinement stops when additional visual changes no longer produce a meaningful improvement in:
+
+- Comprehension
+- Visual hierarchy
+- Cobrykz brand distinction
+
+Every implementation change must have a clear functional or aesthetic justification against at least one of these criteria. Novelty, visual complexity, and difference for its own sake are not valid reasons to continue. When the remaining changes are merely subjective variations rather than material improvements, the homepage refinement is complete.
+
 ## Explicit Non-Goals
 
 - Milestone 2 implementation
