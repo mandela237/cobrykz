@@ -46,11 +46,35 @@ The experience combines:
 The result should feel sophisticated and proprietary, not futuristic,
 cinematic, or trend-driven.
 
+### Signature language, not the only language
+
+System Atlas is the defining visual language of Cobrykz, but it is not a
+requirement for every page or section. It should appear where spatial
+explanation makes a relationship, workflow, information flow, decision, or
+system easier to understand.
+
+Typography, editorial composition, photography, interface artifacts, and white
+space should carry sections that do not benefit from a diagram. The experience
+must feel composed and premium, not like an operating manual filled with
+diagrams.
+
+The correct balance is:
+
+- System Atlas creates recognition and explains complexity.
+- Editorial typography creates authority and pace.
+- White space creates focus and confidence.
+- Photography creates human accountability.
+- Real artifacts and evidence create credibility.
+
+No page has a diagram quota. A major page should have one defining visual
+memory, but that memory may be a system model, a photographic composition, an
+evidence artifact, or a distinctive editorial sequence.
+
 ### The defining visual idea
 
 The website is a living atlas of business systems.
 
-Each page presents a different view of that atlas:
+When System Atlas is used, each page presents a different operational view:
 
 - Homepage: business transformation
 - Solutions: capability relationships
@@ -83,6 +107,21 @@ to fill space. A node cannot pulse unless it represents a real control or
 decision. A path cannot move unless it demonstrates the movement of something
 named.
 
+### The Atlas decision test
+
+Before creating a System Atlas visual, ask:
+
+1. Is there a meaningful relationship, sequence, flow, boundary, or change to
+   explain?
+2. Would a spatial model make that idea faster or easier to understand than
+   typography alone?
+3. Can every visible element be named?
+4. Does this section need a visual after considering the rhythm of the
+   surrounding page?
+
+If any answer is no, use editorial composition, photography, an interface
+artifact, or purposeful white space instead.
+
 ### The comprehension rule
 
 Every visual must answer at least one of these questions:
@@ -113,6 +152,11 @@ composition modes:
 
 Pages should alternate these modes to create pacing. Two adjacent sections
 should not use the same composition unless continuity is intentional.
+
+System views are signature moments, not the default section template. Most
+pages should use one primary System Atlas composition. Smaller atlas fragments
+may recur only when they continue the same explanation. They should not reset
+as unrelated diagrams in successive sections.
 
 ### Spatial grid
 
@@ -282,6 +326,7 @@ Every diagram includes:
 
 - Default states communicate the complete core idea without interaction.
 - Interaction reveals detail; it does not hide essential meaning.
+- Diagrams appear only when they outperform a clear editorial composition.
 - Desktop diagrams may use spatial relationships.
 - Mobile diagrams recompose into ordered layers, flows, or annotated sequences.
 - Horizontal overflow is reserved for genuinely sequential content and must be
@@ -313,6 +358,10 @@ Illustration is diagrammatic rather than pictorial.
 The signature style is a **layered operational cutaway**: a system is shown in
 context, its working layers are separated just enough to understand them, and
 its important connections are named.
+
+Illustration should remain scarce. Repetition weakens the signature. A page may
+use a single substantial operational cutaway and allow the rest of the
+experience to return to typography, photography, evidence, and space.
 
 ## 10. Motion Philosophy
 
@@ -371,6 +420,10 @@ Hover may preview; it cannot be the only way to access information.
 
 The user should feel that the website is responsive to inquiry, not performing
 for attention.
+
+Sections without a meaningful interactive relationship remain static.
+Interaction is not added merely to make the site feel technologically
+advanced.
 
 ## 12. Homepage Hero Concept
 
@@ -433,8 +486,9 @@ The remaining sections use fragments of the hero model:
 - Projects and authority sections shift from possibility to evidence and
   accountability.
 
-The page feels like one system being progressively understood, not a sequence
-of unrelated sections.
+These fragments are used selectively. Sections led by trust, evidence, or
+editorial argument may remain typographic. The page feels like one system being
+progressively understood, not a sequence of unrelated diagrams.
 
 ### Solutions hub — Capability exploration
 
@@ -533,6 +587,10 @@ The founder portrait is paired with this system rather than placed in a
 conventional biography block. Annotations connect the company’s standards to
 specific parts of delivery.
 
+Photography carries the human and accountability sections. The atlas appears
+once to explain the connected operating model; it does not compete with the
+founder portrait throughout the page.
+
 ### Projects index — Evidence
 
 **Defining visual before publication:** The Evidence Standard.
@@ -582,9 +640,11 @@ by decorative category cards.
 
 **Defining visual:** A decision diagram embedded in the argument.
 
-Each substantial article contains one explanatory system model, workflow, or
-decision tree. The executive answer remains immediate. Diagrams clarify the
-reasoning rather than interrupting it.
+When the subject contains a meaningful system, workflow, or decision, the
+article may contain one explanatory model. Articles that are clearer through
+typography, evidence, or an annotated interface should use those forms instead.
+The executive answer remains immediate. Visuals clarify the reasoning rather
+than interrupting it.
 
 ### Contact — Beginning of partnership
 
@@ -635,6 +695,8 @@ It becomes distinctive through a repeatable proprietary syntax:
 - Editorial copy and spatial models work as one composition.
 - Blue indicates meaningful activation rather than general decoration.
 - Diagrams mature across a narrative instead of resetting in every section.
+- The signature grammar is used with enough restraint that its appearance
+  remains meaningful.
 
 If the logo is removed, the combination of translucent system sheets,
 structural frames, cobalt signal paths, precise annotations, and operational
@@ -668,6 +730,7 @@ Prefer:
 - Durable color roles
 - Meaningful depth
 - Static clarity before animated enhancement
+- Editorial restraint between signature visual moments
 
 ## 17. Accessibility, Performance, and Responsive Rules
 
@@ -699,6 +762,8 @@ Before a visual is approved, confirm:
 8. It uses the shared System Atlas grammar.
 9. It creates a page-specific memory.
 10. It still feels composed when animation is removed.
+11. It is more useful than typography, photography, or white space would be in
+    the same section.
 
 ## 19. Implementation Boundary
 
