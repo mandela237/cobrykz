@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/.superpowers/brainstorm/
 
 # isolated development worktrees
 /.worktrees/
