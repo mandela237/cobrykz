@@ -52,7 +52,8 @@ test("gives major route families canonical and social metadata", () => {
 test("provides useful accessible recovery routes", () => {
   const notFound = read("app/not-found.tsx");
   const error = read("app/global-error.tsx");
-  assert.equal((notFound.match(/<h1\b/g) || []).length, 1);
+  assert.equal((notFound.match(/<h1\b/g) || []).length, 2);
+  assert.match(notFound, /ResponsivePageComposition/);
   assert.match(notFound, /href=["']\/solutions["']/);
   assert.match(notFound, /href=["']\/contact["']/);
   assert.match(error, /["']use client["']/);
