@@ -184,10 +184,26 @@ test("keeps Process stage and gate sequencing inside one focused client island",
   assert.match(rail, /id=\{`process-\$\{stage\.name\.toLowerCase\(\)\}`\}/);
   assert.match(rail, /aria-expanded=\{isOpen\}/);
   assert.match(rail, /aria-controls=\{panelId\}/);
+  assert.match(
+    rail,
+    /setOpenStageName\(isOpen \? null : stage\.name\)/,
+    "pressing the active minus-state control must collapse its panel",
+  );
   assert.match(rail, /aria-live="polite"/);
   assert.match(rail, /stage\.decisions\.map/);
   assert.match(rail, /stage\.outputs\.map/);
+  assert.match(rail, /gate\.title/);
+  assert.match(rail, /gate\.question/);
   assert.match(rail, /gate\.criteria\.map/);
+  assert.match(
+    rail,
+    /className="mobile-process-rail__detail"[\s\S]*?\{gate \? \([\s\S]*?<aside/,
+    "a decision gate must follow the stage detail within the stage that precedes it",
+  );
+  assert.match(
+    rail,
+    /id=\{`process-gate-\$\{gate\.after\.toLowerCase\(\)\}-\$\{gate\.before\.toLowerCase\(\)\}`\}/,
+  );
   assert.doesNotMatch(
     rail,
     /Discover|Assess|Design|Build|Deploy|Optimize/,

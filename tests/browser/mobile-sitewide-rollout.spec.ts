@@ -89,7 +89,52 @@ test("Process recomposes into one accessible delivery sequence", async ({
 
     const stageTriggers = page.locator(".mobile-process-rail__trigger");
     await expect(stageTriggers).toHaveCount(6);
-    await expect(page.locator("[data-process-decision-gate]")).toHaveCount(2);
+    const gatePlacement = await page
+      .locator(".mobile-process-rail")
+      .evaluate((rail) =>
+        Array.from(rail.children).map((stage) => ({
+          stageId: stage.id,
+          gateId:
+            stage.querySelector("[data-process-decision-gate]")?.id ?? null,
+        })),
+      );
+    expect(gatePlacement).toEqual([
+      { stageId: "process-discover", gateId: null },
+      {
+        stageId: "process-assess",
+        gateId: "process-gate-assess-design",
+      },
+      { stageId: "process-design", gateId: null },
+      {
+        stageId: "process-build",
+        gateId: "process-gate-build-deploy",
+      },
+      { stageId: "process-deploy", gateId: null },
+      { stageId: "process-optimize", gateId: null },
+    ]);
+
+    const gates = page.locator("[data-process-decision-gate]");
+    await expect(gates).toHaveCount(2);
+    await expect(gates.nth(0)).toContainText("Choose the responsible direction");
+    await expect(gates.nth(0)).toContainText(
+      "Is the recommended opportunity valuable, achievable, and responsible enough to design?",
+    );
+    await expect(gates.nth(0).locator("li")).toHaveText([
+      "Expected business value",
+      "Readiness and feasibility",
+      "Material risks and safeguards",
+      "Clear scope, ownership, and next decision",
+    ]);
+    await expect(gates.nth(1)).toContainText("Confirm operational readiness");
+    await expect(gates.nth(1)).toContainText(
+      "Is the working solution ready to become part of real operations?",
+    );
+    await expect(gates.nth(1).locator("li")).toHaveText([
+      "Validated behavior and quality",
+      "Security, access, integration, and recovery readiness",
+      "Named operational ownership",
+      "Adoption, support, and change readiness",
+    ]);
 
     const touchTargets = await stageTriggers.evaluateAll((nodes) =>
       nodes.map((node) => {
@@ -104,7 +149,9 @@ test("Process recomposes into one accessible delivery sequence", async ({
 
     for (let index = 0; index < 6; index += 1) {
       const trigger = stageTriggers.nth(index);
-      await trigger.click();
+      if ((await trigger.getAttribute("aria-expanded")) !== "true") {
+        await trigger.click();
+      }
       await expect(trigger).toHaveAttribute("aria-expanded", "true");
       await expect(
         page.locator(".mobile-process-rail__trigger[aria-expanded='true']"),
@@ -115,6 +162,22 @@ test("Process recomposes into one accessible delivery sequence", async ({
     }
 
     await stageTriggers.first().click();
+    await expect(stageTriggers.first()).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    await stageTriggers.first().click();
+    await expect(stageTriggers.first()).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    await expect(
+      page.locator(".mobile-process-rail__trigger[aria-expanded='true']"),
+    ).toHaveCount(0);
+    const firstPanelId = await stageTriggers.first().getAttribute("aria-controls");
+    expect(firstPanelId).toBeTruthy();
+    await expect(page.locator(`#${firstPanelId}`)).toBeHidden();
+
     await page.keyboard.press("Tab");
     await expect(stageTriggers.nth(1)).toBeFocused();
     expect(

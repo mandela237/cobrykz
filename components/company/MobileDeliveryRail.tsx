@@ -47,7 +47,7 @@ export default function MobileDeliveryRail({
               className="mobile-process-rail__trigger"
               aria-expanded={isOpen}
               aria-controls={panelId}
-              onClick={() => setOpenStageName(stage.name)}
+              onClick={() => setOpenStageName(isOpen ? null : stage.name)}
             >
               <span
                 aria-hidden="true"
