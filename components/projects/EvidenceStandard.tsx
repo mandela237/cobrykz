@@ -1,4 +1,4 @@
-const evidenceGroups = [
+export const evidenceGroups = [
   {
     title: "Business condition",
     parts: ["Project introduction", "Business context", "Challenge"],
