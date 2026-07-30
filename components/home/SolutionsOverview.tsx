@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { homePageCopy } from "@/components/content/home";
 import { solutions } from "@/components/content/solutions";
 import SectionIntro from "@/components/ui/SectionIntro";
 
@@ -14,8 +15,8 @@ export default function SolutionsOverview() {
           <div>
             <SectionIntro
               id="solutions-heading"
-              title="Modern solutions for real business challenges."
-              description="Cobrykz combines strategy and execution to move organizations from problem to working solution."
+              title={homePageCopy.solutions.title}
+              description={homePageCopy.solutions.description}
             />
             <div
               data-capability-rail

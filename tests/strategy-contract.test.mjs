@@ -51,7 +51,11 @@ test("provides an accessible business-challenge router", () => {
   assert.match(source, /aria-live="polite"/);
   assert.match(
     source,
-    /A focused assessment confirms the right approach\./,
+    /homePageCopy\.challengeRouter\.assessment/,
+  );
+  assert.match(
+    read("components/content/home.ts"),
+    /assessment:\s*"A focused assessment confirms the right approach\."/,
   );
   assert.match(
     source,
@@ -179,7 +183,7 @@ test("builds semantic homepage sections from frozen shared content", () => {
 
   assert.match(
     sections.hero,
-    /import \{ homeMessage \} from ["']@\/components\/content\/home["']/,
+    /import \{[^}]*homeMessage[^}]*homePageCopy[^}]*\} from ["']@\/components\/content\/home["']/s,
   );
   assert.match(sections.hero, /\{homeMessage\.headline\}/);
   assert.match(sections.hero, /\{homeMessage\.description\}/);
@@ -193,7 +197,7 @@ test("builds semantic homepage sections from frozen shared content", () => {
     assert.match(
       source,
       new RegExp(
-        `import \\{ ${content} \\} from ["']@/components/content/home["']`,
+        `import \\{[^}]*${content}[^}]*\\} from ["']@/components/content/home["']`,
       ),
     );
     assert.match(source, new RegExp(`${content}\\.map\\(\\(${item}`));
@@ -235,7 +239,7 @@ test("keeps the frozen Solutions section identity", () => {
   );
   assert.match(
     source,
-    /<SectionIntro\s+id="solutions-heading"\s+title="Modern solutions for real business challenges\."\s+description="Cobrykz combines strategy and execution to move organizations from problem to working solution\."\s*\/>/s,
+    /<SectionIntro\s+id="solutions-heading"\s+title=\{homePageCopy\.solutions\.title\}\s+description=\{homePageCopy\.solutions\.description\}\s*\/>/s,
   );
 });
 
@@ -264,7 +268,7 @@ test("uses the shared primary CTA at both homepage decision points", () => {
   ]) {
     assert.match(
       source,
-      /import \{ primaryCta \} from ["']@\/components\/content\/site["']/,
+      /import \{[^}]*primaryCta[^}]*\} from ["']@\/components\/content\/site["']/s,
       `${name} must consume the shared CTA`,
     );
     assert.match(

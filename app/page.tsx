@@ -9,6 +9,7 @@ import ProjectsEvidence from "@/components/home/ProjectsEvidence";
 import AuthorityBand from "@/components/home/AuthorityBand";
 import HomeFinalCTA from "@/components/home/HomeFinalCTA";
 import MobileHomePage from "@/components/home/MobileHomePage";
+import ResponsiveHomePage from "@/components/home/ResponsiveHomePage";
 import { buildPageMetadata } from "@/lib/seo/site";
 
 export const metadata = buildPageMetadata({
@@ -19,27 +20,39 @@ export const metadata = buildPageMetadata({
 });
 
 export default function Home() {
-  return (
+  const desktopOpening = (
     <>
-      <div className="md:hidden">
-        <MobileHomePage />
-      </div>
-      <div className="hidden md:block">
-        <HomeHero />
-        <BusinessOutcomes />
-        <SolutionsOverview />
-        <WhyCobrykz />
-        <AIPointOfView />
-        <div className="border-y border-border bg-white">
-          <div className="section-shell py-16 sm:py-20 lg:py-24">
-            <ChallengeRouter />
-          </div>
+      <HomeHero />
+      <BusinessOutcomes />
+      <SolutionsOverview />
+      <WhyCobrykz />
+      <AIPointOfView />
+      <div className="border-y border-border bg-white">
+        <div className="section-shell py-16 sm:py-20 lg:py-24">
+          <ChallengeRouter />
         </div>
-        <ProcessOverview />
-        <ProjectsEvidence />
-        <AuthorityBand />
-        <HomeFinalCTA />
       </div>
+      <ProcessOverview />
     </>
+  );
+  const closing = (
+    <>
+      <ProjectsEvidence />
+      <AuthorityBand />
+      <HomeFinalCTA />
+    </>
+  );
+  const desktop = (
+    <>
+      {desktopOpening}
+      {closing}
+    </>
+  );
+
+  return (
+    <ResponsiveHomePage
+      mobile={<MobileHomePage closing={closing} />}
+      desktop={desktop}
+    />
   );
 }

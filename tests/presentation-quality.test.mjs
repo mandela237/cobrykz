@@ -93,30 +93,38 @@ function collectImportClosure(
   return closure;
 }
 
-function assertSingleResponsiveHomepageTree(
+function assertResponsiveHomepageBoundary(
   entryPath,
   sourceReader = read,
   sourceExists = (path) => existsSync(join(root, path)),
 ) {
   const closure = collectImportClosure(entryPath, sourceReader, sourceExists);
-  const paths = [...closure.keys()];
+  const entry = closure.get(entryPath);
   const sources = [...closure.values()].join("\n");
+  const boundaryPath = [...closure.keys()].find((path) =>
+    path.endsWith("components/home/ResponsiveHomePage.tsx"),
+  );
 
-  assert.doesNotMatch(
-    paths.join("\n"),
-    /(?:^|\/)components\/mobile(?:\/|$)/,
-    "the homepage import closure must not reach a parallel mobile tree",
+  assert.ok(
+    boundaryPath,
+    "the Homepage must use the focused responsive runtime boundary",
   );
   assert.doesNotMatch(
-    sources,
-    /MobileExperience|["']@\/components\/mobile\/|["']\.\.?(?:\/[^"']*)*\/mobile\//,
-    "the homepage and its transitive imports must not reference mobile-only modules",
+    entry,
+    /\bmd:hidden\b|\bhidden md:block\b/,
+    "the Homepage entry must not render simultaneous CSS-hidden trees",
   );
+
+  const boundary = closure.get(boundaryPath);
+  assert.match(boundary, /useSyncExternalStore/);
+  assert.match(boundary, /matchMedia\("\(max-width: 767px\)"\)/);
+  assert.match(boundary, /return isMobile \? mobile : desktop/);
   assert.doesNotMatch(
-    sources,
-    /(?:^|[\s"'`])(?:sm|md|lg|xl|2xl):hidden(?=$|[\s"'`])|(?:^|[\s"'`])hidden(?=$|[\s"'`])[^"\n]*\b(?:sm|md|lg|xl|2xl):(?:block|flex|grid|inline|inline-block|inline-flex)\b/,
-    "the homepage closure must not switch duplicate content trees at breakpoints",
+    boundary,
+    /\{mobile\}\s*\{desktop\}|\{desktop\}\s*\{mobile\}/,
+    "the responsive boundary must return only one Homepage tree",
   );
+  assert.doesNotMatch(sources, /MobileExperience/);
 
   return closure;
 }
@@ -501,6 +509,7 @@ test("keeps the premium token layer small and intentional", () => {
     "--control-transition",
     "--focus-ring-light",
     "--focus-ring-dark",
+    "--focus-ring-on-light",
     "--section-gutter",
   ];
 
@@ -593,6 +602,7 @@ test("preserves the frozen palette and font tokens", () => {
 test("keeps the dark focus token distinct on every approved dark surface", () => {
   const globals = read("app/globals.css");
   const focusColor = "#9cc8ff";
+  const lightSurfaceFocusColor = "#1748cc";
 
   assert.match(globals, /--focus-ring-dark:\s*#9cc8ff;/);
   for (const [surface, color] of Object.entries({
@@ -609,11 +619,15 @@ test("keeps the dark focus token distinct on every approved dark surface", () =>
     globals,
     /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible,\s*\.bg-charcoal :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
   );
+  assert.ok(
+    contrastRatio(lightSurfaceFocusColor, "#ffffff") >= 3,
+    "the dark-stage Atlas focus override must reach 3:1 on white",
+  );
 });
 
-test("uses the shared section shell across approved responsive compositions", () => {
+test("uses one runtime-selected responsive Homepage tree and one shared shell", () => {
   const globals = read("app/globals.css");
-  const homepageClosure = collectImportClosure("app/page.tsx");
+  const homepageClosure = assertResponsiveHomepageBoundary("app/page.tsx");
 
   assert.match(
     globals,
@@ -642,7 +656,7 @@ test("uses the shared section shell across approved responsive compositions", ()
     "the challenge router must appear in the single homepage tree",
   );
 
-  const transitiveMobileFixture = {
+  const missingBoundaryFixture = {
     "app/page.tsx":
       'import HomeSection from "@/components/home/HomeSection"; export default HomeSection;',
     "components/home/HomeSection.tsx":
@@ -652,12 +666,12 @@ test("uses the shared section shell across approved responsive compositions", ()
   };
   assert.throws(
     () =>
-      assertSingleResponsiveHomepageTree(
+      assertResponsiveHomepageBoundary(
         "app/page.tsx",
-        (path) => transitiveMobileFixture[path],
-        (path) => Object.hasOwn(transitiveMobileFixture, path),
+        (path) => missingBoundaryFixture[path],
+        (path) => Object.hasOwn(missingBoundaryFixture, path),
       ),
-    /must not (?:reach a parallel mobile tree|reference mobile-only modules)/,
+    /must use the focused responsive runtime boundary/,
   );
 
   const breakpointSplitFixture = {
@@ -668,13 +682,122 @@ test("uses the shared section shell across approved responsive compositions", ()
   };
   assert.throws(
     () =>
-      assertSingleResponsiveHomepageTree(
+      assertResponsiveHomepageBoundary(
         "app/page.tsx",
         (path) => breakpointSplitFixture[path],
         (path) => Object.hasOwn(breakpointSplitFixture, path),
       ),
-    /must not switch duplicate content trees at breakpoints/,
+    /must use the focused responsive runtime boundary|must not render simultaneous CSS-hidden trees/,
   );
+
+  const simultaneousFixture = {
+    "app/page.tsx":
+      'import ResponsiveHomePage from "@/components/home/ResponsiveHomePage"; export default function Page() { return <ResponsiveHomePage mobile={<div />} desktop={<div />} />; }',
+    "components/home/ResponsiveHomePage.tsx":
+      '"use client"; import { useSyncExternalStore } from "react"; export default function ResponsiveHomePage({ mobile, desktop }) { window.matchMedia("(max-width: 767px)"); const isMobile = useSyncExternalStore(() => () => {}, () => false, () => false); const duplicate = <>{mobile}{desktop}</>; return isMobile ? mobile : desktop; }',
+  };
+  assert.throws(
+    () =>
+      assertResponsiveHomepageBoundary(
+        "app/page.tsx",
+        (path) => simultaneousFixture[path],
+        (path) => Object.hasOwn(simultaneousFixture, path),
+      ),
+    /must return only one Homepage tree/,
+  );
+});
+
+test("keeps alternative Homepage trees internally unique and copy-synchronized", () => {
+  const mobile = read("components/home/MobileHomePage.tsx");
+  const homeContent = read("components/content/home.ts");
+  const siteContent = read("components/content/site.ts");
+  const desktopPaths = [
+    "components/home/HomeHero.tsx",
+    "components/home/BusinessOutcomes.tsx",
+    "components/home/SolutionsOverview.tsx",
+    "components/home/WhyCobrykz.tsx",
+    "components/home/AIPointOfView.tsx",
+    "components/home/ChallengeRouter.tsx",
+    "components/home/ProcessOverview.tsx",
+    "components/home/ProjectsEvidence.tsx",
+    "components/home/AuthorityBand.tsx",
+    "components/home/HomeFinalCTA.tsx",
+  ];
+  const mobilePaths = [
+    "components/home/MobileHomePage.tsx",
+    "components/home/ProjectsEvidence.tsx",
+    "components/home/AuthorityBand.tsx",
+    "components/home/HomeFinalCTA.tsx",
+  ];
+
+  const assertUniqueIds = (paths, label) => {
+    const sources = paths.map(read);
+    const ids = sources.flatMap((source) =>
+      [...source.matchAll(/\bid=["']([^"']+)["']/g)].map(
+        (match) => match[1],
+      ),
+    );
+    assert.equal(
+      new Set(ids).size,
+      ids.length,
+      `${label} must not contain duplicate static IDs or anchors`,
+    );
+    const idSet = new Set(ids);
+    const labelledByTargets = sources.flatMap((source) =>
+      [...source.matchAll(/\baria-labelledby=["']([^"']+)["']/g)].map(
+        (match) => match[1],
+      ),
+    );
+    for (const target of labelledByTargets) {
+      assert.ok(
+        idSet.has(target),
+        `${label} aria-labelledby target ${target} must resolve uniquely`,
+      );
+    }
+  };
+
+  assertUniqueIds(desktopPaths, "desktop Homepage");
+  assertUniqueIds(mobilePaths, "mobile Homepage");
+  assert.match(homeContent, /export const homePageCopy/);
+  assert.match(siteContent, /export const solutionsCta/);
+  assert.match(siteContent, /export const processCta/);
+
+  for (const [path, reference] of [
+    ["components/home/HomeHero.tsx", "homePageCopy.hero"],
+    ["components/home/BusinessOutcomes.tsx", "homePageCopy.outcomes"],
+    ["components/home/SolutionsOverview.tsx", "homePageCopy.solutions"],
+    ["components/home/WhyCobrykz.tsx", "homePageCopy.whyCobrykz"],
+    ["components/home/AIPointOfView.tsx", "homePageCopy.ai"],
+    ["components/home/ChallengeRouter.tsx", "homePageCopy.challengeRouter"],
+    ["components/home/ProcessOverview.tsx", "homePageCopy.process"],
+  ]) {
+    assert.match(read(path), new RegExp(reference.replace(".", "\\.")));
+  }
+
+  assert.match(mobile, /homePageCopy/);
+  assert.match(read("components/home/HomeHero.tsx"), /solutionsCta/);
+  assert.match(mobile, /solutionsCta/);
+  assert.match(read("components/home/ProcessOverview.tsx"), /processCta/);
+  assert.match(mobile, /processCta/);
+
+  for (const literal of [
+    "Business technology, connected",
+    "Technology should make the business stronger.",
+    "Modern solutions for real business challenges.",
+    "One accountable partner from decision to delivery.",
+    "A practical point of view on AI.",
+    "What is holding the work back?",
+    "A focused assessment confirms the right approach.",
+    "A clear path from question to working system.",
+    "Explore our solutions",
+    "Explore the full process",
+  ]) {
+    assert.doesNotMatch(
+      mobile,
+      new RegExp(literal.replace(/[.?]/g, "\\$&")),
+      `${literal} must come from shared content`,
+    );
+  }
 });
 
 test("bounds the shared header within the 320px viewport", () => {

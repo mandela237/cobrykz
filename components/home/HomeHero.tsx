@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { homeMessage } from "@/components/content/home";
-import { primaryCta } from "@/components/content/site";
+import { homeMessage, homePageCopy } from "@/components/content/home";
+import { primaryCta, solutionsCta } from "@/components/content/site";
 import BusinessSystemCutaway from "@/components/home/BusinessSystemCutaway";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 
@@ -17,7 +17,7 @@ export default function HomeHero() {
       <div className="section-shell grid gap-12 py-16 sm:py-20 lg:min-h-[calc(100svh-5rem)] lg:grid-cols-[minmax(0,0.83fr)_minmax(34rem,1.17fr)] lg:items-center lg:gap-12 lg:py-20 xl:gap-16">
         <div className="home-hero-atlas__message relative z-10">
           <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-blue-tint">
-            Business technology, connected
+            {homePageCopy.hero.eyebrow}
           </p>
           <h1
             id="home-hero-heading"
@@ -33,10 +33,10 @@ export default function HomeHero() {
               {primaryCta.label}
             </PrimaryLink>
             <Link
-              href="/solutions"
+              href={solutionsCta.href}
               className="action-transition inline-flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/5 px-5 text-[13px] font-semibold text-white hover:border-blue-tint hover:bg-white/10"
             >
-              Explore our solutions
+              {solutionsCta.label}
             </Link>
           </div>
           <div className="mt-10 grid max-w-xl grid-cols-3 border-y border-white/15 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-white/52">

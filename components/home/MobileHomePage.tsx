@@ -2,24 +2,27 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import type { ReactNode } from "react";
 import {
   aiPrinciples,
   challengeRoutes,
   homeMessage,
   homeOutcomes,
+  homePageCopy,
   processStages,
   whyCobrykz,
 } from "@/components/content/home";
-import { primaryCta, solutionsCta } from "@/components/content/site";
+import {
+  primaryCta,
+  processCta,
+  solutionsCta,
+} from "@/components/content/site";
 import {
   solutionBySlug,
   solutions,
   type SolutionSlug,
 } from "@/components/content/solutions";
-import AuthorityBand from "@/components/home/AuthorityBand";
 import { businessSystemCutaway } from "@/components/home/BusinessSystemCutaway";
-import HomeFinalCTA from "@/components/home/HomeFinalCTA";
-import ProjectsEvidence from "@/components/home/ProjectsEvidence";
 import MobileAtlasPath from "@/components/mobile/MobileAtlasPath";
 import MobileChapter from "@/components/mobile/MobileChapter";
 import MobileDisclosureGroup from "@/components/mobile/MobileDisclosureGroup";
@@ -28,7 +31,11 @@ import PrimaryLink from "@/components/ui/PrimaryLink";
 const itemId = (value: string) =>
   value.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and");
 
-export default function MobileHomePage() {
+type MobileHomePageProps = {
+  closing: ReactNode;
+};
+
+export default function MobileHomePage({ closing }: MobileHomePageProps) {
   const [selectedAtlasNodeId, setSelectedAtlasNodeId] = useState("challenge");
   const [selectedSlug, setSelectedSlug] =
     useState<SolutionSlug>("business-automation");
@@ -37,10 +44,15 @@ export default function MobileHomePage() {
 
   return (
     <div data-mobile-homepage>
-      <MobileChapter id="mobile-home-opening" index={1} eyebrow="Opening" tone="dark">
+      <MobileChapter
+        id="home-opening"
+        index={1}
+        eyebrow="Opening"
+        tone="dark"
+      >
         <div className="mobile-home-hero">
-          <p className="mobile-home-kicker">Business technology, connected</p>
-          <h1>{homeMessage.headline}</h1>
+          <p className="mobile-home-kicker">{homePageCopy.hero.eyebrow}</p>
+          <h1 id="home-hero-heading">{homeMessage.headline}</h1>
           <p className="mobile-home-lead">{homeMessage.description}</p>
           <div className="mobile-home-actions">
             <PrimaryLink href={primaryCta.href}>{primaryCta.label}</PrimaryLink>
@@ -53,27 +65,26 @@ export default function MobileHomePage() {
           </div>
         </div>
         <div className="mobile-home-atlas-plane">
-          <p className="mobile-home-artifact-label">Business transformation Atlas</p>
+          <p className="mobile-home-artifact-label">
+            {businessSystemCutaway.eyebrow}
+          </p>
           <MobileAtlasPath
             definition={businessSystemCutaway}
             selectedNodeId={selectedAtlasNodeId}
             onSelectNode={setSelectedAtlasNodeId}
-            ariaLabel="How a challenge becomes an operating improvement"
+            ariaLabel={businessSystemCutaway.title}
           />
         </div>
       </MobileChapter>
 
       <MobileChapter
-        id="mobile-home-outcomes"
+        id="outcomes"
         index={2}
         eyebrow="Business outcomes"
       >
         <div className="mobile-home-chapter-intro">
-          <h2>Technology should make the business stronger.</h2>
-          <p>
-            The right system creates progress people can recognize in growth,
-            day-to-day work, and important decisions.
-          </p>
+          <h2>{homePageCopy.outcomes.title}</h2>
+          <p>{homePageCopy.outcomes.description}</p>
         </div>
         <div className="mobile-home-outcome-plane">
           <MobileDisclosureGroup
@@ -95,17 +106,14 @@ export default function MobileHomePage() {
       </MobileChapter>
 
       <MobileChapter
-        id="mobile-home-solutions"
+        id="solutions"
         index={3}
         eyebrow="Solutions"
         tone="muted"
       >
         <div className="mobile-home-chapter-intro">
-          <h2>Modern solutions for real business challenges.</h2>
-          <p>
-            Cobrykz combines strategy and execution to move organizations from
-            problem to working solution.
-          </p>
+          <h2>{homePageCopy.solutions.title}</h2>
+          <p>{homePageCopy.solutions.description}</p>
         </div>
         <div className="mobile-home-ledger">
           <MobileDisclosureGroup
@@ -134,17 +142,14 @@ export default function MobileHomePage() {
       </MobileChapter>
 
       <MobileChapter
-        id="mobile-home-trust"
+        id="why-cobrykz"
         index={4}
         eyebrow="Why Cobrykz"
         tone="dark"
       >
         <div className="mobile-home-chapter-intro">
-          <h2>One accountable partner from decision to delivery.</h2>
-          <p>
-            Strong systems come from keeping business context, technical
-            judgment, and implementation responsibility connected.
-          </p>
+          <h2>{homePageCopy.whyCobrykz.title}</h2>
+          <p>{homePageCopy.whyCobrykz.description}</p>
         </div>
         <div className="mobile-home-trust-grid">
           <MobileDisclosureGroup
@@ -166,17 +171,13 @@ export default function MobileHomePage() {
       </MobileChapter>
 
       <MobileChapter
-        id="mobile-home-ai"
+        id="ai-point-of-view"
         index={5}
         eyebrow="AI point of view"
       >
         <div className="mobile-home-chapter-intro">
-          <h2>A practical point of view on AI.</h2>
-          <p>
-            AI is valuable when it improves real work. Cobrykz evaluates it as
-            one possible tool within a responsible business solution, never as
-            a requirement.
-          </p>
+          <h2>{homePageCopy.ai.title}</h2>
+          <p>{homePageCopy.ai.description}</p>
         </div>
         <div className="mobile-home-ai-artifact" data-decision-artifact>
           <p className="mobile-home-artifact-label">Decision model</p>
@@ -199,14 +200,13 @@ export default function MobileHomePage() {
       </MobileChapter>
 
       <MobileChapter
-        id="mobile-home-challenges"
+        id="challenge-router"
         index={6}
         eyebrow="Challenge router"
         tone="muted"
       >
         <div className="mobile-home-chapter-intro">
-          <h2>What is holding the work back?</h2>
-          <p>Select the closest challenge to trace a useful starting path.</p>
+          <h2>{homePageCopy.challengeRouter.title}</h2>
         </div>
         <div
           role="group"
@@ -244,7 +244,7 @@ export default function MobileHomePage() {
             </li>
             <li>
               <span>02</span>
-              <strong>Focused assessment</strong>
+              <strong>{homePageCopy.challengeRouter.assessment}</strong>
             </li>
             <li>
               <span>03</span>
@@ -262,16 +262,13 @@ export default function MobileHomePage() {
       </MobileChapter>
 
       <MobileChapter
-        id="mobile-home-process"
+        id="process"
         index={7}
         eyebrow="Process"
       >
         <div className="mobile-home-chapter-intro">
-          <h2>A clear path from question to working system.</h2>
-          <p>
-            Each engagement follows the same disciplined sequence while
-            adapting to the people, constraints, and outcomes involved.
-          </p>
+          <h2>{homePageCopy.process.title}</h2>
+          <p>{homePageCopy.process.description}</p>
         </div>
         <div className="mobile-home-process-rail">
           <MobileDisclosureGroup
@@ -289,17 +286,16 @@ export default function MobileHomePage() {
             )}
             renderPanel={(stage) => <p>{stage.description}</p>}
           />
-          <Link href="/process" className="mobile-home-text-link action-transition">
-            Explore the full process
+          <Link
+            href={processCta.href}
+            className="mobile-home-text-link action-transition"
+          >
+            {processCta.label}
           </Link>
         </div>
       </MobileChapter>
 
-      <div className="mobile-home-closing">
-        <ProjectsEvidence />
-        <AuthorityBand />
-        <HomeFinalCTA />
-      </div>
+      <div className="mobile-home-closing">{closing}</div>
     </div>
   );
 }

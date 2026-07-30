@@ -1,4 +1,4 @@
-import { aiPrinciples } from "@/components/content/home";
+import { aiPrinciples, homePageCopy } from "@/components/content/home";
 import SectionIntro from "@/components/ui/SectionIntro";
 
 export default function AIPointOfView() {
@@ -8,8 +8,8 @@ export default function AIPointOfView() {
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <SectionIntro
             id="ai-heading"
-            title="A practical point of view on AI."
-            description="AI is valuable when it improves real work. Cobrykz evaluates it as one possible tool within a responsible business solution, never as a requirement."
+            title={homePageCopy.ai.title}
+            description={homePageCopy.ai.description}
           />
           <ul
             data-decision-artifact

@@ -35,25 +35,43 @@ test("defines a semantic Chaptered Atlas mobile grammar", () => {
     css,
     /\.mobile-chapter\[data-mobile-tone="dark"\]\s+:focus-visible\s*\{[^}]*outline-color:\s*var\(--focus-ring-dark\)/s,
   );
+  assert.match(css, /--focus-ring-on-light:\s*#[0-9a-f]{6}/i);
+  assert.match(
+    css,
+    /\.mobile-chapter\[data-mobile-tone="dark"\]\s+\.mobile-atlas__control:focus-visible\s*\{[^}]*outline-color:\s*var\(--focus-ring-on-light\)/s,
+  );
 });
 
-test("recomposes Atlas definitions vertically without copying labels", () => {
+test("recomposes Atlas definitions vertically without copying business labels", () => {
   const mobileAtlas = read("components/mobile/MobileAtlasPath.tsx");
   const relationship = read("components/solutions/CapabilityRelationshipAtlas.tsx");
 
   assert.match(mobileAtlas, /definition: AtlasDefinition/);
   assert.match(mobileAtlas, /definition\.nodes\.map/);
   assert.match(mobileAtlas, /definition\.connections/);
+  assert.match(
+    mobileAtlas,
+    /definition\.readingDirection\.replace\([^)]*left to right[^)]*top to bottom/is,
+  );
+  assert.doesNotMatch(mobileAtlas, /\{definition\.readingDirection\}/);
   assert.match(relationship, /export const capabilityRelationship/);
   assert.doesNotMatch(mobileAtlas, /Consulting|Automation|Digital systems/);
 });
 
-test("groups Atlas fan-out by its actual source instead of a serial path", () => {
+test("renders each Atlas node control once and preserves selected fan-in and fan-out", () => {
   const mobileAtlas = read("components/mobile/MobileAtlasPath.tsx");
 
   assert.match(mobileAtlas, /definition\.connections\.filter/);
-  assert.match(mobileAtlas, /connection\.source === source\.id/);
-  assert.match(mobileAtlas, /connections\.map\(\(connection\)/);
+  assert.match(mobileAtlas, /connection\.target === selectedNodeId/);
+  assert.match(mobileAtlas, /connection\.source === selectedNodeId/);
+  assert.match(mobileAtlas, /incomingConnections\.map\(\(connection\)/);
+  assert.match(mobileAtlas, /outgoingConnections\.map\(\(connection\)/);
+  assert.match(mobileAtlas, /data-atlas-state=\{connection\.state \?\? "default"\}/);
+  assert.equal(
+    (mobileAtlas.match(/<MobileAtlasNodeControl/g) || []).length,
+    1,
+    "the node list must create exactly one control per logical node",
+  );
   assert.doesNotMatch(mobileAtlas, /padStart\(/);
 });
 
@@ -74,6 +92,7 @@ test("requires a selection callback for interactive mobile Atlas controls", () =
 test("builds the mobile Homepage from the frozen content source", () => {
   const mobile = read("components/home/MobileHomePage.tsx");
   const page = read("app/page.tsx");
+  const home = read("components/content/home.ts");
   const site = read("components/content/site.ts");
 
   for (const model of [
@@ -90,7 +109,11 @@ test("builds the mobile Homepage from the frozen content source", () => {
 
   assert.match(mobile, /primaryCta/);
   assert.match(mobile, /solutionsCta/);
+  assert.match(mobile, /processCta/);
+  assert.match(mobile, /homePageCopy/);
+  assert.match(home, /export const homePageCopy/);
   assert.match(site, /export const solutionsCta/);
+  assert.match(site, /export const processCta/);
   assert.match(page, /MobileHomePage/);
   assert.match(page, /HomeHero/);
   assert.match(mobile, /data-mobile-homepage/);
@@ -103,7 +126,20 @@ test("builds the mobile Homepage from the frozen content source", () => {
     mobile,
     /Turn business challenges into better systems\./,
   );
-  assert.doesNotMatch(mobile, /Explore our solutions/);
+  for (const literal of [
+    "Business technology, connected",
+    "Technology should make the business stronger.",
+    "Modern solutions for real business challenges.",
+    "One accountable partner from decision to delivery.",
+    "A practical point of view on AI.",
+    "What is holding the work back?",
+    "A focused assessment confirms the right approach.",
+    "A clear path from question to working system.",
+    "Explore our solutions",
+    "Explore the full process",
+  ]) {
+    assert.doesNotMatch(mobile, new RegExp(literal.replace(/[.?]/g, "\\$&")));
+  }
 });
 
 test("keeps the approved Homepage chapter order", () => {
@@ -116,9 +152,7 @@ test("keeps the approved Homepage chapter order", () => {
     'eyebrow="AI point of view"',
     'eyebrow="Challenge router"',
     'eyebrow="Process"',
-    "<ProjectsEvidence",
-    "<AuthorityBand",
-    "<HomeFinalCTA",
+    "{closing}",
   ];
 
   for (let index = 1; index < sequence.length; index += 1) {
@@ -147,15 +181,32 @@ test("uses disclosure and selection patterns for dense Homepage chapters", () =>
   assert.match(desktopAtlas, /export const businessSystemCutaway/);
 });
 
-test("exposes exactly one responsive Homepage composition at a time", () => {
+test("renders exactly one runtime-selected Homepage composition with canonical anchors", () => {
   const page = read("app/page.tsx");
+  const boundary = read("components/home/ResponsiveHomePage.tsx");
+  const mobile = read("components/home/MobileHomePage.tsx");
   const css = read("app/globals.css");
 
-  assert.match(
-    page,
-    /<div className="md:hidden">\s*<MobileHomePage \/>\s*<\/div>/,
-  );
-  assert.match(page, /<div className="hidden md:block">/);
+  assert.match(page, /<ResponsiveHomePage/);
+  assert.doesNotMatch(page, /\bmd:hidden\b|\bhidden md:block\b/);
+  assert.match(boundary, /"use client"/);
+  assert.match(boundary, /useSyncExternalStore/);
+  assert.match(boundary, /matchMedia\("\(max-width: 767px\)"\)/);
+  assert.match(boundary, /getServerSnapshot/);
+  assert.match(boundary, /return isMobile \? mobile : desktop/);
+  assert.doesNotMatch(boundary, /\{mobile\}\s*\{desktop\}|\{desktop\}\s*\{mobile\}/);
+  assert.doesNotMatch(mobile, /ProjectsEvidence|AuthorityBand|HomeFinalCTA/);
+  assert.match(mobile, /closing: ReactNode/);
+
+  for (const anchor of [
+    "outcomes",
+    "solutions",
+    "why-cobrykz",
+    "ai-point-of-view",
+    "process",
+  ]) {
+    assert.match(mobile, new RegExp(`id=["']${anchor}["']`));
+  }
   assert.doesNotMatch(
     css,
     /\[data-mobile-homepage\]\s*\{[^}]*overflow-x:\s*(?:hidden|clip)/s,
@@ -187,4 +238,13 @@ test("exposes exactly one responsive Homepage composition at a time", () => {
       `${desktopSequence[index - 1]} must precede ${desktopSequence[index]}`,
     );
   }
+});
+
+test("keeps selected Atlas explanations readable on mobile", () => {
+  const css = read("app/globals.css");
+
+  assert.match(
+    css,
+    /\.mobile-atlas__detail\s*\{[^}]*font-size:\s*0\.9375rem/s,
+  );
 });
