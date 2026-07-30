@@ -3662,6 +3662,170 @@ button {
   .mobile-project-detail-cta .primary-link {
     justify-self: start;
   }
+  [data-mobile-insights-index],
+  [data-mobile-insight-article] {
+    min-width: 0;
+  }
+
+  .mobile-insights-opening,
+  .mobile-insight-opening,
+  .mobile-insight-section,
+  .mobile-insights-state,
+  .mobile-insight-answer,
+  .mobile-insight-steps,
+  .mobile-insight-related,
+  .mobile-insight-author,
+  .mobile-insight-cta {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .mobile-insights-opening h1,
+  .mobile-insight-opening h1 {
+    font-size: 2.75rem;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    color: var(--navy);
+  }
+
+  .mobile-insights-opening p,
+  .mobile-insights-state p,
+  .mobile-insight-section p,
+  .mobile-insight-author p,
+  .mobile-insight-cta p {
+    color: var(--slate);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .mobile-insights-method {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .mobile-insights-method h2,
+  .mobile-insight-answer h2,
+  .mobile-insight-cta h2 {
+    color: white;
+  }
+
+  .mobile-insights-method ol,
+  .mobile-insight-ledger ol,
+  .mobile-insight-steps ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid currentColor;
+  }
+
+  .mobile-insights-method li,
+  .mobile-insight-steps li {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .mobile-insights-method li span,
+  .mobile-insight-steps li span,
+  .mobile-insights-ledger a > span {
+    color: var(--blue-tint);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .mobile-insights-actions {
+    display: grid;
+    gap: 0.75rem;
+    justify-items: start;
+  }
+
+  .mobile-insights-secondary,
+  .mobile-insight-back,
+  .mobile-insight-related a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    color: var(--blue);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.25rem;
+  }
+
+  .mobile-insights-ledger {
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  .mobile-insights-ledger li {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mobile-insights-ledger a {
+    display: grid;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 1.25rem 0;
+    color: var(--navy);
+  }
+
+  .mobile-insights-ledger a > span {
+    color: var(--blue);
+  }
+
+  .mobile-insights-ledger a > p {
+    color: var(--slate);
+    line-height: 1.6;
+  }
+
+  .mobile-insight-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: var(--slate);
+    font-size: 0.84rem;
+  }
+
+  .mobile-insight-answer p {
+    color: rgb(255 255 255 / 0.82);
+    font-size: 1.2rem;
+    line-height: 1.55;
+  }
+
+  .mobile-insight-section h2,
+  .mobile-insight-steps h2,
+  .mobile-insight-related h2,
+  .mobile-insight-author h2 {
+    color: var(--navy);
+    font-size: 1.75rem;
+    line-height: 1.08;
+  }
+
+  .mobile-insight-section p + p {
+    margin-top: 0.5rem;
+  }
+
+  .mobile-insight-steps li {
+    border-color: var(--border);
+  }
+
+  .mobile-insight-steps li span {
+    color: var(--blue);
+  }
+
+  .mobile-insight-steps li p {
+    color: var(--slate);
+    line-height: 1.65;
+  }
+
+  .mobile-insight-cta .primary-link {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 767px) {
 }
 
 @media (prefers-reduced-motion: reduce) {

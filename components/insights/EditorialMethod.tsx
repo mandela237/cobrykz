@@ -1,4 +1,4 @@
-const method = [
+export const editorialMethod = [
   "Define the decision",
   "Examine the operating system",
   "Compare practical options",
@@ -18,7 +18,7 @@ export default function EditorialMethod() {
           </h2>
         </div>
         <ol className="border-t border-white/20">
-          {method.map((step, index) => (
+          {editorialMethod.map((step, index) => (
             <li key={step} className="grid grid-cols-[3rem_1fr] border-b border-white/20 py-6">
               <span className="text-[11px] font-bold text-blue-tint">
                 {String(index + 1).padStart(2, "0")}

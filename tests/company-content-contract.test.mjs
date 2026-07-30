@@ -484,8 +484,8 @@ test("adds honest visual frameworks for Projects and Insights", () => {
     "components/projects/DesktopProjectCaseStudy.tsx",
   );
   const evidenceStandard = read("components/projects/EvidenceStandard.tsx");
-  const insightsIndex = read("components/insights/InsightsIndex.tsx");
-  const insightArticle = read("components/insights/InsightArticle.tsx");
+  const insightsIndex = read("components/insights/DesktopInsightsIndex.tsx");
+  const insightArticle = read("components/insights/DesktopInsightArticle.tsx");
   const editorialMethod = read("components/insights/EditorialMethod.tsx");
 
   assert.match(projectsIndex, /<DesktopProjectsIndex/);
@@ -695,7 +695,7 @@ test("builds an honest noindex Insights index from published articles only", () 
 });
 
 test("renders a transparent Insights empty state without draft article cards", () => {
-  const source = read("components/insights/InsightsIndex.tsx");
+  const source = read("components/insights/DesktopInsightsIndex.tsx");
 
   assert.ok(source, "components/insights/InsightsIndex.tsx must exist");
   assert.doesNotMatch(source, /["']use client["']/);
@@ -734,7 +734,7 @@ test("generates Insight articles only for published slugs and rejects drafts", (
 });
 
 test("defines the approved Insight article structure and conversion path", () => {
-  const source = read("components/insights/InsightArticle.tsx");
+  const source = read("components/insights/DesktopInsightArticle.tsx");
 
   assert.ok(source, "components/insights/InsightArticle.tsx must exist");
   assert.equal((source.match(/<h1\b/g) || []).length, 1);
