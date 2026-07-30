@@ -42,3 +42,26 @@ test("recomposes Atlas definitions vertically without copying labels", () => {
   assert.match(relationship, /export const capabilityRelationship/);
   assert.doesNotMatch(mobileAtlas, /Consulting|Automation|Digital systems/);
 });
+
+test("groups Atlas fan-out by its actual source instead of a serial path", () => {
+  const mobileAtlas = read("components/mobile/MobileAtlasPath.tsx");
+
+  assert.match(mobileAtlas, /definition\.connections\.filter/);
+  assert.match(mobileAtlas, /connection\.source === source\.id/);
+  assert.match(mobileAtlas, /connections\.map\(\(connection\)/);
+  assert.doesNotMatch(mobileAtlas, /padStart\(/);
+});
+
+test("represents every Atlas connection without first-match loss", () => {
+  const mobileAtlas = read("components/mobile/MobileAtlasPath.tsx");
+
+  assert.doesNotMatch(mobileAtlas, /\.find\(/);
+  assert.match(mobileAtlas, /new Map\(definition\.nodes\.map/);
+});
+
+test("requires a selection callback for interactive mobile Atlas controls", () => {
+  const mobileAtlas = read("components/mobile/MobileAtlasPath.tsx");
+
+  assert.match(mobileAtlas, /onSelectNode: \(nodeId: string\) => void/);
+  assert.doesNotMatch(mobileAtlas, /onSelectNode\?\./);
+});
