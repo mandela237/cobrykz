@@ -70,6 +70,27 @@ for (const path of solutionRoutes) {
       "#solution-operating-model .mobile-atlas__control",
     );
     await expect(atlasControls).toHaveCount(7);
+    expect(
+      await atlasControls.locator("strong").evaluateAll((labels) =>
+        labels.flatMap((label) => {
+          const textNode = [...label.childNodes].find(
+            (node) => node.nodeType === Node.TEXT_NODE,
+          );
+          if (!textNode?.textContent) return [];
+
+          const fragmented: string[] = [];
+          const matcher = /\S+/g;
+          let match: RegExpExecArray | null;
+          while ((match = matcher.exec(textNode.textContent))) {
+            const range = document.createRange();
+            range.setStart(textNode, match.index);
+            range.setEnd(textNode, match.index + match[0].length);
+            if (range.getClientRects().length > 1) fragmented.push(match[0]);
+          }
+          return fragmented;
+        }),
+      ),
+    ).toEqual([]);
     await atlasControls.last().click();
     await expect(atlasControls.last()).toHaveAttribute(
       "aria-pressed",

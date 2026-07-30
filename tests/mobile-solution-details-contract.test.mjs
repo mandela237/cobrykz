@@ -192,6 +192,10 @@ test("adds contained touch-first styling for the mobile solution family", () => 
     /\[data-mobile-solution-detail\]\s+\.mobile-disclosure-trigger\s*\{[^}]*min-height:\s*4[^;]*rem/s,
   );
   assert.match(css, /\.mobile-solution-atlas-stage\s*\{/);
+  assert.match(
+    css,
+    /\[data-mobile-solution-detail\]\s+\.mobile-atlas__control strong\s*\{[^}]*overflow-wrap:\s*normal[^}]*word-break:\s*normal[^}]*hyphens:\s*none/s,
+  );
   assert.match(css, /\.mobile-solution-deliverable-ledger\s*\{/);
   assert.match(
     css,
