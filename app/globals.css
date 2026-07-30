@@ -23,7 +23,7 @@
 :root {
   --control-transition: 0.2s ease;
   --focus-ring-light: rgba(31, 94, 255, 0.78);
-  --focus-ring-dark: rgba(31, 94, 255, 0.78);
+  --focus-ring-dark: #9cc8ff;
   --section-gutter: 1.25rem;
 
   color-scheme: light;
@@ -136,7 +136,8 @@ button {
 }
 
 .bg-navy :focus-visible,
-.bg-footer-bg :focus-visible {
+.bg-footer-bg :focus-visible,
+.bg-charcoal :focus-visible {
   outline-color: var(--focus-ring-dark);
 }
 

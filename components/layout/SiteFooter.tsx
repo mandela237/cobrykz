@@ -74,7 +74,7 @@ export default function SiteFooter() {
             </ul>
             <a
               href="mailto:info@cobrykz.com"
-              className="action-transition mt-5 inline-flex min-h-11 items-center text-[13px] font-medium text-white hover:text-[#9CC8FF] active:text-[#9CC8FF]"
+              className="action-transition mt-5 inline-flex min-h-11 items-center text-[13px] font-medium text-white hover:text-blue-tint active:text-blue-tint"
             >
               info@cobrykz.com
             </a>

@@ -7,7 +7,7 @@ export default function AuthorityBand() {
     >
       <div className="section-shell grid gap-10 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-24">
         <div>
-          <p className="text-[11px] font-bold uppercase text-[#9CC8FF]">
+          <p className="text-[11px] font-bold uppercase text-blue-tint">
             Accountable leadership
           </p>
           <h2
@@ -27,7 +27,7 @@ export default function AuthorityBand() {
           aria-labelledby="planned-insight-heading"
           className="border-t border-white/20 pt-7 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
         >
-          <p className="text-[11px] font-bold uppercase text-[#9CC8FF]">
+          <p className="text-[11px] font-bold uppercase text-blue-tint">
             Planned insight
           </p>
           <h3

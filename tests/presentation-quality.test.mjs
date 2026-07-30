@@ -171,7 +171,7 @@ function jsxTags(source) {
 }
 
 const prohibitedIconMotion =
-  /(?:^|[\s"'`{])(?:[\w-]+:)*(?:-?(?:rotate|scale|translate-y)-[^\s"`}]+|animate-(?:bounce|pulse|spin))/;
+  /(?:^|[\s"'`{])(?:[\w-]+:)*(?:-?(?:rotate|scale|translate-y)-[^\s"`}]+|animate-(?!none\b)[^\s"`}]+)/;
 
 function assertLucideOnlyIcons(source, path) {
   const imports = new Map();
@@ -209,6 +209,17 @@ function assertLucideOnlyIcons(source, path) {
       ([, alias]) => [alias, iconPropertySources],
     ),
   );
+  for (const [, alias, importedIdentifier] of source.matchAll(
+    /\bconst\s+(\w+)\s*=\s*([A-Z][A-Za-z0-9_]*)\s*;/g,
+  )) {
+    const importSource = imports.get(importedIdentifier);
+    if (importSource) dynamicIconAliases.set(alias, new Set([importSource]));
+  }
+  for (const [, alias] of source.matchAll(
+    /\bconst\s*{\s*icon\s*:\s*(\w+)\s*}\s*=/g,
+  )) {
+    dynamicIconAliases.set(alias, iconPropertySources);
+  }
 
   const inlineSvgCount = (source.match(/<svg\b/g) || []).length;
   if (path === "components/CobrykzLogo.tsx") {
@@ -297,7 +308,17 @@ function assertHeroMediaAccessible(source, label) {
     );
   }
 
-  for (const [, attributes] of source.matchAll(/<Image\b([^>]*)\/?>/gs)) {
+  const imageAliases = new Set(["img"]);
+  for (const [, alias] of source.matchAll(
+    /^\s*import\s+([A-Z][A-Za-z0-9_]*)\s+from\s+["']next\/image["'];?\s*$/gm,
+  )) {
+    imageAliases.add(alias);
+  }
+
+  for (const tag of jsxTags(source).filter(
+    ({ closing, name }) => !closing && imageAliases.has(name),
+  )) {
+    const attributes = tag.attributes;
     assert.match(attributes, /\balt=/, `${label} image must define alt text`);
     if (/\balt=""/.test(attributes)) {
       assert.match(
@@ -307,6 +328,83 @@ function assertHeroMediaAccessible(source, label) {
       );
     }
   }
+}
+
+function assertReadableExplanatoryText(source, label) {
+  const blocks = [...source.matchAll(/<(p|span)\b([^>]*)>([\s\S]*?)<\/\1>/g)]
+    .filter(([, tag, attributes, body]) => {
+      if (tag === "p" && !/\buppercase\b/.test(attributes)) return true;
+      return (
+        /\b(?:leading-[5-9]|opacity-\d+)\b/.test(attributes) ||
+        /\b(?:description|navOutcome|outcome|tagline|selectedChallenge)\b/.test(
+          body,
+        )
+      );
+    });
+
+  for (const [, , attributes] of blocks) {
+    assert.doesNotMatch(
+      attributes,
+      /\btext-xs\b/,
+      `${label} explanatory text must be at least 13px`,
+    );
+    for (const [, value, unit] of attributes.matchAll(
+      /\btext-\[(\d*\.?\d+)(px|rem)\]/g,
+    )) {
+      const pixels = Number(value) * (unit === "rem" ? 16 : 1);
+      assert.ok(
+        pixels >= 13,
+        `${label} explanatory text must be at least 13px; received ${value}${unit}`,
+      );
+    }
+  }
+}
+
+function contrastRatio(foreground, background) {
+  const luminance = (hex) => {
+    const channels = hex
+      .slice(1)
+      .match(/.{2}/g)
+      .map((channel) => Number.parseInt(channel, 16) / 255)
+      .map((channel) =>
+        channel <= 0.04045
+          ? channel / 12.92
+          : ((channel + 0.055) / 1.055) ** 2.4,
+      );
+    return (
+      channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722
+    );
+  };
+  const values = [luminance(foreground), luminance(background)].sort(
+    (a, b) => b - a,
+  );
+  return (values[0] + 0.05) / (values[1] + 0.05);
+}
+
+function assertMinimalAuthoredMotion(source, label) {
+  assert.doesNotMatch(
+    source,
+    /@keyframes\b|(?:^|[;{]\s*)animation(?:-name)?\s*:|(?:^|[;{]\s*)transform\s*:|transition[^;{}]*\btransform\b|\banimate-(?!none\b)[^\s"'`}]*/m,
+    `${label} must not author continuous animation or transform motion`,
+  );
+}
+
+function assertApprovedPresentationUtilities(source, label) {
+  assert.doesNotMatch(
+    source,
+    /(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-\[(?:#|rgba?\(|hsla?\(|oklch\(|color:|var\()/,
+    `${label} must use approved palette utilities instead of arbitrary colors`,
+  );
+  assert.doesNotMatch(
+    source,
+    /(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose|zinc|neutral|stone|gray-(?!light\b|100\b)|slate-\d)/,
+    `${label} must not use Tailwind color families outside the approved palette`,
+  );
+  assert.doesNotMatch(
+    source,
+    /\bfont-(?:serif|mono|\[(?![1-9]\d{2}\]))/,
+    `${label} must use only the approved sans font utility`,
+  );
 }
 
 test("uses platform-native font rasterization", () => {
@@ -388,6 +486,46 @@ test("preserves the frozen palette and font tokens", () => {
   );
   assert.match(globals, /--font-sans:\s*var\(--font-geist-sans\);/);
   assert.match(globals, /--font-serif:\s*var\(--font-playfair\);/);
+  assert.deepEqual(
+    [...globals.matchAll(/(--font-[\w-]+)\s*:/g)].map(([, token]) => token),
+    ["--font-sans", "--font-serif"],
+    "the theme must not introduce extra font-family tokens",
+  );
+
+  for (const path of trackedTsxPaths()) {
+    assertApprovedPresentationUtilities(read(path), path);
+  }
+  for (const fixture of [
+    '<p className="text-[#9CC8FF]">Arbitrary color</p>',
+    '<p className="text-red-500">Tailwind family</p>',
+    '<p className="font-serif">Unapproved family</p>',
+  ]) {
+    assert.throws(
+      () => assertApprovedPresentationUtilities(fixture, "utility fixture"),
+      /approved palette utilities|outside the approved palette|approved sans font utility/,
+    );
+  }
+});
+
+test("keeps the dark focus token distinct on every approved dark surface", () => {
+  const globals = read("app/globals.css");
+  const focusColor = "#9cc8ff";
+
+  assert.match(globals, /--focus-ring-dark:\s*#9cc8ff;/);
+  for (const [surface, color] of Object.entries({
+    navy: "#0b1728",
+    "footer void": "#081321",
+    charcoal: "#132136",
+  })) {
+    assert.ok(
+      contrastRatio(focusColor, color) >= 3,
+      `dark focus ring must reach 3:1 against ${surface}`,
+    );
+  }
+  assert.match(
+    globals,
+    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible,\s*\.bg-charcoal :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
+  );
 });
 
 test("uses one responsive section shell from 320px upward", () => {
@@ -472,10 +610,12 @@ test("bounds the shared header within the 320px viewport", () => {
     header,
     /className="section-shell min-w-0 flex min-h-16 flex-wrap items-center/,
   );
-  assert.match(
+  assert.doesNotMatch(
     header,
-    /<nav\s+className="order-3 min-w-0 w-full border-t border-border/,
+    /\b(?:sm:|md:|lg:|xl:|2xl:)?order-(?:none|first|last|\d+)\b/,
+    "header visual order must match DOM and keyboard order",
   );
+  assert.match(header, /<nav\s+className="min-w-0 w-full border-t border-border/);
   assert.match(
     header,
     /<ul\s+className="flex max-w-full flex-wrap items-center justify-start gap-x-2 gap-y-1 py-1 lg:flex-nowrap lg:gap-0 lg:py-0"/,
@@ -488,8 +628,13 @@ test("bounds the shared header within the 320px viewport", () => {
   );
   assert.match(
     header,
-    /className="order-2 mb-2 w-full max-w-full basis-full lg:order-none lg:mb-0 lg:w-auto lg:basis-auto"/,
+    /className="mb-2 w-full max-w-full basis-full lg:mb-0 lg:w-auto lg:basis-auto"/,
     "the exact primary CTA must occupy its own bounded mobile row",
+  );
+  assert.ok(
+    header.indexOf('href="/"') < header.indexOf("<nav") &&
+      header.indexOf("<nav") < header.indexOf("<PrimaryLink"),
+    "header DOM/tab order must be logo, navigation, then primary CTA",
   );
 
   assert.match(
@@ -533,25 +678,15 @@ test("keeps mobile typography fixed and readable", () => {
     /\btext-\[2rem\][^"]*\bsm:text-\[2\.5rem\][^"]*\blg:text-5xl/,
   );
 
-  const explanatoryBlocks = [
-    ...liveTsxSource().matchAll(
-      /<(p|span)\b([^>]*)>([\s\S]*?)<\/\1>/g,
-    ),
-  ].filter(([, tag, attributes, body]) => {
-    if (tag === "p" && !/\buppercase\b/.test(attributes)) return true;
-    return (
-      /\b(?:leading-[5-9]|opacity-\d+)\b/.test(attributes) ||
-      /\b(?:description|navOutcome|outcome|tagline|selectedChallenge)\b/.test(
-        body,
-      )
-    );
-  });
-
-  for (const [, , attributes] of explanatoryBlocks) {
-    assert.doesNotMatch(
-      attributes,
-      /\btext-xs\b|\btext-\[(?:10|11|12)px\]\b/,
-      "explanatory paragraph and supporting span text must be at least 13px",
+  assertReadableExplanatoryText(liveTsxSource(), "tracked presentation");
+  for (const value of ["12px", "12.5px", "0.75rem"]) {
+    assert.throws(
+      () =>
+        assertReadableExplanatoryText(
+          `<p className="text-[${value}]">Important explanation</p>`,
+          `fixture-${value}`,
+        ),
+      /at least 13px/,
     );
   }
 });
@@ -618,7 +753,7 @@ test("keeps actions, focus, and reduced motion restrained", () => {
   );
   assert.match(
     globals,
-    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
+    /\.bg-navy :focus-visible,\s*\.bg-footer-bg :focus-visible,\s*\.bg-charcoal :focus-visible\s*{[^}]*var\(--focus-ring-dark\)/s,
   );
   assert.match(
     globals,
@@ -647,6 +782,26 @@ test("uses one accessible Lucide interface icon family", () => {
     /&(?:larr|rarr|uarr|darr);|[←→↑↓]/,
     "directional interface icons must not bypass Lucide with text glyphs",
   );
+});
+
+test("keeps authored animation and transforms out of the presentation", () => {
+  for (const path of [
+    ...trackedTsxPaths(),
+    ...collectFiles("app", ".css"),
+  ]) {
+    assertMinimalAuthoredMotion(read(path), path);
+  }
+  for (const fixture of [
+    ".pulse { animation: pulse 1s infinite; }",
+    "@keyframes pulse { to { opacity: .5; } }",
+    ".lift { transform: translateY(-2px); }",
+    '<span className="animate-ping" />',
+  ]) {
+    assert.throws(
+      () => assertMinimalAuthoredMotion(fixture, "motion fixture"),
+      /must not author continuous animation or transform motion/,
+    );
+  }
 });
 
 test("rejects inaccessible or third-party icon fixtures", () => {
@@ -690,6 +845,17 @@ test("rejects inaccessible or third-party icon fixtures", () => {
     export const Fixture = () => (
       <Menu className="-translate-y-px" size={16} strokeWidth={2} aria-hidden="true" />
     );
+  `;
+  const directAlias = `
+    import { Menu } from "lucide-react";
+    const Icon = Menu;
+    export const Fixture = () => <Icon aria-hidden="true" />;
+  `;
+  const destructuredAlias = `
+    import { Menu } from "lucide-react";
+    const actions = [{ icon: Menu }];
+    const { icon: Icon } = actions[0];
+    export const Fixture = () => <Icon aria-hidden="true" />;
   `;
 
   assert.throws(
@@ -738,6 +904,55 @@ test("rejects inaccessible or third-party icon fixtures", () => {
       ),
     /must not add continuous or attention-seeking motion to Menu/,
   );
+  assert.doesNotThrow(() =>
+    assertLucideOnlyIcons(directAlias, "fixture-direct-alias.tsx"),
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        directAlias.replace(' aria-hidden="true"', ""),
+        "fixture-direct-alias-missing-aria.tsx",
+      ),
+    /must hide adjacent-text decorative Icon icons/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        directAlias.replace('"lucide-react"', '"other-icons"'),
+        "fixture-direct-alias-third-party.tsx",
+      ),
+    /must come from lucide-react/,
+  );
+  assert.doesNotThrow(() =>
+    assertLucideOnlyIcons(destructuredAlias, "fixture-destructured-alias.tsx"),
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        destructuredAlias.replace(' aria-hidden="true"', ""),
+        "fixture-destructured-missing-aria.tsx",
+      ),
+    /must hide adjacent-text decorative Icon icons/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        destructuredAlias.replace('"lucide-react"', '"other-icons"'),
+        "fixture-destructured-third-party.tsx",
+      ),
+    /must come from lucide-react/,
+  );
+  assert.throws(
+    () =>
+      assertLucideOnlyIcons(
+        directAlias.replace(
+          'aria-hidden="true"',
+          'aria-hidden="true" className="animate-ping"',
+        ),
+        "fixture-pinging-icon.tsx",
+      ),
+    /must not add continuous or attention-seeking motion/,
+  );
 });
 
 test("keeps navigation text on crisp surfaces", () => {
@@ -781,6 +996,24 @@ test("keeps retained hero media accessible and non-blocking", () => {
       ),
     /video must be muted/,
     "media attributes elsewhere in the hero must not satisfy the video contract",
+  );
+  assert.throws(
+    () => assertHeroMediaAccessible('<img src="/hero.jpg" />', "native image"),
+    /image must define alt text/,
+  );
+  assert.throws(
+    () =>
+      assertHeroMediaAccessible(
+        'import HeroImage from "next/image";\n<HeroImage src="/hero.jpg" />',
+        "aliased Next image",
+      ),
+    /image must define alt text/,
+  );
+  assert.doesNotThrow(() =>
+    assertHeroMediaAccessible(
+      'import HeroImage from "next/image";\n<HeroImage src="/hero.jpg" alt="" aria-hidden="true" />',
+      "decorative aliased Next image",
+    ),
   );
 });
 

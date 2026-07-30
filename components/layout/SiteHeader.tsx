@@ -26,7 +26,7 @@ export default function SiteHeader() {
         </Link>
 
         <nav
-          className="order-3 min-w-0 w-full border-t border-border lg:order-none lg:w-auto lg:border-0"
+          className="min-w-0 w-full border-t border-border lg:w-auto lg:border-0"
           aria-label="Primary navigation"
         >
           <ul
@@ -52,7 +52,7 @@ export default function SiteHeader() {
 
         <PrimaryLink
           href={primaryCta.href}
-          className="order-2 mb-2 w-full max-w-full basis-full lg:order-none lg:mb-0 lg:w-auto lg:basis-auto"
+          className="mb-2 w-full max-w-full basis-full lg:mb-0 lg:w-auto lg:basis-auto"
         >
           {primaryCta.label}
         </PrimaryLink>
