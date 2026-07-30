@@ -1,5 +1,6 @@
 "use client";
 
+import AtlasTextEquivalent from "@/components/atlas/AtlasTextEquivalent";
 import type { AtlasDefinition } from "@/components/atlas/types";
 
 type MobileAtlasNode = AtlasDefinition["nodes"][number];
@@ -8,6 +9,7 @@ type MobileAtlasPathProps = {
   selectedNodeId?: string;
   onSelectNode: (nodeId: string) => void;
   ariaLabel: string;
+  showDefinitionContext?: boolean;
 };
 
 type MobileAtlasNodeControlProps = {
@@ -38,6 +40,7 @@ export default function MobileAtlasPath({
   selectedNodeId,
   onSelectNode,
   ariaLabel,
+  showDefinitionContext = false,
 }: MobileAtlasPathProps) {
   const nodesById = new Map(definition.nodes.map((node) => [node.id, node]));
   const selectedNode = selectedNodeId
@@ -53,9 +56,26 @@ export default function MobileAtlasPath({
     /left to right/i,
     "top to bottom",
   );
+  const mobileDefinition: AtlasDefinition = {
+    ...definition,
+    readingDirection: verticalReadingDirection,
+  };
+  const titleId = `${definition.id}-mobile-title`;
+  const descriptionId = `${definition.id}-mobile-description`;
 
   return (
-    <figure className="mobile-atlas" aria-label={ariaLabel}>
+    <figure
+      className="mobile-atlas"
+      aria-label={showDefinitionContext ? undefined : ariaLabel}
+      aria-labelledby={showDefinitionContext ? titleId : undefined}
+      aria-describedby={showDefinitionContext ? descriptionId : undefined}
+    >
+      {showDefinitionContext ? (
+        <div className="mobile-atlas__heading">
+          <h3 id={titleId}>{definition.title}</h3>
+          <p id={descriptionId}>{definition.description}</p>
+        </div>
+      ) : null}
       <ol className="mobile-atlas__map" aria-label={`${ariaLabel} planes`}>
         {definition.layers.map((layer) => {
           const layerNodes = definition.nodes.filter(
@@ -89,6 +109,9 @@ export default function MobileAtlasPath({
                 <span aria-hidden="true">{layer.depth}</span>
                 <strong>{layer.label}</strong>
               </div>
+              {showDefinitionContext ? (
+                <p className="mobile-atlas__layer-meaning">{layer.meaning}</p>
+              ) : null}
               <ol className="mobile-atlas__nodes">
                 {layerNodes.map((node) => (
                   <li key={node.id} data-atlas-kind={node.kind}>
@@ -155,6 +178,22 @@ export default function MobileAtlasPath({
       <figcaption className="mobile-atlas__caption">
         {verticalReadingDirection}
       </figcaption>
+      {showDefinitionContext && definition.legend?.length ? (
+        <details className="mobile-atlas__legend">
+          <summary className="min-h-11">Understand the model</summary>
+          <dl>
+            {definition.legend?.map((item) => (
+              <div key={item.label}>
+                <dt>{item.label}</dt>
+                <dd>{item.meaning}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
+      ) : null}
+      {showDefinitionContext ? (
+        <AtlasTextEquivalent definition={mobileDefinition} />
+      ) : null}
     </figure>
   );
 }

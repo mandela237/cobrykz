@@ -749,6 +749,28 @@ button {
     box-shadow: var(--atlas-depth-shadow);
   }
 
+  .mobile-atlas__heading {
+    display: grid;
+    gap: 0.65rem;
+    padding: 1.15rem 1.25rem;
+    border-bottom: 1px solid var(--atlas-frame);
+    background: white;
+  }
+
+  .mobile-atlas__heading h3 {
+    color: var(--color-navy);
+    font-size: 1.25rem;
+    font-weight: 750;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+
+  .mobile-atlas__heading p {
+    color: var(--color-slate);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
   .mobile-atlas__map {
     position: relative;
     display: grid;
@@ -836,6 +858,13 @@ button {
   .mobile-atlas__layer-header strong {
     font-size: 0.6875rem;
     font-weight: 750;
+  }
+
+  .mobile-atlas__layer-meaning {
+    margin: 0 0.25rem 0.65rem;
+    color: var(--color-slate);
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 
   .mobile-atlas__nodes {
@@ -960,6 +989,49 @@ button {
   .mobile-atlas__caption {
     border-top: 1px solid var(--atlas-frame);
     padding: 0.9rem 1.25rem;
+    color: var(--color-slate);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .mobile-atlas__legend {
+    border-top: 1px solid var(--atlas-frame);
+    color: var(--color-navy);
+    background: white;
+  }
+
+  .mobile-atlas__legend summary {
+    display: flex;
+    min-height: 2.75rem;
+    cursor: pointer;
+    align-items: center;
+    padding-inline: 1.25rem;
+    color: var(--color-blue);
+    font-size: 0.75rem;
+    font-weight: 750;
+  }
+
+  .mobile-atlas__legend dl {
+    display: grid;
+    margin: 0;
+    padding: 0 1.25rem 1rem;
+  }
+
+  .mobile-atlas__legend dl > div {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, 0.65fr) minmax(0, 1.35fr);
+    gap: 0.75rem;
+    padding-block: 0.65rem;
+    border-top: 1px solid var(--atlas-frame);
+  }
+
+  .mobile-atlas__legend dt {
+    color: var(--color-navy);
+    font-size: 0.75rem;
+    font-weight: 750;
+  }
+
+  .mobile-atlas__legend dd {
     color: var(--color-slate);
     font-size: 0.75rem;
     line-height: 1.5;
@@ -1685,6 +1757,20 @@ button {
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .mobile-solutions-field-label {
+    margin-top: 1rem;
+    color: var(--color-navy);
+    font-size: 0.6875rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .mobile-solutions-field-label:first-child {
+    margin-top: 0;
   }
 
   .mobile-solutions-atlas-stage {

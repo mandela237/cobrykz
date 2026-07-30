@@ -32,6 +32,7 @@ export default function MobileCapabilityAtlas() {
         selectedNodeId={selectedNodeId}
         onSelectNode={setSelectedNodeId}
         ariaLabel={capabilityRelationship.title}
+        showDefinitionContext
       />
       <div
         className="mobile-solutions-atlas__action"

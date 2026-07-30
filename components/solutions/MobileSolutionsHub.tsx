@@ -15,7 +15,10 @@ import type {
 import MobileChapter from "@/components/mobile/MobileChapter";
 import MobileDisclosureGroup from "@/components/mobile/MobileDisclosureGroup";
 import MobileCapabilityAtlas from "@/components/solutions/MobileCapabilityAtlas";
-import type { SelectionRow } from "@/components/solutions/SolutionSelectionMatrix";
+import {
+  selectionLabels,
+  type SelectionRow,
+} from "@/components/solutions/SolutionSelectionMatrix";
 import { capabilityRelationship } from "@/components/solutions/CapabilityRelationshipAtlas";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 
@@ -216,7 +219,13 @@ export default function MobileSolutionsHub({
               ),
               panel: (
                 <>
+                  <p className="mobile-solutions-field-label">
+                    {selectionLabels.signal}
+                  </p>
                   <p>{row.signal}</p>
+                  <p className="mobile-solutions-field-label">
+                    {selectionLabels.solution}
+                  </p>
                   <ul className="mobile-solutions-condition-links">
                     {row.solutionSlugs.map((slug) => {
                       const solution = solutionBySlug[slug];

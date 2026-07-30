@@ -525,6 +525,46 @@ test("uses compact disclosures and a focused relationship Atlas island on Soluti
   assert.match(atlas, /aria-live="polite"/);
 });
 
+test("preserves every shared Atlas field in the mobile relationship explanation", () => {
+  const path = read("components/mobile/MobileAtlasPath.tsx");
+  const atlas = read("components/solutions/MobileCapabilityAtlas.tsx");
+
+  assert.match(atlas, /showDefinitionContext/);
+  assert.match(path, /\{definition\.title\}/);
+  assert.match(path, /\{definition\.description\}/);
+  assert.match(path, /\{layer\.meaning\}/);
+  assert.match(path, /definition\.legend\?\.map\(\(item\)/);
+  assert.match(path, /\{item\.label\}/);
+  assert.match(path, /\{item\.meaning\}/);
+  assert.match(path, /<AtlasTextEquivalent/);
+  assert.match(path, /definition=\{mobileDefinition\}/);
+  assert.match(
+    path,
+    /readingDirection:\s*verticalReadingDirection/,
+    "the nonvisual equivalent must describe the recomposed reading direction",
+  );
+});
+
+test("shares starting-point decision labels across desktop and mobile", () => {
+  const matrix = read("components/solutions/SolutionSelectionMatrix.tsx");
+  const mobile = read("components/solutions/MobileSolutionsHub.tsx");
+
+  assert.match(matrix, /export const selectionLabels/);
+  assert.match(
+    matrix,
+    /signal:\s*"What it may signal"/,
+  );
+  assert.match(
+    matrix,
+    /solution:\s*"Likely starting solution"/,
+  );
+  assert.match(matrix, /\{selectionLabels\.signal\}/);
+  assert.match(matrix, /\{selectionLabels\.solution\}/);
+  assert.match(mobile, /selectionLabels/);
+  assert.match(mobile, /\{selectionLabels\.signal\}/);
+  assert.match(mobile, /\{selectionLabels\.solution\}/);
+});
+
 test("mounts exactly one responsive Solutions presentation and preserves desktop source", () => {
   const hub = read("components/solutions/SolutionsHub.tsx");
   const boundary = read("components/solutions/ResponsiveSolutionsHub.tsx");
