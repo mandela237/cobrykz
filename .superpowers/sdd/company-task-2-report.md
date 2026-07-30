@@ -4,7 +4,10 @@
 
 **Status:** Complete
 
-**Commit:** `feat: add Cobrykz process and about pages`
+**Commits:**
+
+- `e11e8ab` — `feat: add Cobrykz process and about pages`
+- `fix: keep About typography in approved sans system`
 
 ## Delivered
 
@@ -23,6 +26,10 @@
    - 8 passed, 4 failed for the expected missing routes/components.
 2. GREEN: `node --test tests/company-content-contract.test.mjs`
    - 12 passed, 0 failed after implementation.
+3. Review RED: `node --test tests/company-content-contract.test.mjs`
+   - 11 passed, 1 failed because `AboutPage.tsx` still used the rejected `font-serif` utility.
+4. Review GREEN: `node --test tests/company-content-contract.test.mjs`
+   - 12 passed, 0 failed after removing both rejected utilities and adding a regression assertion.
 
 ## Final Verification
 
@@ -47,3 +54,4 @@
 - Existing modified Task 1, Task 3, and Task 4 reports were not edited and are excluded from the Task 2 commit.
 - No frozen strategy/content registry, prior reports, media, or solution/home files were changed.
 - The build retains the repository's existing Next.js warning about multiple lockfiles and inferred workspace root. It does not affect compilation or static generation.
+- Before the review-fix build, a stale `next start -p 3100` process rooted in this exact worktree was safely identified and stopped. No unrelated Node processes were touched.

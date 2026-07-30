@@ -390,6 +390,11 @@ test("renders the exact progressive process, both decision gates, and the comple
 test("renders the approved About narrative, founder portrait, standards, and shared CTA", () => {
   const source = read("components/company/AboutPage.tsx");
 
+  assert.doesNotMatch(
+    source,
+    /\bfont-serif\b/,
+    "About must use the approved sans/editorial typography treatment",
+  );
   assert.match(source, /\{content\.foundingTension\}/);
   assert.match(source, /\{content\.purpose\.title\}/);
   assert.match(source, /\{content\.purpose\.description\}/);

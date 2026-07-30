@@ -41,7 +41,7 @@ export default function AboutPage({ content }: AboutPageProps) {
 
       <section aria-label="Why Cobrykz exists" className="bg-navy text-white">
         <div className="section-shell py-16 sm:py-20 lg:py-24">
-          <p className="max-w-5xl font-serif text-[2rem] leading-[1.2] text-white sm:text-[2.5rem] lg:text-5xl">
+          <p className="max-w-5xl text-[2rem] leading-[1.2] text-white sm:text-[2.5rem] lg:text-5xl">
             {content.foundingTension}
           </p>
         </div>
@@ -131,7 +131,7 @@ export default function AboutPage({ content }: AboutPageProps) {
             >
               {content.leadership.title}
             </h2>
-            <p className="mt-6 font-serif text-2xl text-charcoal sm:text-3xl">
+            <p className="mt-6 text-2xl text-charcoal sm:text-3xl">
               {content.leadership.name}
             </p>
             <p className="mt-5 max-w-2xl text-base leading-7 text-slate sm:text-[17px] sm:leading-8">
