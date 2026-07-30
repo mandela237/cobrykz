@@ -12,6 +12,7 @@ const read = (path) => {
 test("defines a semantic Chaptered Atlas mobile grammar", () => {
   const chapter = read("components/mobile/MobileChapter.tsx");
   const disclosure = read("components/mobile/MobileDisclosureGroup.tsx");
+  const css = read("app/globals.css");
 
   assert.match(chapter, /export default function MobileChapter/);
   assert.match(chapter, /data-mobile-chapter/);
@@ -20,4 +21,13 @@ test("defines a semantic Chaptered Atlas mobile grammar", () => {
   assert.match(disclosure, /aria-expanded/);
   assert.match(disclosure, /aria-controls/);
   assert.match(disclosure, /min-h-11/);
+  assert.match(disclosure, /<div\s+role="group"\s+aria-label=\{ariaLabel\}/);
+  assert.match(
+    css,
+    /\.mobile-chapter\[data-mobile-tone="dark"\]\s+\.mobile-chapter__marker\s*\{[^}]*color:\s*var\(--focus-ring-dark\)/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-chapter\[data-mobile-tone="dark"\]\s+:focus-visible\s*\{[^}]*outline-color:\s*var\(--focus-ring-dark\)/s,
+  );
 });

@@ -612,6 +612,14 @@ button {
     color: white;
   }
 
+  .mobile-chapter[data-mobile-tone="dark"] .mobile-chapter__marker {
+    color: var(--focus-ring-dark);
+  }
+
+  .mobile-chapter[data-mobile-tone="dark"] :focus-visible {
+    outline-color: var(--focus-ring-dark);
+  }
+
   .mobile-chapter__inner {
     padding-block: 3.5rem;
   }

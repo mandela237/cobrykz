@@ -24,7 +24,11 @@ export default function MobileDisclosureGroup<T>({
   const [openId, setOpenId] = useState<string | null>(defaultOpenId ?? null);
 
   return (
-    <div aria-label={ariaLabel} className="mobile-disclosure-group">
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      className="mobile-disclosure-group"
+    >
       {items.map((item, index) => {
         const itemId = getId(item);
         const isOpen = itemId === openId;
