@@ -34,6 +34,10 @@ export type InsightDefinition = {
 
 export type PublishedInsightDefinition = InsightDefinition & {
   status: "published";
+  publishedAt: string;
+  readingTimeMinutes: number;
+  sections: readonly InsightSection[];
+  nextSteps: readonly string[];
 };
 
 export const insights = [

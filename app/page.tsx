@@ -8,6 +8,14 @@ import ProcessOverview from "@/components/home/ProcessOverview";
 import ProjectsEvidence from "@/components/home/ProjectsEvidence";
 import AuthorityBand from "@/components/home/AuthorityBand";
 import HomeFinalCTA from "@/components/home/HomeFinalCTA";
+import { buildPageMetadata } from "@/lib/seo/site";
+
+export const metadata = buildPageMetadata({
+  title: "Cobrykz | AI, Automation, Software & Digital Systems",
+  description:
+    "Cobrykz helps businesses grow and operate more effectively through AI, automation, custom software, websites, and connected digital systems.",
+  path: "/",
+});
 
 export default function Home() {
   return (

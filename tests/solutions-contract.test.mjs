@@ -448,12 +448,16 @@ test("defines the Solutions hub route with unique static metadata", () => {
   const expectedDescription =
     "Explore AI, automation, custom software, websites, digital business systems, and technology consulting shaped around real business challenges.";
 
-  assert.match(page, /import type \{ Metadata \} from ["']next["']/);
+  assert.match(
+    page,
+    /import \{ buildPageMetadata \} from ["']@\/lib\/seo\/site["']/,
+  );
   assert.match(
     page,
     /import SolutionsHub from ["']@\/components\/solutions\/SolutionsHub["']/,
   );
-  assert.match(page, /export const metadata: Metadata = \{/);
+  assert.match(page, /export const metadata = buildPageMetadata\(\{/);
+  assert.match(page, /path:\s*["']\/solutions["']/);
   assert.ok(page.includes(`title: "${expectedTitle}"`));
   assert.ok(
     page.includes(`description:\n    "${expectedDescription}"`),
@@ -512,7 +516,10 @@ test("defines six thin static solution routes from the shared model", () => {
   for (const { slug, lookup } of expectedRoutes) {
     const page = read(`app/solutions/${slug}/page.tsx`);
 
-    assert.match(page, /import type \{ Metadata \} from ["']next["']/);
+    assert.match(
+      page,
+      /import \{ buildPageMetadata \} from ["']@\/lib\/seo\/site["']/,
+    );
     assert.match(
       page,
       /import \{ solutionBySlug \} from ["']@\/components\/content\/solutions["']/,
@@ -525,7 +532,10 @@ test("defines six thin static solution routes from the shared model", () => {
       page.includes(`const solution = ${lookup};`),
       `${slug} must look up its explicit model key`,
     );
-    assert.match(page, /export const metadata: Metadata = solution\.metadata;/);
+    assert.match(
+      page,
+      /export const metadata = buildPageMetadata\(\{\s*\.\.\.solution\.metadata,\s*path:\s*solution\.href\s*\}\);/,
+    );
     assert.match(
       page,
       /export default function Page\(\) \{\s*return <SolutionPage solution=\{solution\}\s*\/>;\s*\}/,

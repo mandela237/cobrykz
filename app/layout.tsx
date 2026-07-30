@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Playfair_Display } from "next/font/google";
 import SiteFooter from "@/components/layout/SiteFooter";
 import SiteHeader from "@/components/layout/SiteHeader";
+import {
+  organizationSchema,
+  serializeJsonLd,
+  websiteSchema,
+} from "@/lib/seo/site";
 import "./globals.css";
 
 const geist = Geist({
@@ -48,6 +53,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} ${playfair.variable}`}>
       <body className="flex min-h-screen flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteSchema) }}
+        />
         <SiteHeader />
         <main className="site-shell-main">{children}</main>
         <SiteFooter />
