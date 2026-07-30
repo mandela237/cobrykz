@@ -2435,6 +2435,16 @@ button {
     line-height: 1.02;
   }
 
+  .mobile-about-opening__eyebrow {
+    margin-bottom: -0.75rem;
+    color: var(--color-blue);
+    font-size: 0.6875rem;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
   .mobile-about-opening__introduction {
     display: grid;
     gap: 1rem;

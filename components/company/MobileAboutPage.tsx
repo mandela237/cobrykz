@@ -19,10 +19,13 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-hero"
         index={1}
-        eyebrow={content.eyebrow}
+        eyebrow="Company"
         tone="muted"
       >
         <div className="mobile-about-opening">
+          <p className="mobile-about-opening__eyebrow">
+            {content.eyebrow}
+          </p>
           <h1 id="about-hero-heading" className="text-balance">
             {content.headline}
           </h1>
@@ -37,7 +40,7 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-founding-tension"
         index={2}
-        eyebrow="Why Cobrykz exists"
+        eyebrow="Origin"
         tone="dark"
       >
         <p className="mobile-about-founding-statement">
@@ -48,7 +51,7 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-purpose"
         index={3}
-        eyebrow={content.purpose.title}
+        eyebrow="Purpose"
       >
         <MobileChapterIntro
           id="about-purpose-heading"
@@ -60,7 +63,7 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-principles"
         index={4}
-        eyebrow="Company principles"
+        eyebrow="Principles"
         tone="muted"
       >
         <MobileChapterIntro
@@ -93,7 +96,7 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-partnership"
         index={5}
-        eyebrow={content.partnership.title}
+        eyebrow="Partnership"
         tone="dark"
       >
         <MobileChapterIntro
@@ -114,7 +117,7 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-leadership"
         index={6}
-        eyebrow={content.leadership.role}
+        eyebrow="Leadership"
       >
         <div className="mobile-about-leadership">
           <figure className="mobile-about-leadership__portrait">
@@ -147,7 +150,7 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-standards"
         index={7}
-        eyebrow="Company standards"
+        eyebrow="Standards"
         tone="muted"
       >
         <MobileChapterIntro
@@ -180,7 +183,7 @@ export default function MobileAboutPage({
       <MobileChapter
         id="about-cta"
         index={8}
-        eyebrow={content.cta.label}
+        eyebrow="Next step"
         tone="dark"
       >
         <div className="mobile-about-final">

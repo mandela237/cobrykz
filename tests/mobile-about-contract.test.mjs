@@ -105,6 +105,37 @@ test("keeps founder identity and accountability visible without disclosure", () 
   assert.doesNotMatch(leadershipChapter, /<MobileDisclosureGroup/);
 });
 
+test("uses concise structural chapter markers without repeating approved headings or the CTA", () => {
+  const mobile = read("components/company/MobileAboutPage.tsx");
+  const markers = [
+    "Company",
+    "Origin",
+    "Purpose",
+    "Principles",
+    "Partnership",
+    "Leadership",
+    "Standards",
+    "Next step",
+  ];
+
+  for (const marker of markers) {
+    assert.match(mobile, new RegExp(`eyebrow="${marker}"`));
+  }
+
+  for (const repeatedField of [
+    "content.eyebrow",
+    "content.purpose.title",
+    "content.partnership.title",
+    "content.leadership.role",
+    "content.cta.label",
+  ]) {
+    assert.doesNotMatch(
+      mobile,
+      new RegExp(`eyebrow=\\{${repeatedField.replace(".", "\\.")}\\}`),
+    );
+  }
+});
+
 test("preserves the frozen desktop About section order and renderer", () => {
   const desktop = read("components/company/AboutPage.tsx");
   const route = read("app/about/page.tsx");

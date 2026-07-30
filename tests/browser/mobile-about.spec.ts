@@ -133,15 +133,36 @@ test("About partnership Atlas selects every operating node accessibly", async ({
     }),
   ).toHaveAttribute("aria-pressed", "true");
 
-  const improvement = atlas.getByRole("button", {
-    name: "Improvement",
-    exact: true,
-  });
-  await improvement.click();
-  await expect(improvement).toHaveAttribute("aria-pressed", "true");
-  await expect(
-    atlas.getByText("Continued operating value.", { exact: true }),
-  ).toBeVisible();
+  const nodes = [
+    ["Business strategy", "Business context and desired outcome."],
+    [
+      "Cobrykz accountability",
+      "The integrating frame for decisions and delivery.",
+    ],
+    ["Experience design", "People, users, and service."],
+    ["Engineering", "Responsible technical implementation."],
+    ["AI", "Focused intelligence where justified."],
+    ["Automation", "Reliable workflow movement."],
+    ["Integration", "Connected tools and information."],
+    ["Deployment", "Responsible introduction into real work."],
+    ["Improvement", "Continued operating value."],
+  ] as const;
+
+  for (const [label, detail] of nodes) {
+    const control = atlas.getByRole("button", {
+      name: label,
+      exact: true,
+    });
+    await control.click();
+    await expect(control).toHaveAttribute("aria-pressed", "true");
+    await expect(atlas.locator(".mobile-atlas__detail > strong")).toHaveText(
+      label,
+    );
+    await expect(atlas.locator(".mobile-atlas__detail > p")).toHaveText(
+      detail,
+    );
+  }
+
   await expect(
     atlas.locator(".mobile-atlas__caption"),
   ).toBeVisible();
