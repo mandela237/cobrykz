@@ -362,21 +362,21 @@ test("renders one H1 per company page through one responsive server component tr
 
 test("renders the exact progressive process, both decision gates, and the complete operating model", () => {
   const source = read("components/company/ProcessPage.tsx");
+  const rail = read("components/company/DeliveryRail.tsx");
 
-  assert.match(source, /<ol\b[\s\S]*content\.stages\.map\(\(stage,\s*index\)/);
-  assert.match(source, /\{stage\.name\}/);
-  assert.match(source, /\{stage\.summary\}/);
-  assert.match(source, /\{stage\.description\}/);
-  assert.match(source, /stage\.decisions\.map\(\(decision\)/);
-  assert.match(source, /stage\.outputs\.map\(\(output\)/);
+  assert.match(rail, /<ol\b[\s\S]*stages\.map\(\(stage,\s*index\)/);
+  assert.match(rail, /\{stage\.summary\}/);
+  assert.match(rail, /\{stage\.description\}/);
+  assert.match(rail, /stage\.decisions\.map\(\(decision\)/);
+  assert.match(rail, /stage\.outputs\.map\(\(output\)/);
   assert.match(
-    source,
-    /content\.decisionGates\.find\([\s\S]*gate\.after === stage\.name[\s\S]*gate\.before === content\.stages\[index \+ 1\]\?\.name/,
+    rail,
+    /gates\.find\([\s\S]*candidate\.after === stage\.name[\s\S]*candidate\.before === stages\[index \+ 1\]\?\.name/,
   );
-  assert.match(source, /\{gate\.title\}/);
-  assert.match(source, /\{gate\.question\}/);
-  assert.match(source, /gate\.criteria\.map\(\(criterion\)/);
-  assert.match(source, /Decision gate between \$\{gate\.after\} and \$\{gate\.before\}/);
+  assert.match(rail, /\{gate\.title\}/);
+  assert.match(rail, /\{gate\.question\}/);
+  assert.match(rail, /gate\.criteria\.map\(\(criterion\)/);
+  assert.match(rail, /Decision gate between \$\{gate\.after\} and \$\{gate\.before\}/);
 
   assert.match(source, /\{content\.scaling\.title\}/);
   assert.match(source, /\{content\.scaling\.description\}/);
@@ -421,6 +421,29 @@ test("renders the approved About narrative, founder portrait, standards, and sha
     assert.match(page, /\{content\.cta\.title\}/);
     assert.match(page, /\{content\.cta\.description\}/);
   }
+});
+
+test("renders one continuous, accountable delivery rail", () => {
+  const rail = read("components/company/DeliveryRail.tsx");
+  const page = read("components/company/ProcessPage.tsx");
+
+  for (const stage of [
+    "Discover",
+    "Assess",
+    "Design",
+    "Build",
+    "Deploy",
+    "Optimize",
+  ]) {
+    assert.match(rail, new RegExp(stage));
+  }
+
+  assert.equal((rail.match(/data-decision-gate/g) || []).length, 1);
+  assert.match(rail, /<ol\b/);
+  assert.match(rail, /aria-label="Cobrykz delivery process"/);
+  assert.match(rail, /stages\.map/);
+  assert.match(rail, /gates\.find/);
+  assert.match(page, /<DeliveryRail\s+stages=\{content\.stages\}\s+gates=\{content\.decisionGates\}\s*\/>/);
 });
 
 test("builds an honest noindex Projects index from published projects only", () => {

@@ -1,4 +1,5 @@
 import type { ProcessPageDefinition } from "@/components/content/companyPages";
+import DeliveryRail from "@/components/company/DeliveryRail";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 
 type ProcessPageProps = {
@@ -40,106 +41,10 @@ export default function ProcessPage({ content }: ProcessPageProps) {
 
       <section aria-label="Process stages" className="bg-white">
         <div className="section-shell py-16 sm:py-20 lg:py-24">
-          <ol className="relative border-t border-border before:absolute before:bottom-12 before:left-5 before:top-11 before:w-px before:bg-border before:content-[''] sm:before:left-[1.375rem]">
-            {content.stages.map((stage, index) => {
-              const gate = content.decisionGates.find(
-                (gate) =>
-                  gate.after === stage.name &&
-                  gate.before === content.stages[index + 1]?.name,
-              );
-
-              return (
-                <li key={stage.name} className="relative">
-                  <article className="grid gap-5 border-b border-border py-9 sm:grid-cols-[4.5rem_minmax(0,0.8fr)_minmax(0,1.2fr)] sm:gap-7 lg:py-12">
-                    <div className="flex items-center gap-4 sm:block">
-                      <span
-                        aria-hidden="true"
-                        className="relative z-10 inline-flex size-10 items-center justify-center rounded-full border border-blue/25 bg-blue-tint text-[11px] font-bold text-blue sm:size-11"
-                      >
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue sm:mt-4">
-                        {stage.name}
-                      </p>
-                    </div>
-
-                    <div>
-                      <h2 className="text-balance text-2xl font-bold leading-tight text-navy sm:text-3xl">
-                        {stage.summary}
-                      </h2>
-                      <p className="mt-4 text-[15px] leading-7 text-slate sm:text-base">
-                        {stage.description}
-                      </p>
-                    </div>
-
-                    <div className="grid gap-7 border-t border-border pt-6 sm:border-l sm:border-t-0 sm:pl-7 sm:pt-0 lg:grid-cols-2">
-                      <div>
-                        <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-navy">
-                          Decisions
-                        </h3>
-                        <ul className="mt-4 space-y-3">
-                          {stage.decisions.map((decision) => (
-                            <li
-                              key={decision}
-                              className="border-l-2 border-blue/25 pl-3 text-sm leading-6 text-slate"
-                            >
-                              {decision}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-navy">
-                          Outputs
-                        </h3>
-                        <ul className="mt-4 space-y-3">
-                          {stage.outputs.map((output) => (
-                            <li
-                              key={output}
-                              className="border-l-2 border-evergreen/30 pl-3 text-sm leading-6 text-slate"
-                            >
-                              {output}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </article>
-
-                  {gate ? (
-                    <aside
-                      aria-label={`Decision gate between ${gate.after} and ${gate.before}`}
-                      className="border-b border-blue/15 bg-blue-tint px-5 py-7 sm:px-8"
-                    >
-                      <div className="grid gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
-                        <div>
-                          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue">
-                            Decision gate
-                          </p>
-                          <h2 className="mt-3 text-xl font-bold text-navy sm:text-2xl">
-                            {gate.title}
-                          </h2>
-                          <p className="mt-3 text-[15px] font-medium leading-7 text-charcoal">
-                            {gate.question}
-                          </p>
-                        </div>
-                        <ul className="grid gap-3 sm:grid-cols-2">
-                          {gate.criteria.map((criterion) => (
-                            <li
-                              key={criterion}
-                              className="border-t border-blue/20 pt-3 text-sm leading-6 text-slate"
-                            >
-                              {criterion}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </aside>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
+          <DeliveryRail
+            stages={content.stages}
+            gates={content.decisionGates}
+          />
         </div>
       </section>
 
