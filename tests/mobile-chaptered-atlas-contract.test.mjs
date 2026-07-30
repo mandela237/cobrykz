@@ -31,3 +31,14 @@ test("defines a semantic Chaptered Atlas mobile grammar", () => {
     /\.mobile-chapter\[data-mobile-tone="dark"\]\s+:focus-visible\s*\{[^}]*outline-color:\s*var\(--focus-ring-dark\)/s,
   );
 });
+
+test("recomposes Atlas definitions vertically without copying labels", () => {
+  const mobileAtlas = read("components/mobile/MobileAtlasPath.tsx");
+  const relationship = read("components/solutions/CapabilityRelationshipAtlas.tsx");
+
+  assert.match(mobileAtlas, /definition: AtlasDefinition/);
+  assert.match(mobileAtlas, /definition\.nodes\.map/);
+  assert.match(mobileAtlas, /definition\.connections/);
+  assert.match(relationship, /export const capabilityRelationship/);
+  assert.doesNotMatch(mobileAtlas, /Consulting|Automation|Digital systems/);
+});

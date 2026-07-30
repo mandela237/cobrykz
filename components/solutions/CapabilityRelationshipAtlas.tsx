@@ -3,7 +3,7 @@ import SystemAtlas from "@/components/atlas/SystemAtlas";
 import type { AtlasDefinition } from "@/components/atlas/types";
 import { solutions } from "@/components/content/solutions";
 
-const capabilityRelationship = {
+export const capabilityRelationship = {
   id: "capability-relationship",
   eyebrow: "Capability relationship",
   title: "Different capabilities play different roles.",
