@@ -38,6 +38,23 @@ test("uses Cobrykz voice for direct accountability", () => {
   assert.doesNotMatch(source, /Mandela Atud provides direct accountability/);
 });
 
+test("provides an accessible business-challenge router", () => {
+  const source = read("components/home/ChallengeRouter.tsx");
+
+  assert.match(source, /["']use client["']/);
+  assert.match(source, /challengeRoutes/);
+  assert.match(source, /solutionBySlug/);
+  assert.match(source, /<button\b/);
+  assert.match(source, /aria-pressed=/);
+  assert.match(source, /aria-live="polite"/);
+  assert.match(
+    source,
+    /A focused assessment confirms the right approach\./,
+  );
+  assert.match(source, /<Link\s+href=\{selectedSolution\.href\}/);
+  assert.match(source, /<Link\s+href="\/contact"/);
+});
+
 test("wraps every page in the shared Cobrykz site shell", () => {
   const source = read("app/layout.tsx");
 
