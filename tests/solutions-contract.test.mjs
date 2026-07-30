@@ -355,6 +355,73 @@ test("defines the Solutions hub route with unique static metadata", () => {
   );
 });
 
+test("defines six thin static solution routes from the shared model", () => {
+  const expectedRoutes = [
+    { slug: "ai", lookup: "solutionBySlug.ai" },
+    {
+      slug: "business-automation",
+      lookup: 'solutionBySlug["business-automation"]',
+    },
+    {
+      slug: "custom-software-development",
+      lookup: 'solutionBySlug["custom-software-development"]',
+    },
+    {
+      slug: "digital-business-systems",
+      lookup: 'solutionBySlug["digital-business-systems"]',
+    },
+    {
+      slug: "websites-web-applications",
+      lookup: 'solutionBySlug["websites-web-applications"]',
+    },
+    {
+      slug: "technology-consulting",
+      lookup: 'solutionBySlug["technology-consulting"]',
+    },
+  ];
+
+  assert.deepEqual(
+    expectedRoutes.map(({ slug }) => slug),
+    expectedSlugs,
+    "each modeled solution must receive one dedicated static route",
+  );
+
+  for (const { slug, lookup } of expectedRoutes) {
+    const page = read(`app/solutions/${slug}/page.tsx`);
+
+    assert.match(page, /import type \{ Metadata \} from ["']next["']/);
+    assert.match(
+      page,
+      /import \{ solutionBySlug \} from ["']@\/components\/content\/solutions["']/,
+    );
+    assert.match(
+      page,
+      /import SolutionPage from ["']@\/components\/solutions\/SolutionPage["']/,
+    );
+    assert.ok(
+      page.includes(`const solution = ${lookup};`),
+      `${slug} must look up its explicit model key`,
+    );
+    assert.match(page, /export const metadata: Metadata = solution\.metadata;/);
+    assert.match(
+      page,
+      /export default function Page\(\) \{\s*return <SolutionPage solution=\{solution\}\s*\/>;\s*\}/,
+    );
+    assert.doesNotMatch(page, /["']use client["']/);
+  }
+
+  assert.equal(
+    new Set(solutions.map(({ metadata }) => metadata.title)).size,
+    expectedRoutes.length,
+    "the route metadata titles must remain unique in the shared model",
+  );
+  assert.equal(
+    new Set(solutions.map(({ metadata }) => metadata.description)).size,
+    expectedRoutes.length,
+    "the route metadata descriptions must remain unique in the shared model",
+  );
+});
+
 test("renders the frozen Solutions hub narrative from shared content", () => {
   const hub = read("components/solutions/SolutionsHub.tsx");
   const matrix = read("components/solutions/SolutionSelectionMatrix.tsx");
