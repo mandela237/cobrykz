@@ -84,6 +84,8 @@ for (const path of solutionRoutes) {
     );
     await expect(faqTriggers).toHaveCount(3);
     await faqTriggers.first().focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
     await expect(faqTriggers.first()).toBeFocused();
     expect(
       await faqTriggers.first().evaluate((node) => {
@@ -158,8 +160,12 @@ test("workflow comparison exposes Before, After, and safeguards", async ({
     "aria-expanded",
     "true",
   );
+  const afterPanelId = await workflowTriggers
+    .nth(1)
+    .getAttribute("aria-controls");
+  expect(afterPanelId).toBeTruthy();
   await expect(
-    artifact.locator(".mobile-solution-workflow__steps li"),
+    artifact.locator(`[id="${afterPanelId}"] li`),
   ).toHaveCount(4);
   await expect(
     artifact
