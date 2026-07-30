@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { PublishedProjectDefinition } from "@/components/content/projects";
 import PrimaryLink from "@/components/ui/PrimaryLink";
+import TransformationRecord from "@/components/projects/TransformationRecord";
 
 type ProjectCaseStudyProps = {
   project: PublishedProjectDefinition;
@@ -33,6 +34,7 @@ export default function ProjectCaseStudy({
           </p>
         </div>
       </section>
+      <TransformationRecord project={project} />
 
       {project.context?.length ? (
         <section

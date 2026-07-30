@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { PublishedProjectDefinition } from "@/components/content/projects";
 import PrimaryLink from "@/components/ui/PrimaryLink";
+import EvidenceStandard from "@/components/projects/EvidenceStandard";
 
 type ProjectsIndexProps = {
   projects: readonly PublishedProjectDefinition[];
@@ -33,6 +34,7 @@ export default function ProjectsIndex({ projects }: ProjectsIndexProps) {
           </p>
         </div>
       </section>
+      <EvidenceStandard />
 
       {projects.length === 0 ? (
         <section

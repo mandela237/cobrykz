@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { PublishedInsightDefinition } from "@/components/content/insights";
 import PrimaryLink from "@/components/ui/PrimaryLink";
+import DecisionDiagram from "@/components/insights/DecisionDiagram";
 import { serializeJsonLd, siteUrl } from "@/lib/seo/site";
 
 type InsightArticleProps = {
@@ -73,6 +74,9 @@ export default function InsightArticle({ insight }: InsightArticleProps) {
           </p>
         </div>
       </section>
+      {insight.visual ? (
+        <DecisionDiagram definition={insight.visual} />
+      ) : null}
 
       {insight.sections?.map((section) => (
         <section

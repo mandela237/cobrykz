@@ -475,6 +475,25 @@ test("composes About around one connected partner and accountable leadership", (
   assert.doesNotMatch(page, /content\.standards\.map\(\(standard,\s*index\)/);
 });
 
+test("adds honest visual frameworks for Projects and Insights", () => {
+  const projectsIndex = read("components/projects/ProjectsIndex.tsx");
+  const projectCaseStudy = read("components/projects/ProjectCaseStudy.tsx");
+  const evidenceStandard = read("components/projects/EvidenceStandard.tsx");
+  const insightsIndex = read("components/insights/InsightsIndex.tsx");
+  const insightArticle = read("components/insights/InsightArticle.tsx");
+  const editorialMethod = read("components/insights/EditorialMethod.tsx");
+
+  assert.match(projectsIndex, /<EvidenceStandard\s*\/>/);
+  assert.match(insightsIndex, /<EditorialMethod\s*\/>/);
+  assert.doesNotMatch(
+    `${evidenceStandard}\n${editorialMethod}`,
+    /client logo|verified result|testimonial|published article/i,
+  );
+  assert.match(projectCaseStudy, /<TransformationRecord\s+project=\{project\}/);
+  assert.match(insightArticle, /insight\.visual\s*\?/);
+  assert.match(insightArticle, /<DecisionDiagram\s+definition=\{insight\.visual\}/);
+});
+
 test("builds an honest noindex Projects index from published projects only", () => {
   const route = read("app/projects/page.tsx");
 

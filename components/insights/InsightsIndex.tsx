@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { PublishedInsightDefinition } from "@/components/content/insights";
 import PrimaryLink from "@/components/ui/PrimaryLink";
+import EditorialMethod from "@/components/insights/EditorialMethod";
 
 type InsightsIndexProps = {
   insights: readonly PublishedInsightDefinition[];
@@ -31,6 +32,7 @@ export default function InsightsIndex({ insights }: InsightsIndexProps) {
           </p>
         </div>
       </section>
+      <EditorialMethod />
 
       {insights.length < 3 ? (
         <section aria-labelledby="insights-empty-heading" className="bg-white">

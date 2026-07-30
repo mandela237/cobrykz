@@ -1,4 +1,5 @@
 import type { PublicationStatus } from "./projects";
+import type { AtlasDefinition } from "@/components/atlas/types";
 
 export type { PublicationStatus } from "./projects";
 
@@ -30,6 +31,7 @@ export type InsightDefinition = {
     title: string;
     description: string;
   };
+  visual?: AtlasDefinition;
 };
 
 export type PublishedInsightDefinition = InsightDefinition & {
