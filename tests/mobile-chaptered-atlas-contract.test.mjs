@@ -21,6 +21,11 @@ test("defines a semantic Chaptered Atlas mobile grammar", () => {
   assert.match(disclosure, /aria-expanded/);
   assert.match(disclosure, /aria-controls/);
   assert.match(disclosure, /min-h-11/);
+  assert.match(
+    disclosure,
+    /items: readonly T\[\]/,
+    "shared frozen content arrays must pass directly into disclosures",
+  );
   assert.match(disclosure, /<div\s+role="group"\s+aria-label=\{ariaLabel\}/);
   assert.match(
     css,
@@ -64,4 +69,122 @@ test("requires a selection callback for interactive mobile Atlas controls", () =
 
   assert.match(mobileAtlas, /onSelectNode: \(nodeId: string\) => void/);
   assert.doesNotMatch(mobileAtlas, /onSelectNode\?\./);
+});
+
+test("builds the mobile Homepage from the frozen content source", () => {
+  const mobile = read("components/home/MobileHomePage.tsx");
+  const page = read("app/page.tsx");
+  const site = read("components/content/site.ts");
+
+  for (const model of [
+    "homeMessage",
+    "homeOutcomes",
+    "whyCobrykz",
+    "aiPrinciples",
+    "challengeRoutes",
+    "processStages",
+    "solutions",
+  ]) {
+    assert.match(mobile, new RegExp(model));
+  }
+
+  assert.match(mobile, /primaryCta/);
+  assert.match(mobile, /solutionsCta/);
+  assert.match(site, /export const solutionsCta/);
+  assert.match(page, /MobileHomePage/);
+  assert.match(page, /HomeHero/);
+  assert.match(mobile, /data-mobile-homepage/);
+  assert.doesNotMatch(
+    mobile,
+    /<main\b/,
+    "the root layout already provides the page main landmark",
+  );
+  assert.doesNotMatch(
+    mobile,
+    /Turn business challenges into better systems\./,
+  );
+  assert.doesNotMatch(mobile, /Explore our solutions/);
+});
+
+test("keeps the approved Homepage chapter order", () => {
+  const mobile = read("components/home/MobileHomePage.tsx");
+  const sequence = [
+    'eyebrow="Opening"',
+    'eyebrow="Business outcomes"',
+    'eyebrow="Solutions"',
+    'eyebrow="Why Cobrykz"',
+    'eyebrow="AI point of view"',
+    'eyebrow="Challenge router"',
+    'eyebrow="Process"',
+    "<ProjectsEvidence",
+    "<AuthorityBand",
+    "<HomeFinalCTA",
+  ];
+
+  for (let index = 1; index < sequence.length; index += 1) {
+    assert.ok(
+      mobile.indexOf(sequence[index - 1]) < mobile.indexOf(sequence[index]),
+      `${sequence[index - 1]} must precede ${sequence[index]}`,
+    );
+  }
+});
+
+test("uses disclosure and selection patterns for dense Homepage chapters", () => {
+  const mobile = read("components/home/MobileHomePage.tsx");
+  const desktopAtlas = read("components/home/BusinessSystemCutaway.tsx");
+
+  assert.ok(
+    (mobile.match(/<MobileDisclosureGroup/g) || []).length >= 5,
+    "outcomes, capabilities, accountability, AI, and process require disclosure",
+  );
+  assert.match(mobile, /defaultOpenId="grow-more-effectively"/);
+  assert.match(mobile, /ariaLabel="Business outcomes"/);
+  assert.match(mobile, /Object\.values\(challengeRoutes\)\.map/);
+  assert.match(mobile, /aria-pressed=\{isSelected\}/);
+  assert.match(mobile, /aria-live="polite"/);
+  assert.match(mobile, /<MobileAtlasPath/);
+  assert.match(mobile, /businessSystemCutaway/);
+  assert.match(desktopAtlas, /export const businessSystemCutaway/);
+});
+
+test("exposes exactly one responsive Homepage composition at a time", () => {
+  const page = read("app/page.tsx");
+  const css = read("app/globals.css");
+
+  assert.match(
+    page,
+    /<div className="md:hidden">\s*<MobileHomePage \/>\s*<\/div>/,
+  );
+  assert.match(page, /<div className="hidden md:block">/);
+  assert.doesNotMatch(
+    css,
+    /\[data-mobile-homepage\]\s*\{[^}]*overflow-x:\s*(?:hidden|clip)/s,
+    "the mobile Homepage must contain rather than conceal horizontal overflow",
+  );
+  assert.match(
+    css,
+    /\.mobile-home-atlas-plane\s*\{[^}]*overflow:\s*hidden/s,
+    "the bounded hero artifact must contain its decorative light field",
+  );
+
+  const desktopSequence = [
+    "<HomeHero />",
+    "<BusinessOutcomes />",
+    "<SolutionsOverview />",
+    "<WhyCobrykz />",
+    "<AIPointOfView />",
+    "<ChallengeRouter />",
+    "<ProcessOverview />",
+    "<ProjectsEvidence />",
+    "<AuthorityBand />",
+    "<HomeFinalCTA />",
+  ];
+
+  for (let index = 1; index < desktopSequence.length; index += 1) {
+    assert.ok(
+      page.indexOf(desktopSequence[index - 1]) <
+        page.indexOf(desktopSequence[index]),
+      `${desktopSequence[index - 1]} must precede ${desktopSequence[index]}`,
+    );
+  }
 });

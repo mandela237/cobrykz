@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import type { ReactNode } from "react";
 
 type MobileDisclosureGroupProps<T> = {
-  items: T[];
+  items: readonly T[];
   getId: (item: T) => string;
   renderSummary: (item: T, index: number, isOpen: boolean) => ReactNode;
   renderPanel: (item: T, index: number) => ReactNode;

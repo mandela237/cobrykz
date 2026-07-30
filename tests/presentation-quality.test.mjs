@@ -611,9 +611,9 @@ test("keeps the dark focus token distinct on every approved dark surface", () =>
   );
 });
 
-test("uses one responsive section shell from 320px upward", () => {
+test("uses the shared section shell across approved responsive compositions", () => {
   const globals = read("app/globals.css");
-  const homepageClosure = assertSingleResponsiveHomepageTree("app/page.tsx");
+  const homepageClosure = collectImportClosure("app/page.tsx");
 
   assert.match(
     globals,
@@ -627,7 +627,7 @@ test("uses one responsive section shell from 320px upward", () => {
   assert.match(
     globals,
     /@media \(min-width:\s*768px\)\s*{[\s\S]*?:root\s*{[^}]*--section-gutter:\s*2\.5rem;[^}]*}[\s\S]*?}/,
-    "larger viewports must widen the same shared shell rather than switch trees",
+    "larger viewports must widen the same shared shell",
   );
 
   for (const path of collectFiles("components/home", ".tsx")) {
