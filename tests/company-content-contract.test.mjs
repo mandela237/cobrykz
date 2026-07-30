@@ -422,3 +422,172 @@ test("renders the approved About narrative, founder portrait, standards, and sha
     assert.match(page, /\{content\.cta\.description\}/);
   }
 });
+
+test("builds an honest noindex Projects index from published projects only", () => {
+  const route = read("app/projects/page.tsx");
+
+  assert.ok(route, "app/projects/page.tsx must exist");
+  assert.doesNotMatch(route, /["']use client["']/);
+  assert.match(
+    route,
+    /import ProjectsIndex from ["']@\/components\/projects\/ProjectsIndex["']/,
+  );
+  assert.match(
+    route,
+    /import \{ publishedProjects \} from ["']@\/components\/content\/projects["']/,
+  );
+  assert.match(
+    route,
+    /robots:\s*\{\s*index:\s*publishedProjects\.length\s*>\s*0,\s*follow:\s*true,?\s*\}/s,
+  );
+  assert.match(route, /alternates:\s*\{\s*canonical:\s*["']\/projects["']/s);
+  assert.match(route, /openGraph:\s*\{[\s\S]*url:\s*["']\/projects["']/);
+  assert.match(route, /<ProjectsIndex\s+projects=\{publishedProjects\}\s*\/>/);
+});
+
+test("renders an intentional Projects empty state without fake inventory or filters", () => {
+  const source = read("components/projects/ProjectsIndex.tsx");
+
+  assert.ok(source, "components/projects/ProjectsIndex.tsx must exist");
+  assert.doesNotMatch(source, /["']use client["']/);
+  assert.match(
+    source,
+    /import type \{ PublishedProjectDefinition \} from ["']@\/components\/content\/projects["']/,
+  );
+  assert.match(source, /projects:\s*readonly PublishedProjectDefinition\[\]/);
+  assert.equal(
+    (source.match(/<h1\b/g) || []).length,
+    1,
+    "Projects index must render exactly one H1",
+  );
+  assert.match(source, /projects\.length\s*===\s*0/);
+  assert.match(source, /No project case studies are published yet/i);
+  assert.match(source, /href=["']\/solutions["']/);
+  assert.match(source, /Explore (?:our )?solutions/i);
+  assert.match(
+    source,
+    /<PrimaryLink\s+href=["']\/contact["'][^>]*>[\s\S]*Discuss a business challenge[\s\S]*<\/PrimaryLink>/,
+  );
+  assert.doesNotMatch(source, /<select\b|<button\b|filter\(/);
+  assert.doesNotMatch(
+    textFor(projectsModule.exports.publishedProjects),
+    /client|outcome|testimonial|metric/,
+  );
+});
+
+test("generates Project details only for published slugs and rejects unavailable work", () => {
+  const route = read("app/projects/[slug]/page.tsx");
+
+  assert.ok(route, "app/projects/[slug]/page.tsx must exist");
+  assert.doesNotMatch(route, /["']use client["']/);
+  assert.match(route, /import \{ notFound \} from ["']next\/navigation["']/);
+  assert.match(
+    route,
+    /import \{\s*getPublishedProject,\s*publishedProjects,\s*\} from ["']@\/components\/content\/projects["']/s,
+  );
+  assert.match(route, /export const dynamicParams\s*=\s*false/);
+  assert.match(
+    route,
+    /export function generateStaticParams\(\)\s*\{[\s\S]*return publishedProjects\.map\(\(project\)\s*=>\s*\(\{\s*slug:\s*project\.slug,\s*\}\)\);?[\s\S]*\}/,
+  );
+  assert.match(route, /params:\s*Promise<\{\s*slug:\s*string\s*\}>/);
+  assert.match(
+    route,
+    /getPublishedProject\(slug,\s*publishedProjects\)/,
+  );
+  assert.ok(
+    (route.match(/\bnotFound\(\)/g) || []).length >= 2,
+    "metadata and page rendering must both reject unavailable slugs",
+  );
+  assert.match(route, /<ProjectCaseStudy\s+project=\{project\}\s*\/>/);
+});
+
+test("keeps Project detail metadata specific, canonical, and evidence-led", () => {
+  const route = read("app/projects/[slug]/page.tsx");
+
+  assert.match(route, /export async function generateMetadata\(/);
+  assert.match(route, /project\.metadata\?\.title\s*\?\?/);
+  assert.match(route, /project\.metadata\?\.description\s*\?\?\s*project\.summary/);
+  assert.match(route, /const url\s*=\s*`\/projects\/\$\{project\.slug\}`/);
+  assert.match(
+    route,
+    /alternates:\s*\{\s*canonical:\s*url,?\s*\}/s,
+  );
+  assert.match(route, /openGraph:\s*\{[\s\S]*url,\s*\}/);
+  assert.doesNotMatch(
+    route,
+    /anonymous|confidential client|industry-leading|transformative results/i,
+  );
+});
+
+test("defines the approved 13-part business case-study narrative", () => {
+  const source = read("components/projects/ProjectCaseStudy.tsx");
+  const parts = [
+    "Project introduction",
+    "Business context",
+    "Challenge",
+    "Assessment and strategy",
+    "Solution",
+    "How it works",
+    "Capabilities combined",
+    "Implementation and partnership",
+    "Verified outcomes",
+    "Authorized client perspective",
+    "Next stage",
+    "Related content",
+    "Project call to action",
+  ];
+
+  assert.ok(source, "components/projects/ProjectCaseStudy.tsx must exist");
+  assert.doesNotMatch(source, /["']use client["']/);
+  assert.match(
+    source,
+    /import type \{ PublishedProjectDefinition \} from ["']@\/components\/content\/projects["']/,
+  );
+  assert.match(source, /project:\s*PublishedProjectDefinition/);
+  assert.equal(
+    (source.match(/<h1\b/g) || []).length,
+    1,
+    "Project detail must render exactly one H1",
+  );
+
+  let previousIndex = -1;
+  for (const part of parts) {
+    const index = source.indexOf(part);
+    assert.ok(index > previousIndex, `${part} must appear in approved order`);
+    previousIndex = index;
+  }
+
+  for (const field of [
+    "project.context",
+    "project.challenge",
+    "project.strategy",
+    "project.solution",
+    "project.howItWorks",
+    "project.capabilities",
+    "project.implementation",
+    "project.verifiedOutcomes",
+    "project.authorizedQuote",
+    "project.nextStage",
+    "project.relatedContent",
+  ]) {
+    assert.match(
+      source,
+      new RegExp(field.replace(".", "\\.")),
+      `Project case study must render ${field}`,
+    );
+  }
+
+  assert.match(source, /\{outcome\.result\}/);
+  assert.match(source, /\{outcome\.evidence\}/);
+  assert.match(source, /\{project\.authorizedQuote\.attribution\}/);
+  assert.match(
+    source,
+    /<PrimaryLink\s+href=["']\/contact["'][^>]*>[\s\S]*Discuss a business challenge[\s\S]*<\/PrimaryLink>/,
+  );
+  assert.doesNotMatch(
+    source,
+    /\b(?:sm|md|lg|xl|2xl):hidden\b|\bhidden\b[^"\n]*\b(?:sm|md|lg|xl|2xl):(?:block|flex|grid)\b/,
+    "Project detail must use one responsive content tree",
+  );
+});
