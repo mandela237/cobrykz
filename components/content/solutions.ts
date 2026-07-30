@@ -20,6 +20,31 @@ export type SolutionFaq = {
   answer: string;
 };
 
+type SolutionArtifactItem = {
+  title: string;
+  description: string;
+};
+
+export type SolutionArtifact =
+  | {
+      kind: "workflow-comparison";
+      eyebrow: string;
+      title: string;
+      description: string;
+      before: { label: string; steps: readonly string[] };
+      after: { label: string; steps: readonly string[] };
+      safeguards: readonly SolutionArtifactItem[];
+    }
+  | {
+      kind: "system-map";
+      eyebrow: string;
+      title: string;
+      description: string;
+      centerLabel: string;
+      elements: readonly SolutionArtifactItem[];
+      distinctions: readonly SolutionArtifactItem[];
+    };
+
 export type SolutionPageDefinition = SolutionDefinition & {
   heroSupport: string;
   recognition: readonly string[];
@@ -31,6 +56,7 @@ export type SolutionPageDefinition = SolutionDefinition & {
   faqs: readonly SolutionFaq[];
   cta: { title: string; label: string };
   metadata: { title: string; description: string };
+  artifact?: SolutionArtifact;
   guidance?: { title: string; description: string };
 };
 
@@ -210,6 +236,43 @@ const businessAutomationSolution = {
     title: "Business Process and Workflow Automation | Cobrykz",
     description:
       "Improve and automate intake, approvals, routing, documents, reporting, and connected workflows without losing human oversight.",
+  },
+  artifact: {
+    kind: "workflow-comparison",
+    eyebrow: "Illustrative workflow",
+    title: "Before and after: a request and approval workflow",
+    description:
+      "This example shows the difference between moving routine coordination into a dependable workflow and merely making the same fragile process faster.",
+    before: {
+      label: "Before",
+      steps: [
+        "A request arrives through an email or informal message.",
+        "A team member copies details into a tracker and follows up for missing information.",
+        "Approvers exchange reminders while status and ownership remain unclear.",
+        "Someone updates connected records and prepares the final document by hand.",
+      ],
+    },
+    after: {
+      label: "After",
+      steps: [
+        "Structured intake validates the required information.",
+        "Rules route the request to the responsible reviewer with clear status.",
+        "Approval updates connected records and prepares the required document.",
+        "Monitoring confirms completion or sends the work to an exception path.",
+      ],
+    },
+    safeguards: [
+      {
+        title: "Exception handling",
+        description:
+          "Missing data, conflicting rules, or a system failure pauses the normal flow, preserves context, and routes the work to a named owner for recovery.",
+      },
+      {
+        title: "Human review",
+        description:
+          "People retain approval, judgment, and accountability where context matters; the workflow records the decision before routine steps continue.",
+      },
+    ],
   },
 } as const satisfies SolutionPageDefinition;
 
@@ -391,6 +454,51 @@ const digitalBusinessSystemsSolution = {
     title: "Connected Digital Business Systems | Cobrykz",
     description:
       "Connect operational tools, information, workflows, and teams in a clearer digital environment designed around how the business moves.",
+  },
+  artifact: {
+    kind: "system-map",
+    eyebrow: "System map",
+    title: "The parts of a connected operating environment",
+    description:
+      "A digital business system gives these parts a dependable way to work together. The goal is not one oversized product; it is a clearer environment with deliberate connections and ownership.",
+    centerLabel: "Connected operating environment",
+    elements: [
+      {
+        title: "People",
+        description:
+          "The customers, teams, owners, and reviewers who take action and remain accountable.",
+      },
+      {
+        title: "Tools",
+        description:
+          "The useful platforms, tailored interfaces, and integrations that support the work.",
+      },
+      {
+        title: "Workflows",
+        description:
+          "The triggers, decisions, handoffs, exceptions, and approvals that move work forward.",
+      },
+      {
+        title: "Information",
+        description:
+          "The records, documents, context, and reporting people need to make dependable decisions.",
+      },
+    ],
+    distinctions: [
+      {
+        title: "Custom Software",
+        description: "Creates a tailored application.",
+      },
+      {
+        title: "Digital Business Systems",
+        description: "Creates a connected operating environment.",
+      },
+      {
+        title: "Business Automation",
+        description:
+          "Moves work through that environment with less manual effort.",
+      },
+    ],
   },
 } as const satisfies SolutionPageDefinition;
 

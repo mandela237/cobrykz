@@ -5,6 +5,7 @@ import OutcomeList from "@/components/solutions/OutcomeList";
 import ProblemRecognition from "@/components/solutions/ProblemRecognition";
 import RelatedSolutions from "@/components/solutions/RelatedSolutions";
 import SolutionApproach from "@/components/solutions/SolutionApproach";
+import SolutionArtifact from "@/components/solutions/SolutionArtifact";
 import SolutionFaqs from "@/components/solutions/SolutionFaqs";
 import SolutionFinalCta from "@/components/solutions/SolutionFinalCta";
 import SolutionGuidance from "@/components/solutions/SolutionGuidance";
@@ -22,6 +23,7 @@ export default function SolutionPage({ solution }: SolutionPageProps) {
       <OutcomeList solution={solution} />
       <CapabilityList solution={solution} />
       <ApplicationExamples solution={solution} />
+      {solution.artifact && <SolutionArtifact artifact={solution.artifact} />}
       {solution.guidance && <SolutionGuidance guidance={solution.guidance} />}
       <SolutionApproach solution={solution} />
       <RelatedSolutions solution={solution} />

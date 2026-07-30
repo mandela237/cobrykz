@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import ts from "typescript";
@@ -43,6 +43,38 @@ const requiredArrays = [
   "relatedSlugs",
   "faqs",
 ];
+
+const collectSolutionPageRoutes = (directory, segments = []) => {
+  const routes = existsSync(join(directory, "page.tsx"))
+    ? [segments.join("/")]
+    : [];
+
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      routes.push(
+        ...collectSolutionPageRoutes(join(directory, entry.name), [
+          ...segments,
+          entry.name,
+        ]),
+      );
+    }
+  }
+
+  return routes;
+};
+
+const assertExactSolutionPageRoutes = (pageRoutes) => {
+  assert.deepEqual(
+    pageRoutes.toSorted(),
+    ["", ...expectedSlugs].toSorted(),
+    "app/solutions must contain exactly the hub and six approved static pages",
+  );
+  assert.equal(
+    pageRoutes.some((route) => /[[\]]/.test(route)),
+    false,
+    "solution routes must not use dynamic segments",
+  );
+};
 
 const textFor = (solution) =>
   JSON.stringify(solution)
@@ -192,6 +224,61 @@ test("preserves the approved decision guidance for each solution", () => {
   ]);
 });
 
+test("defines visible typed artifacts for workflow maturity and the connected system map", () => {
+  assert.match(source, /export type SolutionArtifact\s*=/);
+  assert.match(
+    source,
+    /artifact\?:\s*SolutionArtifact/,
+    "solution artifacts must remain optional on the shared page definition",
+  );
+
+  const automation = solutionBySlug["business-automation"];
+  assert.equal(automation.artifact?.kind, "workflow-comparison");
+  assert.equal(automation.artifact.eyebrow, "Illustrative workflow");
+  assert.equal(automation.artifact.before.label, "Before");
+  assert.equal(automation.artifact.after.label, "After");
+  assert.ok(automation.artifact.before.steps.length >= 3);
+  assert.ok(automation.artifact.after.steps.length >= 3);
+  assert.deepEqual(
+    automation.artifact.safeguards.map(({ title }) => title),
+    ["Exception handling", "Human review"],
+  );
+  assert.match(
+    textFor(automation.artifact.safeguards),
+    /missing data/,
+  );
+  assert.match(
+    textFor(automation.artifact.safeguards),
+    /system failure/,
+  );
+  assert.match(textFor(automation.artifact.safeguards), /recover/);
+  assert.match(textFor(automation.artifact.safeguards), /judgment/);
+
+  const systems = solutionBySlug["digital-business-systems"];
+  assert.equal(systems.artifact?.kind, "system-map");
+  assert.equal(systems.artifact.eyebrow, "System map");
+  assert.deepEqual(
+    systems.artifact.elements.map(({ title }) => title),
+    ["People", "Tools", "Workflows", "Information"],
+  );
+  assert.deepEqual(
+    systems.artifact.distinctions.map(({ title }) => title),
+    ["Custom Software", "Digital Business Systems", "Business Automation"],
+  );
+  assert.match(
+    textFor(systems.artifact),
+    /tailored application/,
+  );
+  assert.match(
+    textFor(systems.artifact),
+    /connected operating environment/,
+  );
+  assert.match(
+    textFor(systems.artifact),
+    /less manual effort/,
+  );
+});
+
 const solutionComponentIds = {
   "components/solutions/SolutionHero.tsx": "solution-hero-heading",
   "components/solutions/ProblemRecognition.tsx":
@@ -210,7 +297,7 @@ const solutionComponentIds = {
     "solution-final-cta-heading",
 };
 
-test("composes every solution from ten shared server-rendered sections", () => {
+test("composes every solution from shared server-rendered sections", () => {
   const page = read("components/solutions/SolutionPage.tsx");
   const componentSources = Object.fromEntries(
     Object.keys(solutionComponentIds).map((path) => [path, read(path)]),
@@ -221,7 +308,7 @@ test("composes every solution from ten shared server-rendered sections", () => {
   assert.doesNotMatch(allSources, /["']use client["']/);
   assert.match(
     page,
-    /<SolutionHero solution=\{solution\}\s*\/>[\s\S]*<ProblemRecognition solution=\{solution\}\s*\/>[\s\S]*<OutcomeList solution=\{solution\}\s*\/>[\s\S]*<CapabilityList solution=\{solution\}\s*\/>[\s\S]*<ApplicationExamples solution=\{solution\}\s*\/>[\s\S]*\{solution\.guidance &&\s*<SolutionGuidance guidance=\{solution\.guidance\}\s*\/>\}[\s\S]*<SolutionApproach solution=\{solution\}\s*\/>[\s\S]*<RelatedSolutions solution=\{solution\}\s*\/>[\s\S]*<SolutionFaqs solution=\{solution\}\s*\/>[\s\S]*<SolutionFinalCta solution=\{solution\}\s*\/>/,
+    /<SolutionHero solution=\{solution\}\s*\/>[\s\S]*<ProblemRecognition solution=\{solution\}\s*\/>[\s\S]*<OutcomeList solution=\{solution\}\s*\/>[\s\S]*<CapabilityList solution=\{solution\}\s*\/>[\s\S]*<ApplicationExamples solution=\{solution\}\s*\/>[\s\S]*\{solution\.artifact &&\s*<SolutionArtifact artifact=\{solution\.artifact\}\s*\/>\}[\s\S]*\{solution\.guidance &&\s*<SolutionGuidance guidance=\{solution\.guidance\}\s*\/>\}[\s\S]*<SolutionApproach solution=\{solution\}\s*\/>[\s\S]*<RelatedSolutions solution=\{solution\}\s*\/>[\s\S]*<SolutionFaqs solution=\{solution\}\s*\/>[\s\S]*<SolutionFinalCta solution=\{solution\}\s*\/>/,
   );
   assert.equal(
     (leafSources.match(/<h1\b/g) || []).length,
@@ -277,6 +364,39 @@ test("labels examples honestly and renders optional decision guidance only when 
   assert.match(page, /\{solution\.guidance &&\s*<SolutionGuidance/);
   assert.match(guidance, /\{guidance\.title\}/);
   assert.match(guidance, /\{guidance\.description\}/);
+});
+
+test("renders optional explanatory artifacts through one shared labelled component", () => {
+  const artifactPath = "components/solutions/SolutionArtifact.tsx";
+  assert.ok(
+    existsSync(join(root, artifactPath)),
+    "the shared solution artifact renderer must exist",
+  );
+
+  const artifact = read(artifactPath);
+  const page = read("components/solutions/SolutionPage.tsx");
+
+  assert.doesNotMatch(artifact, /["']use client["']/);
+  assert.match(
+    page,
+    /solution\.artifact &&\s*<SolutionArtifact artifact=\{solution\.artifact\}\s*\/>/,
+  );
+  assert.match(
+    artifact,
+    /<section\b[^>]*aria-labelledby="solution-artifact-heading"/s,
+  );
+  assert.match(artifact, /\bid="solution-artifact-heading"/);
+  assert.match(artifact, /\{artifact\.eyebrow\}/);
+  assert.match(artifact, /artifact\.kind === "workflow-comparison"/);
+  assert.match(artifact, /\[artifact\.before,\s*artifact\.after\]\.map/);
+  assert.match(artifact, /\{workflow\.label\}/);
+  assert.match(artifact, /workflow\.steps\.map/);
+  assert.match(artifact, /artifact\.safeguards\.map/);
+  assert.equal(
+    (artifact.match(/artifact\.elements\.slice\([^)]*\)\.map/g) || []).length,
+    2,
+  );
+  assert.match(artifact, /artifact\.distinctions\.map/);
 });
 
 test("uses shared calls to action, related solution links, and accessible FAQ disclosures", () => {
@@ -386,6 +506,9 @@ test("defines six thin static solution routes from the shared model", () => {
     "each modeled solution must receive one dedicated static route",
   );
 
+  const actualPageRoutes = collectSolutionPageRoutes(join(root, "app/solutions"));
+  assertExactSolutionPageRoutes(actualPageRoutes);
+
   for (const { slug, lookup } of expectedRoutes) {
     const page = read(`app/solutions/${slug}/page.tsx`);
 
@@ -419,6 +542,27 @@ test("defines six thin static solution routes from the shared model", () => {
     new Set(solutions.map(({ metadata }) => metadata.description)).size,
     expectedRoutes.length,
     "the route metadata descriptions must remain unique in the shared model",
+  );
+});
+
+test("rejects unexpected seventh and dynamic solution route inventories", () => {
+  assert.throws(
+    () =>
+      assertExactSolutionPageRoutes([
+        "",
+        ...expectedSlugs,
+        "experimental",
+      ]),
+    /exactly the hub and six approved static pages/,
+  );
+  assert.throws(
+    () =>
+      assertExactSolutionPageRoutes([
+        "",
+        ...expectedSlugs,
+        "ai/[slug]",
+      ]),
+    /exactly the hub and six approved static pages/,
   );
 });
 
