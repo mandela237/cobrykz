@@ -591,3 +591,83 @@ test("defines the approved 13-part business case-study narrative", () => {
     "Project detail must use one responsive content tree",
   );
 });
+
+test("builds an honest noindex Insights index from published articles only", () => {
+  const route = read("app/insights/page.tsx");
+
+  assert.ok(route, "app/insights/page.tsx must exist");
+  assert.doesNotMatch(route, /["']use client["']/);
+  assert.match(
+    route,
+    /import \{ publishedInsights \} from ["']@\/components\/content\/insights["']/,
+  );
+  assert.match(
+    route,
+    /robots:\s*\{\s*index:\s*publishedInsights\.length\s*>=\s*3,\s*follow:\s*true,?\s*\}/s,
+  );
+  assert.match(route, /alternates:\s*\{\s*canonical:\s*["']\/insights["']/s);
+  assert.match(route, /<InsightsIndex\s+insights=\{publishedInsights\}\s*\/>/);
+});
+
+test("renders a transparent Insights empty state without draft article cards", () => {
+  const source = read("components/insights/InsightsIndex.tsx");
+
+  assert.ok(source, "components/insights/InsightsIndex.tsx must exist");
+  assert.doesNotMatch(source, /["']use client["']/);
+  assert.match(
+    source,
+    /import type \{ PublishedInsightDefinition \} from ["']@\/components\/content\/insights["']/,
+  );
+  assert.match(source, /insights:\s*readonly PublishedInsightDefinition\[\]/);
+  assert.equal((source.match(/<h1\b/g) || []).length, 1);
+  assert.match(source, /insights\.length\s*<\s*3/);
+  assert.match(source, /Insights are being prepared/i);
+  assert.match(source, /href=["']\/solutions["']/);
+  assert.match(
+    source,
+    /<PrimaryLink\s+href=["']\/contact["'][^>]*>[\s\S]*Discuss a business challenge[\s\S]*<\/PrimaryLink>/,
+  );
+  assert.doesNotMatch(source, /where-should-a-business-start-with-ai|five-signs-a-process|when-custom-software/);
+});
+
+test("generates Insight articles only for published slugs and rejects drafts", () => {
+  const route = read("app/insights/[slug]/page.tsx");
+
+  assert.ok(route, "app/insights/[slug]/page.tsx must exist");
+  assert.match(route, /import \{ notFound \} from ["']next\/navigation["']/);
+  assert.match(
+    route,
+    /import \{\s*getPublishedInsight,\s*publishedInsights,\s*\} from ["']@\/components\/content\/insights["']/s,
+  );
+  assert.match(route, /export const dynamicParams\s*=\s*false/);
+  assert.match(
+    route,
+    /return publishedInsights\.map\(\(insight\)\s*=>\s*\(\{\s*slug:\s*insight\.slug,\s*\}\)\)/s,
+  );
+  assert.ok((route.match(/\bnotFound\(\)/g) || []).length >= 2);
+  assert.match(route, /<InsightArticle\s+insight=\{insight\}\s*\/>/);
+});
+
+test("defines the approved Insight article structure and conversion path", () => {
+  const source = read("components/insights/InsightArticle.tsx");
+
+  assert.ok(source, "components/insights/InsightArticle.tsx must exist");
+  assert.equal((source.match(/<h1\b/g) || []).length, 1);
+  for (const item of [
+    "Executive answer",
+    "insight.sections",
+    "Practical next steps",
+    "insight.nextSteps",
+    "Related solution",
+    "insight.relatedSolution",
+    "Author context",
+    "insight.author.name",
+    "insight.author.role",
+  ]) {
+    assert.match(source, new RegExp(item.replace(".", "\\.")));
+  }
+  assert.match(
+    source,
+    /<PrimaryLink\s+href=["']\/contact["'][^>]*>[\s\S]*Discuss a business challenge[\s\S]*<\/PrimaryLink>/,
+  );
+});
