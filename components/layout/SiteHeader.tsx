@@ -1,3 +1,4 @@
+import Link from "next/link";
 import CobrykzLogo from "@/components/CobrykzLogo";
 import {
   primaryCta,
@@ -7,14 +8,12 @@ import {
 import PrimaryLink from "@/components/ui/PrimaryLink";
 import SolutionsMenu from "./SolutionsMenu";
 
-const homeHref = "/";
-
 export default function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-white">
-      <div className="section-shell flex min-h-16 flex-wrap items-center justify-between gap-x-4">
-        <a
-          href={homeHref}
+      <div className="section-shell flex min-h-16 flex-wrap items-center justify-between gap-x-4 py-2 lg:py-0">
+        <Link
+          href="/"
           className="action-transition flex min-h-11 items-center rounded-lg"
           aria-label={`${siteIdentity.name}, home`}
         >
@@ -24,31 +23,34 @@ export default function SiteHeader() {
             showWordmark
             wordmarkSize="sm"
           />
-        </a>
+        </Link>
 
         <nav
-          className="order-3 w-full border-t border-border md:order-none md:w-auto md:border-0"
+          className="order-3 w-full border-t border-border lg:order-none lg:w-auto lg:border-0"
           aria-label="Primary navigation"
         >
-          <ul className="flex items-center justify-between md:justify-start" role="list">
+          <ul className="flex items-center justify-between lg:justify-start" role="list">
             {primaryNavigation.map((item) =>
               item.label === "Solutions" ? (
                 <SolutionsMenu key={item.href} />
               ) : (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
-                    className="nav-underline action-transition flex min-h-11 items-center px-2 text-[13px] font-medium text-slate hover:text-navy active:text-navy md:px-3"
+                    className="nav-underline action-transition flex min-h-11 items-center px-2 text-[13px] font-medium text-slate hover:text-navy active:text-navy lg:px-3"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ),
             )}
           </ul>
         </nav>
 
-        <PrimaryLink href={primaryCta.href} className="hidden md:inline-flex">
+        <PrimaryLink
+          href={primaryCta.href}
+          className="order-2 mb-2 w-full lg:order-none lg:mb-0 lg:w-auto"
+        >
           {primaryCta.label}
         </PrimaryLink>
       </div>

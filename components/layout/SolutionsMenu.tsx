@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { solutions } from "@/components/content/solutions";
@@ -46,7 +47,7 @@ export default function SolutionsMenu() {
           <ul role="list">
             {solutions.map((solution) => (
               <li key={solution.slug}>
-                <a
+                <Link
                   href={solution.href}
                   className="action-transition block rounded-lg px-3 py-3 hover:bg-gray-light active:bg-gray-100"
                   onClick={closeMenu}
@@ -57,7 +58,7 @@ export default function SolutionsMenu() {
                   <span className="mt-1 block text-[13px] leading-5 text-slate">
                     {solution.navOutcome}
                   </span>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

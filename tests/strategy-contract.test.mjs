@@ -73,3 +73,56 @@ test("provides a keyboard-operable Solutions disclosure from shared content", ()
   assert.match(source, /event\.key === ["']Escape["']/);
   assert.match(source, /onClick=\{closeMenu\}/);
 });
+
+test("keeps the shared primary CTA available on touch and mobile", () => {
+  const site = read("components/content/site.ts");
+  const header = read("components/layout/SiteHeader.tsx");
+
+  assert.match(site, /label: "Discuss a business challenge"/);
+  assert.match(
+    header,
+    /<PrimaryLink\s+[^>]*href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,
+  );
+  assert.doesNotMatch(
+    header,
+    /<PrimaryLink\b[^>]*className="[^"]*\bhidden\b[^"]*"/,
+  );
+});
+
+test("uses Next Link for every internal shared-shell route", () => {
+  const primaryLink = read("components/ui/PrimaryLink.tsx");
+  const header = read("components/layout/SiteHeader.tsx");
+  const solutionsMenu = read("components/layout/SolutionsMenu.tsx");
+  const footer = read("components/layout/SiteFooter.tsx");
+
+  for (const [source, label] of [
+    [primaryLink, "PrimaryLink"],
+    [header, "SiteHeader"],
+    [solutionsMenu, "SolutionsMenu"],
+    [footer, "SiteFooter"],
+  ]) {
+    assert.match(
+      source,
+      /import Link from ["']next\/link["']/,
+      `${label} must use the Next.js internal navigation primitive`,
+    );
+  }
+
+  assert.match(primaryLink, /<Link\s+href=\{href\}/);
+  assert.match(header, /<Link\s+href="\/"/);
+  assert.match(header, /<Link\s+href=\{item\.href\}/);
+  assert.match(solutionsMenu, /<Link\s+href=\{solution\.href\}/);
+  assert.match(footer, /<Link\s+href="\/"/);
+  assert.match(footer, /<Link\s+href=\{solution\.href\}/);
+  assert.match(footer, /<Link\s+href=\{item\.href\}/);
+
+  for (const [source, label] of [
+    [primaryLink, "PrimaryLink"],
+    [header, "SiteHeader"],
+    [solutionsMenu, "SolutionsMenu"],
+  ]) {
+    assert.doesNotMatch(source, /<a\b/, `${label} must not use raw anchors`);
+  }
+  assert.equal((footer.match(/<a\b/g) || []).length, 1);
+  assert.match(footer, /<a\s+href="mailto:info@cobrykz\.com"/);
+});

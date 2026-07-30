@@ -1,3 +1,4 @@
+import Link from "next/link";
 import CobrykzLogo from "@/components/CobrykzLogo";
 import {
   primaryCta,
@@ -10,7 +11,6 @@ import PrimaryLink from "@/components/ui/PrimaryLink";
 const companyLinks = primaryNavigation.filter(
   (item) => item.label !== "Solutions",
 );
-const homeHref = "/";
 
 export default function SiteFooter() {
   return (
@@ -18,8 +18,8 @@ export default function SiteFooter() {
       <div className="section-shell py-12">
         <div className="grid gap-10 border-b border-white/10 pb-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_0.8fr]">
           <div className="sm:col-span-2 lg:col-span-1">
-            <a
-              href={homeHref}
+            <Link
+              href="/"
               className="action-transition inline-flex min-h-11 items-center rounded-lg"
               aria-label={`${siteIdentity.name}, home`}
             >
@@ -29,7 +29,7 @@ export default function SiteFooter() {
                 showWordmark
                 wordmarkSize="sm"
               />
-            </a>
+            </Link>
             <p className="mt-4 max-w-sm text-[15px] leading-6 text-white/75">
               {siteIdentity.tagline}
             </p>
@@ -45,12 +45,12 @@ export default function SiteFooter() {
             <ul className="mt-4 space-y-2" role="list">
               {solutions.map((solution) => (
                 <li key={solution.slug}>
-                  <a
+                  <Link
                     href={solution.href}
                     className="action-transition inline-flex min-h-11 items-center text-[13px] leading-5 text-white/75 hover:text-white active:text-white"
                   >
                     {solution.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -63,12 +63,12 @@ export default function SiteFooter() {
             <ul className="mt-4 space-y-2" role="list">
               {companyLinks.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
                     className="action-transition inline-flex min-h-11 items-center text-[13px] text-white/75 hover:text-white active:text-white"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

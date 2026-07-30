@@ -6,8 +6,8 @@ import test from "node:test";
 
 const root = process.cwd();
 const read = (path) => readFileSync(join(root, path), "utf8");
-// `next/image` is the only non-icon, bare-package PascalCase JSX component in tracked TSX.
-const allowedExternalJsxModules = new Set(["next/image"]);
+// Approved Next.js primitives are the only non-icon bare-package JSX components.
+const allowedExternalJsxModules = new Set(["next/image", "next/link"]);
 const isBareExternalModule = (moduleName) =>
   !moduleName.startsWith(".") && !moduleName.startsWith("@/");
 
