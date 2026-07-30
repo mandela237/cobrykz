@@ -459,8 +459,11 @@ test("defines the Solutions hub route with unique static metadata", () => {
   assert.match(page, /export const metadata = buildPageMetadata\(\{/);
   assert.match(page, /path:\s*["']\/solutions["']/);
   assert.ok(page.includes(`title: "${expectedTitle}"`));
-  assert.ok(
-    page.includes(`description:\n    "${expectedDescription}"`),
+  assert.match(
+    page,
+    new RegExp(
+      `description:\\r?\\n\\s+"${expectedDescription.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`,
+    ),
     "the hub must expose the exact approved static description",
   );
   assert.ok(
