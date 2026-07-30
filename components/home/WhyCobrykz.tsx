@@ -1,4 +1,4 @@
-import { whyCobrykz } from "@/components/content/home";
+import { homePageCopy, whyCobrykz } from "@/components/content/home";
 import SectionIntro from "@/components/ui/SectionIntro";
 
 export default function WhyCobrykz() {
@@ -11,8 +11,8 @@ export default function WhyCobrykz() {
       <div className="section-shell py-16 sm:py-20 lg:py-24">
         <SectionIntro
           id="why-cobrykz-heading"
-          title="One accountable partner from decision to delivery."
-          description="Strong systems come from keeping business context, technical judgment, and implementation responsibility connected."
+          title={homePageCopy.whyCobrykz.title}
+          description={homePageCopy.whyCobrykz.description}
         />
         <ul
           data-home-composition="accountability"

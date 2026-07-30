@@ -135,3 +135,58 @@ export const homeMessage = {
   description:
     "Cobrykz helps businesses use AI, automation, custom software, websites, and connected digital systems to grow, work more efficiently, and create better experiences.",
 } as const;
+
+type HomeSectionCopy = {
+  title: string;
+  description: string;
+};
+
+type HomePageCopy = {
+  hero: {
+    eyebrow: string;
+  };
+  outcomes: HomeSectionCopy;
+  solutions: HomeSectionCopy;
+  whyCobrykz: HomeSectionCopy;
+  ai: HomeSectionCopy;
+  challengeRouter: {
+    title: string;
+    assessment: string;
+  };
+  process: HomeSectionCopy;
+};
+
+export const homePageCopy = {
+  hero: {
+    eyebrow: "Business technology, connected",
+  },
+  outcomes: {
+    title: "Technology should make the business stronger.",
+    description:
+      "The right system creates progress people can recognize in growth, day-to-day work, and important decisions.",
+  },
+  solutions: {
+    title: "Modern solutions for real business challenges.",
+    description:
+      "Cobrykz combines strategy and execution to move organizations from problem to working solution.",
+  },
+  whyCobrykz: {
+    title: "One accountable partner from decision to delivery.",
+    description:
+      "Strong systems come from keeping business context, technical judgment, and implementation responsibility connected.",
+  },
+  ai: {
+    title: "A practical point of view on AI.",
+    description:
+      "AI is valuable when it improves real work. Cobrykz evaluates it as one possible tool within a responsible business solution, never as a requirement.",
+  },
+  challengeRouter: {
+    title: "What is holding the work back?",
+    assessment: "A focused assessment confirms the right approach.",
+  },
+  process: {
+    title: "A clear path from question to working system.",
+    description:
+      "Each engagement follows the same disciplined sequence while adapting to the people, constraints, and outcomes involved.",
+  },
+} as const satisfies HomePageCopy;

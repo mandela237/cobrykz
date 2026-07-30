@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { processStages } from "@/components/content/home";
+import { homePageCopy, processStages } from "@/components/content/home";
+import { processCta } from "@/components/content/site";
 import SectionIntro from "@/components/ui/SectionIntro";
 import HomeSystemThread from "@/components/home/HomeSystemThread";
 
@@ -21,14 +22,14 @@ export default function ProcessOverview() {
         <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <SectionIntro
             id="process-heading"
-            title="A clear path from question to working system."
-            description="Each engagement follows the same disciplined sequence while adapting to the people, constraints, and outcomes involved."
+            title={homePageCopy.process.title}
+            description={homePageCopy.process.description}
           />
           <Link
-            href="/process"
+            href={processCta.href}
             className="action-transition inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-blue underline decoration-blue/30 underline-offset-4 hover:text-navy"
           >
-            Explore the full process
+            {processCta.label}
           </Link>
         </div>
         <div className="home-process-rail mt-14 border border-border bg-white p-6 sm:p-9">

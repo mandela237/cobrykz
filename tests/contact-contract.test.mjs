@@ -71,11 +71,13 @@ test("uses a server-handled provider flow with honest success semantics", () => 
 
 test("renders an accessible low-pressure contact form and fallback", () => {
   const page = read("app/contact/page.tsx");
+  const desktop = read("components/contact/DesktopContactPage.tsx");
   const form = read("components/contact/ContactForm.tsx");
   const content = read("components/content/contact.ts");
-  assert.equal((page.match(/<h1\b/g) || []).length, 1);
+  assert.equal((desktop.match(/<h1\b/g) || []).length, 1);
   assert.match(content, /Tell us what you want the business to do better/);
-  assert.match(page, /mailto:info@cobrykz\.com/);
+  assert.match(desktop, /mailto:info@cobrykz\.com/);
+  assert.match(page, /ResponsivePageComposition/);
   assert.match(form, /aria-describedby/);
   assert.match(form, /role="alert"/);
   assert.match(form, /aria-live="polite"/);
@@ -86,7 +88,7 @@ test("renders an accessible low-pressure contact form and fallback", () => {
 
 test("explains the beginning of a partnership without turning the form into a wizard", () => {
   const path = read("components/contact/InquiryPath.tsx");
-  const page = read("app/contact/page.tsx");
+  const desktop = read("components/contact/DesktopContactPage.tsx");
   const form = read("components/contact/ContactForm.tsx");
 
   for (const step of [
@@ -100,7 +102,7 @@ test("explains the beginning of a partnership without turning the form into a wi
   }
 
   assert.match(path, /contactPage\.responseExpectation/);
-  assert.match(page, /<InquiryPath\s*\/>/);
+  assert.match(desktop, /<InquiryPath\s*\/>/);
   assert.doesNotMatch(form, /SystemAtlas|stepIndex|currentStep|nextStep/);
   assert.doesNotMatch(form, /\bbudget\b/i);
 });

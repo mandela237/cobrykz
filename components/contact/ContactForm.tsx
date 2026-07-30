@@ -11,7 +11,7 @@ type SubmissionState =
   | { status: "success" };
 
 const fieldClass =
-  "mt-2 min-h-12 w-full rounded-lg border border-border bg-white px-4 py-3 text-base text-navy outline-none placeholder:text-slate-light focus:border-blue";
+  "contact-form-control mt-2 min-h-12 w-full rounded-lg border border-border bg-white px-4 py-3 text-base text-navy outline-none placeholder:text-slate-light focus:border-blue";
 
 export default function ContactForm() {
   const [state, setState] = useState<SubmissionState>({ status: "idle" });
@@ -21,6 +21,12 @@ export default function ContactForm() {
   useEffect(() => {
     startedAt.current = Date.now();
   }, []);
+
+  useEffect(() => {
+    if (state.status === "error") {
+      summaryRef.current?.focus();
+    }
+  }, [state.status]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,7 +51,6 @@ export default function ContactForm() {
           message: result.message ?? "Your inquiry was not delivered. Please try again.",
           errors: result.errors ?? {},
         });
-        requestAnimationFrame(() => summaryRef.current?.focus());
         return;
       }
       form.reset();
@@ -57,13 +62,12 @@ export default function ContactForm() {
           "Your inquiry was not delivered. Please try again or email info@cobrykz.com.",
         errors: {},
       });
-      requestAnimationFrame(() => summaryRef.current?.focus());
     }
   }
 
   if (state.status === "success") {
     return (
-      <div aria-live="polite" className="border-y border-border py-10">
+      <div data-contact-success aria-live="polite" className="border-y border-border py-10">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-evergreen">
           Inquiry delivered
         </p>
@@ -79,10 +83,11 @@ export default function ContactForm() {
 
   const errors = state.status === "error" ? state.errors : {};
   return (
-    <form onSubmit={handleSubmit} noValidate>
+    <form data-contact-form onSubmit={handleSubmit} noValidate>
       {state.status === "error" ? (
         <div
           ref={summaryRef}
+          data-contact-error-summary
           role="alert"
           tabIndex={-1}
           className="mb-8 border-l-4 border-blue bg-blue-tint p-5 text-sm leading-6 text-navy"
@@ -92,7 +97,7 @@ export default function ContactForm() {
         </div>
       ) : null}
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="contact-form-fields grid gap-6 sm:grid-cols-2">
         <Field label="Name" name="name" error={errors.name} autoComplete="name" />
         <Field label="Work email" name="email" type="email" error={errors.email} autoComplete="email" />
         <Field label="Company" name="company" error={errors.company} autoComplete="organization" />

@@ -477,13 +477,19 @@ test("composes About around one connected partner and accountable leadership", (
 
 test("adds honest visual frameworks for Projects and Insights", () => {
   const projectsIndex = read("components/projects/ProjectsIndex.tsx");
-  const projectCaseStudy = read("components/projects/ProjectCaseStudy.tsx");
+  const desktopProjectsIndex = read(
+    "components/projects/DesktopProjectsIndex.tsx",
+  );
+  const projectCaseStudy = read(
+    "components/projects/DesktopProjectCaseStudy.tsx",
+  );
   const evidenceStandard = read("components/projects/EvidenceStandard.tsx");
-  const insightsIndex = read("components/insights/InsightsIndex.tsx");
-  const insightArticle = read("components/insights/InsightArticle.tsx");
+  const insightsIndex = read("components/insights/DesktopInsightsIndex.tsx");
+  const insightArticle = read("components/insights/DesktopInsightArticle.tsx");
   const editorialMethod = read("components/insights/EditorialMethod.tsx");
 
-  assert.match(projectsIndex, /<EvidenceStandard\s*\/>/);
+  assert.match(projectsIndex, /<DesktopProjectsIndex/);
+  assert.match(desktopProjectsIndex, /<EvidenceStandard\s*\/>/);
   assert.match(insightsIndex, /<EditorialMethod\s*\/>/);
   assert.doesNotMatch(
     `${evidenceStandard}\n${editorialMethod}`,
@@ -517,9 +523,12 @@ test("builds an honest noindex Projects index from published projects only", () 
 });
 
 test("renders an intentional Projects empty state without fake inventory or filters", () => {
-  const source = read("components/projects/ProjectsIndex.tsx");
+  const source = read("components/projects/DesktopProjectsIndex.tsx");
 
-  assert.ok(source, "components/projects/ProjectsIndex.tsx must exist");
+  assert.ok(
+    source,
+    "components/projects/DesktopProjectsIndex.tsx must exist",
+  );
   assert.doesNotMatch(source, /["']use client["']/);
   assert.match(
     source,
@@ -592,7 +601,9 @@ test("keeps Project detail metadata specific, canonical, and evidence-led", () =
 });
 
 test("defines the approved 13-part business case-study narrative", () => {
-  const source = read("components/projects/ProjectCaseStudy.tsx");
+  const source = read(
+    "components/projects/DesktopProjectCaseStudy.tsx",
+  );
   const parts = [
     "Project introduction",
     "Business context",
@@ -609,7 +620,10 @@ test("defines the approved 13-part business case-study narrative", () => {
     "Project call to action",
   ];
 
-  assert.ok(source, "components/projects/ProjectCaseStudy.tsx must exist");
+  assert.ok(
+    source,
+    "components/projects/DesktopProjectCaseStudy.tsx must exist",
+  );
   assert.doesNotMatch(source, /["']use client["']/);
   assert.match(
     source,
@@ -681,7 +695,7 @@ test("builds an honest noindex Insights index from published articles only", () 
 });
 
 test("renders a transparent Insights empty state without draft article cards", () => {
-  const source = read("components/insights/InsightsIndex.tsx");
+  const source = read("components/insights/DesktopInsightsIndex.tsx");
 
   assert.ok(source, "components/insights/InsightsIndex.tsx must exist");
   assert.doesNotMatch(source, /["']use client["']/);
@@ -720,7 +734,7 @@ test("generates Insight articles only for published slugs and rejects drafts", (
 });
 
 test("defines the approved Insight article structure and conversion path", () => {
-  const source = read("components/insights/InsightArticle.tsx");
+  const source = read("components/insights/DesktopInsightArticle.tsx");
 
   assert.ok(source, "components/insights/InsightArticle.tsx must exist");
   assert.equal((source.match(/<h1\b/g) || []).length, 1);

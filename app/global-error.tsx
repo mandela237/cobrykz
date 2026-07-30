@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ResponsivePageComposition from "@/components/mobile/ResponsivePageComposition";
 
 export default function GlobalError({
   reset,
@@ -11,7 +12,18 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body>
-        <main className="min-h-screen bg-gray-light">
+        <ResponsivePageComposition
+          mobile={<MobileGlobalError reset={reset} />}
+          desktop={<DesktopGlobalError reset={reset} />}
+        />
+      </body>
+    </html>
+  );
+}
+
+function DesktopGlobalError({ reset }: { reset: () => void }) {
+  return (
+    <main className="min-h-screen bg-gray-light">
           <div className="section-shell py-20 sm:py-28">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue">Something went wrong</p>
             <h1 className="text-balance mt-5 max-w-4xl text-[2.5rem] font-extrabold leading-[1.04] text-navy sm:text-5xl">
@@ -30,7 +42,25 @@ export default function GlobalError({
             </div>
           </div>
         </main>
-      </body>
-    </html>
+  );
+}
+
+function MobileGlobalError({ reset }: { reset: () => void }) {
+  return (
+    <main className="min-h-screen" data-mobile-recovery="global-error">
+      <div className="section-shell mobile-recovery-frame">
+        <p className="mobile-recovery-marker">Something went wrong</p>
+        <h1>The page could not be completed.</h1>
+        <p>
+          Try the request again. If the problem continues, return to the Cobrykz homepage.
+        </p>
+        <div className="mobile-recovery-actions">
+          <button type="button" onClick={() => reset()}>
+            Try again
+          </button>
+          <Link href="/">Return home</Link>
+        </div>
+      </div>
+    </main>
   );
 }

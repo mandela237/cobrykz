@@ -6,14 +6,85 @@ import {
   whyCobrykz,
 } from "@/components/content/home";
 import { primaryCta } from "@/components/content/site";
-import SolutionSelectionMatrix from "@/components/solutions/SolutionSelectionMatrix";
+import MobileSolutionsHub from "@/components/solutions/MobileSolutionsHub";
+import type {
+  OperatingContext,
+  SolutionsHubCopy,
+} from "@/components/solutions/MobileSolutionsHub";
+import ResponsiveSolutionsHub from "@/components/solutions/ResponsiveSolutionsHub";
+import SolutionSelectionMatrix, {
+  selectionRows,
+} from "@/components/solutions/SolutionSelectionMatrix";
 import CapabilityRelationshipAtlas from "@/components/solutions/CapabilityRelationshipAtlas";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 import SectionIntro from "@/components/ui/SectionIntro";
 
 const outcomeStartingPoints = [solutions[4], solutions[1], solutions[5]];
 
-export default function SolutionsHub() {
+const solutionsHubCopy = {
+  hero: {
+    eyebrow: "Business technology solutions",
+    title: "Find the right way to improve your business.",
+    description:
+      "Compare practical starting points for growth, operational improvement, and confident modernization. Cobrykz begins with the challenge, then shapes the technology around the result.",
+    action: "Start with an outcome",
+  },
+  outcomes: {
+    title: "Begin with what the business needs to do better.",
+    description:
+      "A desired outcome is often a clearer starting point than a technical category. These pathways help narrow the first conversation.",
+  },
+  portfolio: {
+    title: "Six capabilities, shaped around the challenge.",
+    description:
+      "Each capability has a distinct role. Cobrykz connects them only when the business outcome calls for a broader system.",
+  },
+  selection: {
+    title: "Recognize your likely starting point.",
+    description:
+      "A familiar business condition can indicate the first capability to assess. The final recommendation follows a closer look at the work, constraints, and desired result.",
+  },
+  connected: {
+    title: "Connected outcomes may combine multiple capabilities.",
+    description:
+      "A business challenge can cross customer experience, internal operations, and the systems between them. Cobrykz assesses that wider context before recommending the parts that belong together.",
+  },
+  method: {
+    title: "Clarity comes before a build decision.",
+    description:
+      "Discover, Assess, and Design establish the business case, constraints, and important decisions before implementation begins.",
+  },
+  why: {
+    title: "Why Cobrykz",
+    description:
+      "The work stays connected from the first decision through delivery and long-term improvement.",
+  },
+  cta: {
+    title: "What could technology improve in your business?",
+    description:
+      "Begin with a challenge, bottleneck, or opportunity. You do not need a technical brief to start a useful conversation.",
+  },
+} as const satisfies SolutionsHubCopy;
+
+const operatingContexts = [
+  {
+    title: "Customer experience",
+    description:
+      "A web experience can establish trust, enable customer action, or deliver a digital service.",
+  },
+  {
+    title: "Operational flow",
+    description:
+      "Automation can move the resulting work through approvals, handoffs, and reporting with less manual effort.",
+  },
+  {
+    title: "Connected system",
+    description:
+      "A digital business system can keep the people, tools, and information behind the experience aligned.",
+  },
+] as const satisfies readonly OperatingContext[];
+
+function DesktopSolutionsHub() {
   return (
     <>
       <section
@@ -23,21 +94,19 @@ export default function SolutionsHub() {
       >
         <div className="section-shell py-16 sm:py-20 lg:py-28">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue">
-            Business technology solutions
+            {solutionsHubCopy.hero.eyebrow}
           </p>
           <h1
             id="solutions-hub-hero-heading"
             className="text-balance mt-5 max-w-5xl text-[2.5rem] font-extrabold leading-[1.04] text-navy sm:text-5xl lg:text-7xl"
           >
-            Find the right way to improve your business.
+            {solutionsHubCopy.hero.title}
           </h1>
           <p className="mt-6 max-w-3xl text-base leading-7 text-slate sm:text-lg sm:leading-8">
-            Compare practical starting points for growth, operational
-            improvement, and confident modernization. Cobrykz begins with the
-            challenge, then shapes the technology around the result.
+            {solutionsHubCopy.hero.description}
           </p>
           <PrimaryLink href="#solutions-hub-outcomes" className="mt-8">
-            Start with an outcome
+            {solutionsHubCopy.hero.action}
           </PrimaryLink>
         </div>
       </section>
@@ -50,8 +119,8 @@ export default function SolutionsHub() {
         <div className="section-shell py-16 sm:py-20 lg:py-24">
           <SectionIntro
             id="solutions-hub-outcomes-heading"
-            title="Begin with what the business needs to do better."
-            description="A desired outcome is often a clearer starting point than a technical category. These pathways help narrow the first conversation."
+            title={solutionsHubCopy.outcomes.title}
+            description={solutionsHubCopy.outcomes.description}
           />
           <ol className="mt-12 grid border-y border-border md:grid-cols-3">
             {homeOutcomes.map((outcome, index) => {
@@ -94,8 +163,8 @@ export default function SolutionsHub() {
         <div className="section-shell py-16 sm:py-20 lg:py-24">
           <SectionIntro
             id="solutions-hub-portfolio-heading"
-            title="Six capabilities, shaped around the challenge."
-            description="Each capability has a distinct role. Cobrykz connects them only when the business outcome calls for a broader system."
+            title={solutionsHubCopy.portfolio.title}
+            description={solutionsHubCopy.portfolio.description}
           />
           <ol className="mt-12 border-t border-border">
             {solutions.map((solution, index) => (
@@ -138,8 +207,8 @@ export default function SolutionsHub() {
         <div className="section-shell py-16 sm:py-20 lg:py-24">
           <SectionIntro
             id="solutions-hub-selection-heading"
-            title="Recognize your likely starting point."
-            description="A familiar business condition can indicate the first capability to assess. The final recommendation follows a closer look at the work, constraints, and desired result."
+            title={solutionsHubCopy.selection.title}
+            description={solutionsHubCopy.selection.description}
           />
           <SolutionSelectionMatrix />
         </div>
@@ -153,38 +222,30 @@ export default function SolutionsHub() {
         <div className="section-shell py-16 sm:py-20 lg:py-24">
           <SectionIntro
             id="solutions-hub-connected-heading"
-            title="Connected outcomes may combine multiple capabilities."
-            description="A business challenge can cross customer experience, internal operations, and the systems between them. Cobrykz assesses that wider context before recommending the parts that belong together."
+            title={solutionsHubCopy.connected.title}
+            description={solutionsHubCopy.connected.description}
           />
           <CapabilityRelationshipAtlas />
           <div className="mt-12 grid border-y border-border md:grid-cols-3">
-            <div className="border-b border-border py-7 md:border-b-0 md:border-r md:pr-7">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue">
-                Customer experience
-              </p>
-              <p className="mt-3 text-[15px] leading-7 text-slate">
-                A web experience can establish trust, enable customer action,
-                or deliver a digital service.
-              </p>
-            </div>
-            <div className="border-b border-border py-7 md:border-b-0 md:border-r md:px-7">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue">
-                Operational flow
-              </p>
-              <p className="mt-3 text-[15px] leading-7 text-slate">
-                Automation can move the resulting work through approvals,
-                handoffs, and reporting with less manual effort.
-              </p>
-            </div>
-            <div className="py-7 md:pl-7">
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue">
-                Connected system
-              </p>
-              <p className="mt-3 text-[15px] leading-7 text-slate">
-                A digital business system can keep the people, tools, and
-                information behind the experience aligned.
-              </p>
-            </div>
+            {operatingContexts.map((context, index) => (
+              <div
+                key={context.title}
+                className={
+                  index === 0
+                    ? "border-b border-border py-7 md:border-b-0 md:border-r md:pr-7"
+                    : index === 1
+                      ? "border-b border-border py-7 md:border-b-0 md:border-r md:px-7"
+                      : "py-7 md:pl-7"
+                }
+              >
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue">
+                  {context.title}
+                </p>
+                <p className="mt-3 text-[15px] leading-7 text-slate">
+                  {context.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -197,8 +258,8 @@ export default function SolutionsHub() {
         <div className="section-shell py-16 sm:py-20 lg:py-24">
           <SectionIntro
             id="solutions-hub-method-heading"
-            title="Clarity comes before a build decision."
-            description="Discover, Assess, and Design establish the business case, constraints, and important decisions before implementation begins."
+            title={solutionsHubCopy.method.title}
+            description={solutionsHubCopy.method.description}
           />
           <ol className="mt-12 grid gap-x-8 gap-y-9 md:grid-cols-3">
             {processStages.slice(0, 3).map((stage, index) => (
@@ -235,8 +296,8 @@ export default function SolutionsHub() {
         <div className="section-shell py-16 sm:py-20 lg:py-24">
           <SectionIntro
             id="solutions-hub-why-heading"
-            title="Why Cobrykz"
-            description="The work stays connected from the first decision through delivery and long-term improvement."
+            title={solutionsHubCopy.why.title}
+            description={solutionsHubCopy.why.description}
           />
           <ul className="mt-12 border-t border-border">
             {whyCobrykz.map((reason, index) => (
@@ -272,11 +333,10 @@ export default function SolutionsHub() {
             id="solutions-hub-cta-heading"
             className="text-balance mx-auto max-w-4xl text-[2rem] font-extrabold leading-[1.08] sm:text-[2.5rem] lg:text-5xl"
           >
-            What could technology improve in your business?
+            {solutionsHubCopy.cta.title}
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/75 sm:text-[17px]">
-            Begin with a challenge, bottleneck, or opportunity. You do not need
-            a technical brief to start a useful conversation.
+            {solutionsHubCopy.cta.description}
           </p>
           <PrimaryLink href={primaryCta.href} className="mt-8">
             {primaryCta.label}
@@ -284,5 +344,21 @@ export default function SolutionsHub() {
         </div>
       </section>
     </>
+  );
+}
+
+export default function SolutionsHub() {
+  return (
+    <ResponsiveSolutionsHub
+      mobile={
+        <MobileSolutionsHub
+          copy={solutionsHubCopy}
+          outcomeStartingPoints={outcomeStartingPoints}
+          selectionRows={selectionRows}
+          operatingContexts={operatingContexts}
+        />
+      }
+      desktop={<DesktopSolutionsHub />}
+    />
   );
 }

@@ -1,6 +1,6 @@
 import { contactPage } from "@/components/content/contact";
 
-const inquirySteps = [
+export const inquirySteps = [
   "Business challenge received",
   "Context reviewed",
   "Initial fit and questions identified",

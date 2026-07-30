@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { challengeRoutes } from "@/components/content/home";
+import { challengeRoutes, homePageCopy } from "@/components/content/home";
 import { primaryCta } from "@/components/content/site";
 import {
   solutionBySlug,
@@ -24,7 +24,7 @@ export default function ChallengeRouter() {
     },
     {
       id: "assessment",
-      label: "A focused assessment confirms the right approach.",
+      label: homePageCopy.challengeRouter.assessment,
       state: "active" as const,
     },
     {
@@ -44,7 +44,7 @@ export default function ChallengeRouter() {
         id="challenge-router-title"
         className="max-w-3xl text-[2rem] font-extrabold leading-[1.08] text-navy sm:text-[2.5rem] lg:text-5xl"
       >
-        What is holding the work back?
+        {homePageCopy.challengeRouter.title}
       </h2>
       <div aria-label="Business challenges" className="grid gap-3 sm:grid-cols-2">
         {Object.values(challengeRoutes).map((challenge) => {
@@ -77,7 +77,7 @@ export default function ChallengeRouter() {
       >
         <p className="text-slate">{selectedChallenge.description}</p>
         <p className="mt-3 font-medium text-navy">
-          A focused assessment confirms the right approach.
+          {homePageCopy.challengeRouter.assessment}
         </p>
         <div className="mt-7 border-t border-border pt-7">
           <HomeSystemThread

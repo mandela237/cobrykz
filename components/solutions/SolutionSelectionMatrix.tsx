@@ -2,13 +2,19 @@ import Link from "next/link";
 import { solutionBySlug } from "@/components/content/solutions";
 import type { SolutionSlug } from "@/components/content/solutions";
 
-type SelectionRow = {
+export type SelectionRow = {
   condition: string;
   signal: string;
   solutionSlugs: readonly SolutionSlug[];
 };
 
-const selectionRows = [
+export const selectionLabels = {
+  condition: "Business condition",
+  signal: "What it may signal",
+  solution: "Likely starting solution",
+} as const;
+
+export const selectionRows = [
   {
     condition: "Unclear AI opportunity",
     signal:
@@ -66,19 +72,19 @@ export default function SolutionSelectionMatrix() {
               className="w-1/4 border-b border-border px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-navy"
               scope="col"
             >
-              Business condition
+              {selectionLabels.condition}
             </th>
             <th
               className="w-1/2 border-b border-border px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-navy"
               scope="col"
             >
-              What it may signal
+              {selectionLabels.signal}
             </th>
             <th
               className="w-1/4 border-b border-border px-5 py-4 text-xs font-bold uppercase tracking-[0.12em] text-navy"
               scope="col"
             >
-              Likely starting solution
+              {selectionLabels.solution}
             </th>
           </tr>
         </thead>

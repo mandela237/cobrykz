@@ -1,7 +1,7 @@
 import SystemAtlas from "@/components/atlas/SystemAtlas";
 import type { AtlasDefinition } from "@/components/atlas/types";
 
-const businessSystemCutaway = {
+export const businessSystemCutaway = {
   id: "business-system-cutaway",
   eyebrow: "Business system cutaway",
   title: "How a challenge becomes an operating improvement",

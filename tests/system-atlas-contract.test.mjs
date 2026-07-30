@@ -131,8 +131,9 @@ test("keeps the approved homepage message and actions stable inside the new hero
     hero,
     /<PrimaryLink\s+href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,
   );
-  assert.match(hero, /href=["']\/solutions["']/);
-  assert.match(hero, /Explore our solutions/);
+  assert.match(hero, /href=\{solutionsCta\.href\}/);
+  assert.match(hero, /\{solutionsCta\.label\}/);
+  assert.doesNotMatch(hero, /Explore our solutions/);
   assert.doesNotMatch(hero, /["']use client["']/);
 });
 

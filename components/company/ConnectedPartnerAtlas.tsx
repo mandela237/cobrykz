@@ -1,7 +1,7 @@
 import SystemAtlas from "@/components/atlas/SystemAtlas";
 import type { AtlasDefinition } from "@/components/atlas/types";
 
-const connectedPartner = {
+export const connectedPartner = {
   id: "connected-partner",
   eyebrow: "One connected partner",
   title: "Cobrykz keeps the decisions and delivery connected.",

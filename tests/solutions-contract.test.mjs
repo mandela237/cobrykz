@@ -299,16 +299,21 @@ const solutionComponentIds = {
 
 test("composes every solution from shared server-rendered sections", () => {
   const page = read("components/solutions/SolutionPage.tsx");
+  const desktop = read("components/solutions/DesktopSolutionPage.tsx");
   const componentSources = Object.fromEntries(
     Object.keys(solutionComponentIds).map((path) => [path, read(path)]),
   );
   const leafSources = Object.values(componentSources).join("\n");
-  const allSources = `${page}\n${leafSources}`;
+  const allSources = `${page}\n${desktop}\n${leafSources}`;
 
   assert.doesNotMatch(allSources, /["']use client["']/);
   assert.match(
+    desktop,
+    /<SolutionHero solution=\{solution\}\s*\/>[\s\S]*<ProblemRecognition solution=\{solution\}\s*\/>[\s\S]*<OutcomeList solution=\{solution\}\s*\/>[\s\S]*<CapabilityList solution=\{solution\}\s*\/>[\s\S]*<SolutionOperatingModel solution=\{solution\}\s*\/>[\s\S]*<ApplicationExamples solution=\{solution\}\s*\/>[\s\S]*\{solution\.artifact &&\s*<SolutionArtifact artifact=\{solution\.artifact\}\s*\/>\}[\s\S]*\{solution\.guidance &&\s*<SolutionGuidance guidance=\{solution\.guidance\}\s*\/>\}[\s\S]*<SolutionApproach solution=\{solution\}\s*\/>[\s\S]*<RelatedSolutions solution=\{solution\}\s*\/>[\s\S]*<SolutionFaqs solution=\{solution\}\s*\/>[\s\S]*<SolutionFinalCta solution=\{solution\}\s*\/>/,
+  );
+  assert.match(
     page,
-    /<SolutionHero solution=\{solution\}\s*\/>[\s\S]*<ProblemRecognition solution=\{solution\}\s*\/>[\s\S]*<OutcomeList solution=\{solution\}\s*\/>[\s\S]*<CapabilityList solution=\{solution\}\s*\/>[\s\S]*<ApplicationExamples solution=\{solution\}\s*\/>[\s\S]*\{solution\.artifact &&\s*<SolutionArtifact artifact=\{solution\.artifact\}\s*\/>\}[\s\S]*\{solution\.guidance &&\s*<SolutionGuidance guidance=\{solution\.guidance\}\s*\/>\}[\s\S]*<SolutionApproach solution=\{solution\}\s*\/>[\s\S]*<RelatedSolutions solution=\{solution\}\s*\/>[\s\S]*<SolutionFaqs solution=\{solution\}\s*\/>[\s\S]*<SolutionFinalCta solution=\{solution\}\s*\/>/,
+    /<ResponsivePageComposition[\s\S]*mobile=\{<MobileSolutionPage solution=\{solution\} \/>\}[\s\S]*desktop=\{<DesktopSolutionPage solution=\{solution\} \/>\}/,
   );
   assert.equal(
     (leafSources.match(/<h1\b/g) || []).length,
@@ -357,11 +362,11 @@ test("labels examples honestly and renders optional decision guidance only when 
     "components/solutions/ApplicationExamples.tsx",
   );
   const guidance = read("components/solutions/SolutionGuidance.tsx");
-  const page = read("components/solutions/SolutionPage.tsx");
+  const desktop = read("components/solutions/DesktopSolutionPage.tsx");
 
   assert.match(applications, />\s*Representative applications\s*</);
   assert.match(applications, /solution\.applications\.map\(\(application\)/);
-  assert.match(page, /\{solution\.guidance &&\s*<SolutionGuidance/);
+  assert.match(desktop, /\{solution\.guidance &&\s*<SolutionGuidance/);
   assert.match(guidance, /\{guidance\.title\}/);
   assert.match(guidance, /\{guidance\.description\}/);
 });
@@ -374,11 +379,11 @@ test("renders optional explanatory artifacts through one shared labelled compone
   );
 
   const artifact = read(artifactPath);
-  const page = read("components/solutions/SolutionPage.tsx");
+  const desktop = read("components/solutions/DesktopSolutionPage.tsx");
 
   assert.doesNotMatch(artifact, /["']use client["']/);
   assert.match(
-    page,
+    desktop,
     /solution\.artifact &&\s*<SolutionArtifact artifact=\{solution\.artifact\}\s*\/>/,
   );
   assert.match(
@@ -628,14 +633,16 @@ test("renders the frozen Solutions hub narrative from shared content", () => {
   assert.match(hub, /<SolutionSelectionMatrix\s*\/>/);
   assert.match(
     hub,
-    /title="Connected outcomes may combine multiple capabilities\."/,
+    /connected:\s*\{\s*title:\s*"Connected outcomes may combine multiple capabilities\."/s,
   );
+  assert.match(hub, /title=\{solutionsHubCopy\.connected\.title\}/);
   assert.match(hub, /processStages\.slice\(0,\s*3\)\.map\(\(stage,\s*index\)/);
   assert.match(hub, /whyCobrykz\.map\(\(reason/);
   assert.match(
     hub,
-    />\s*What could technology improve in your business\?\s*</,
+    /cta:\s*\{\s*title:\s*"What could technology improve in your business\?"/s,
   );
+  assert.match(hub, /\{solutionsHubCopy\.cta\.title\}/);
   assert.match(
     hub,
     /<PrimaryLink\s+href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,
@@ -725,7 +732,7 @@ test("defines one meaningful operating model for every approved solution", () =>
   const operatingModel = read(
     "components/solutions/SolutionOperatingModel.tsx",
   );
-  const page = read("components/solutions/SolutionPage.tsx");
+  const desktop = read("components/solutions/DesktopSolutionPage.tsx");
 
   for (const kind of [
     "controlled-ai-loop",
@@ -755,5 +762,5 @@ test("defines one meaningful operating model for every approved solution", () =>
   assert.match(hubAtlas, /href=\{solution\.href\}/);
   assert.match(operatingModel, /solutionVisualBySlug\[solution\.slug\]/);
   assert.match(operatingModel, /<SystemAtlas\b/);
-  assert.match(page, /<SolutionOperatingModel\s+solution=\{solution\}\s*\/>/);
+  assert.match(desktop, /<SolutionOperatingModel\s+solution=\{solution\}\s*\/>/);
 });

@@ -6,12 +6,29 @@ import {
   siteIdentity,
 } from "@/components/content/site";
 import PrimaryLink from "@/components/ui/PrimaryLink";
+import MobileNavigation from "./MobileNavigation";
 import SolutionsMenu from "./SolutionsMenu";
 
 export default function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-white">
-      <div className="section-shell min-w-0 flex min-h-16 flex-wrap items-center justify-between gap-x-4 py-2 lg:py-0">
+      <div className="site-header-mobile section-shell md:hidden">
+        <Link
+          href="/"
+          className="action-transition flex min-h-11 items-center rounded-lg"
+          aria-label={`${siteIdentity.name}, home`}
+        >
+          <CobrykzLogo
+            size={28}
+            variant="default"
+            showWordmark
+            wordmarkSize="sm"
+          />
+        </Link>
+        <MobileNavigation />
+      </div>
+
+      <div className="site-header-desktop section-shell hidden md:flex min-w-0 min-h-16 flex-wrap items-center justify-between gap-x-4 py-2 lg:py-0">
         <Link
           href="/"
           className="action-transition flex min-h-11 items-center rounded-lg"

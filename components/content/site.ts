@@ -17,3 +17,13 @@ export const primaryCta = {
   label: "Discuss a business challenge",
   href: "/contact",
 } as const;
+
+export const solutionsCta = {
+  label: "Explore our solutions",
+  href: "/solutions",
+} as const;
+
+export const processCta = {
+  label: "Explore the full process",
+  href: "/process",
+} as const;

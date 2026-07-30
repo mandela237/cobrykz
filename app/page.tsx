@@ -8,6 +8,8 @@ import ProcessOverview from "@/components/home/ProcessOverview";
 import ProjectsEvidence from "@/components/home/ProjectsEvidence";
 import AuthorityBand from "@/components/home/AuthorityBand";
 import HomeFinalCTA from "@/components/home/HomeFinalCTA";
+import MobileHomePage from "@/components/home/MobileHomePage";
+import ResponsiveHomePage from "@/components/home/ResponsiveHomePage";
 import { buildPageMetadata } from "@/lib/seo/site";
 
 export const metadata = buildPageMetadata({
@@ -18,7 +20,7 @@ export const metadata = buildPageMetadata({
 });
 
 export default function Home() {
-  return (
+  const desktopOpening = (
     <>
       <HomeHero />
       <BusinessOutcomes />
@@ -31,9 +33,26 @@ export default function Home() {
         </div>
       </div>
       <ProcessOverview />
+    </>
+  );
+  const closing = (
+    <>
       <ProjectsEvidence />
       <AuthorityBand />
       <HomeFinalCTA />
     </>
+  );
+  const desktop = (
+    <>
+      {desktopOpening}
+      {closing}
+    </>
+  );
+
+  return (
+    <ResponsiveHomePage
+      mobile={<MobileHomePage closing={closing} />}
+      desktop={desktop}
+    />
   );
 }

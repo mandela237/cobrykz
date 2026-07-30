@@ -1,4 +1,4 @@
-import { homeOutcomes } from "@/components/content/home";
+import { homeOutcomes, homePageCopy } from "@/components/content/home";
 import SectionIntro from "@/components/ui/SectionIntro";
 
 export default function BusinessOutcomes() {
@@ -11,8 +11,8 @@ export default function BusinessOutcomes() {
       <div className="section-shell py-16 sm:py-20 lg:py-24">
         <SectionIntro
           id="outcomes-heading"
-          title="Technology should make the business stronger."
-          description="The right system creates progress people can recognize in growth, day-to-day work, and important decisions."
+          title={homePageCopy.outcomes.title}
+          description={homePageCopy.outcomes.description}
         />
         <ol
           data-home-composition="terminal-states"
