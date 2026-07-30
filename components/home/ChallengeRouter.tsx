@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { challengeRoutes } from "@/components/content/home";
+import { primaryCta } from "@/components/content/site";
 import {
   solutionBySlug,
   type SolutionSlug,
@@ -48,11 +49,17 @@ export default function ChallengeRouter() {
           A focused assessment confirms the right approach.
         </p>
         <div className="mt-4 flex flex-wrap gap-4">
-          <Link href={selectedSolution.href} className="font-semibold text-blue underline">
+          <Link
+            href={selectedSolution.href}
+            className="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-semibold text-blue underline decoration-blue/30 underline-offset-4 transition-colors hover:text-navy"
+          >
             Explore {selectedSolution.name}
           </Link>
-          <Link href="/contact" className="font-semibold text-navy underline">
-            Discuss this challenge
+          <Link
+            href={primaryCta.href}
+            className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm font-semibold text-navy transition-colors hover:border-blue hover:text-blue"
+          >
+            {primaryCta.label}
           </Link>
         </div>
       </div>

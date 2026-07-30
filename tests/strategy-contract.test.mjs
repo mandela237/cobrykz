@@ -44,15 +44,27 @@ test("provides an accessible business-challenge router", () => {
   assert.match(source, /["']use client["']/);
   assert.match(source, /challengeRoutes/);
   assert.match(source, /solutionBySlug/);
-  assert.match(source, /<button\b/);
+  assert.match(source, /Object\.values\(challengeRoutes\)\.map\(/);
+  assert.match(source, /<button\b[\s\S]*?className=\{`min-h-11/);
   assert.match(source, /aria-pressed=/);
+  assert.match(source, /isSelected \? "Selected"/);
   assert.match(source, /aria-live="polite"/);
   assert.match(
     source,
     /A focused assessment confirms the right approach\./,
   );
-  assert.match(source, /<Link\s+href=\{selectedSolution\.href\}/);
-  assert.match(source, /<Link\s+href="\/contact"/);
+  assert.match(
+    source,
+    /<Link\s+href=\{selectedSolution\.href\}\s+className="[^"]*\bmin-h-11\b[^"]*"/,
+  );
+  assert.match(
+    source,
+    /import \{ primaryCta \} from ["']@\/components\/content\/site["']/,
+  );
+  assert.match(
+    source,
+    /<Link\s+href=\{primaryCta\.href\}\s+className="[^"]*\bmin-h-11\b[^"]*"[^>]*>\s*\{primaryCta\.label\}\s*<\/Link>/s,
+  );
 });
 
 test("wraps every page in the shared Cobrykz site shell", () => {
