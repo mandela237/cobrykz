@@ -2416,6 +2416,243 @@ button {
     justify-self: start;
   }
 
+  #about-hero .mobile-chapter__inner {
+    padding-block: 2rem 3.25rem;
+  }
+
+  .mobile-about-opening {
+    display: grid;
+    gap: 2rem;
+    margin-top: 1.35rem;
+  }
+
+  .mobile-about-opening h1 {
+    max-width: 12ch;
+    color: var(--color-navy);
+    font-size: 2.625rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+  }
+
+  .mobile-about-opening__introduction {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem 0 0 1rem;
+    border-top: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-blue);
+  }
+
+  .mobile-about-opening__introduction p {
+    max-width: 36rem;
+    color: var(--color-slate);
+    font-size: 1rem;
+    line-height: 1.72;
+  }
+
+  .mobile-about-founding-statement {
+    max-width: 19ch;
+    margin-top: 1.75rem;
+    color: white;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.18;
+  }
+
+  .mobile-about-disclosures {
+    margin-top: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  [data-mobile-about-page] .mobile-disclosure-group > div {
+    padding-inline: 0.75rem;
+    border-inline: 1px solid var(--color-border);
+    background: white;
+  }
+
+  [data-mobile-about-page]
+    .mobile-disclosure-group
+    > div:nth-child(even) {
+    background:
+      linear-gradient(90deg, rgb(234 242 255 / 0.56), transparent 32%),
+      white;
+  }
+
+  [data-mobile-about-page] .mobile-disclosure-trigger {
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    min-height: 4.75rem;
+    color: var(--color-navy);
+  }
+
+  [data-mobile-about-page] .mobile-disclosure-trigger strong {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  [data-mobile-about-page] .mobile-disclosure-trigger strong::after {
+    color: var(--color-blue);
+    content: "+";
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  [data-mobile-about-page]
+    [data-disclosure-open="true"]
+    > .mobile-disclosure-trigger
+    strong::after {
+    content: "\2212";
+  }
+
+  [data-mobile-about-page] .mobile-disclosure-panel {
+    padding: 0 0 1.35rem 2.25rem;
+    color: var(--color-slate);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .mobile-about-row-index {
+    align-self: start;
+    padding-top: 0.2rem;
+    color: var(--color-blue);
+    font-size: 0.6875rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+  }
+
+  .mobile-about-principles
+    .mobile-disclosure-group
+    > div:first-child {
+    position: relative;
+    z-index: 1;
+    margin: 0 -0.4rem 0.55rem;
+    padding-inline: 1.15rem;
+    border-bottom: 1px solid var(--color-blue);
+    box-shadow: 0 0.85rem 2rem rgb(11 23 40 / 0.08);
+  }
+
+  .mobile-about-atlas-stage {
+    margin-top: 2.25rem;
+    padding: 1rem;
+    border: 1px solid rgb(156 200 255 / 0.25);
+    background:
+      linear-gradient(145deg, rgb(31 94 255 / 0.13), transparent 48%),
+      rgb(255 255 255 / 0.04);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      0 1.5rem 3.75rem rgb(0 0 0 / 0.2);
+  }
+
+  .mobile-about-atlas-stage .mobile-atlas {
+    border-radius: 0;
+    box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 0.2);
+  }
+
+  .mobile-about-leadership {
+    display: grid;
+    margin-top: 1.75rem;
+  }
+
+  .mobile-about-leadership__portrait {
+    position: relative;
+    min-height: 29rem;
+    overflow: hidden;
+    background: var(--color-gray-light);
+  }
+
+  .mobile-about-leadership__portrait::after {
+    position: absolute;
+    inset: auto 0 0;
+    height: 38%;
+    content: "";
+    background: linear-gradient(to top, rgb(11 23 40 / 0.72), transparent);
+    pointer-events: none;
+  }
+
+  .mobile-about-leadership__portrait figcaption {
+    position: absolute;
+    z-index: 1;
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgb(255 255 255 / 0.48);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .mobile-about-leadership__statement {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1rem;
+    margin: -2.5rem 1rem 0;
+    padding: 1.4rem 1.25rem 1.5rem;
+    border-top: 3px solid var(--color-blue);
+    background: white;
+    box-shadow: 0 1.25rem 2.75rem rgb(11 23 40 / 0.13);
+  }
+
+  .mobile-about-leadership__statement h2 {
+    max-width: 13ch;
+    color: var(--color-navy);
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+  }
+
+  .mobile-about-leadership__name {
+    color: var(--color-charcoal);
+    font-size: 1.35rem;
+    line-height: 1.3;
+  }
+
+  .mobile-about-leadership__description {
+    color: var(--color-slate);
+    font-size: 0.9375rem;
+    line-height: 1.72;
+  }
+
+  .mobile-about-standards
+    .mobile-disclosure-group
+    > div:nth-child(odd) {
+    border-left: 3px solid rgb(31 94 255 / 0.34);
+  }
+
+  .mobile-about-final {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+  }
+
+  .mobile-about-final h2 {
+    max-width: 13ch;
+    color: white;
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
+
+  .mobile-about-final p {
+    max-width: 34rem;
+    color: rgb(255 255 255 / 0.72);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .mobile-about-final .primary-link {
+    justify-self: start;
+  }
+
   .site-footer__inner {
     padding-block: 2rem;
   }
