@@ -5,6 +5,7 @@ import test from "node:test";
 import ts from "typescript";
 
 const root = process.cwd();
+const read = (path) => readFileSync(join(root, path), "utf8");
 const source = readFileSync(
   join(root, "components/content/solutions.ts"),
   "utf8",
@@ -18,14 +19,21 @@ const compiled = ts.transpileModule(source, {
 const moduleUrl = `data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`;
 const { solutions, solutionBySlug } = await import(moduleUrl);
 
-const expectedSlugs = [
-  "ai",
-  "business-automation",
-  "custom-software-development",
-  "digital-business-systems",
-  "websites-web-applications",
-  "technology-consulting",
+const expectedSolutions = [
+  { slug: "ai", name: "AI Solutions" },
+  { slug: "business-automation", name: "Business Automation" },
+  {
+    slug: "custom-software-development",
+    name: "Custom Software Development",
+  },
+  { slug: "digital-business-systems", name: "Digital Business Systems" },
+  {
+    slug: "websites-web-applications",
+    name: "Websites & Web Applications",
+  },
+  { slug: "technology-consulting", name: "Technology Consulting" },
 ];
+const expectedSlugs = expectedSolutions.map(({ slug }) => slug);
 const requiredArrays = [
   "recognition",
   "businessOutcomes",
@@ -43,8 +51,14 @@ const textFor = (solution) =>
 
 test("defines six complete solution pages in the approved route order", () => {
   assert.deepEqual(
-    solutions.map(({ slug }) => slug),
-    expectedSlugs,
+    solutions.map(({ slug, name }) => ({ slug, name })),
+    expectedSolutions,
+  );
+  assert.equal(
+    (source.match(/}\s+as const satisfies SolutionPageDefinition;/g) || [])
+      .length,
+    expectedSolutions.length,
+    "each solution definition must retain readonly literal inference",
   );
 
   for (const solution of solutions) {
@@ -176,4 +190,134 @@ test("preserves the approved decision guidance for each solution", () => {
     "Sequenced roadmap",
     "Decision brief",
   ]);
+});
+
+const solutionComponentIds = {
+  "components/solutions/SolutionHero.tsx": "solution-hero-heading",
+  "components/solutions/ProblemRecognition.tsx":
+    "solution-recognition-heading",
+  "components/solutions/OutcomeList.tsx": "solution-outcomes-heading",
+  "components/solutions/CapabilityList.tsx":
+    "solution-capabilities-heading",
+  "components/solutions/ApplicationExamples.tsx":
+    "solution-applications-heading",
+  "components/solutions/SolutionGuidance.tsx":
+    "solution-guidance-heading",
+  "components/solutions/SolutionApproach.tsx": "solution-approach-heading",
+  "components/solutions/RelatedSolutions.tsx": "solution-related-heading",
+  "components/solutions/SolutionFaqs.tsx": "solution-faq-heading",
+  "components/solutions/SolutionFinalCta.tsx":
+    "solution-final-cta-heading",
+};
+
+test("composes every solution from ten shared server-rendered sections", () => {
+  const page = read("components/solutions/SolutionPage.tsx");
+  const componentSources = Object.fromEntries(
+    Object.keys(solutionComponentIds).map((path) => [path, read(path)]),
+  );
+  const leafSources = Object.values(componentSources).join("\n");
+  const allSources = `${page}\n${leafSources}`;
+
+  assert.doesNotMatch(allSources, /["']use client["']/);
+  assert.match(
+    page,
+    /<SolutionHero solution=\{solution\}\s*\/>[\s\S]*<ProblemRecognition solution=\{solution\}\s*\/>[\s\S]*<OutcomeList solution=\{solution\}\s*\/>[\s\S]*<CapabilityList solution=\{solution\}\s*\/>[\s\S]*<ApplicationExamples solution=\{solution\}\s*\/>[\s\S]*\{solution\.guidance &&\s*<SolutionGuidance guidance=\{solution\.guidance\}\s*\/>\}[\s\S]*<SolutionApproach solution=\{solution\}\s*\/>[\s\S]*<RelatedSolutions solution=\{solution\}\s*\/>[\s\S]*<SolutionFaqs solution=\{solution\}\s*\/>[\s\S]*<SolutionFinalCta solution=\{solution\}\s*\/>/,
+  );
+  assert.equal(
+    (leafSources.match(/<h1\b/g) || []).length,
+    1,
+    "the shared solution page system must render exactly one H1",
+  );
+
+  for (const [path, headingId] of Object.entries(solutionComponentIds)) {
+    const component = componentSources[path];
+    assert.match(
+      component,
+      new RegExp(`<section\\b[^>]*aria-labelledby="${headingId}"`, "s"),
+      `${path} must expose a labelled semantic section`,
+    );
+    assert.match(
+      component,
+      new RegExp(`\\bid="${headingId}"`),
+      `${path} must render the referenced heading id`,
+    );
+  }
+
+  assert.doesNotMatch(
+    allSources,
+    /(?:^|[\s"'`])(?:sm|md|lg|xl|2xl):hidden(?=$|[\s"'`])|(?:^|[\s"'`])hidden(?=$|[\s"'`])[^"\n]*\b(?:sm|md|lg|xl|2xl):(?:block|flex|grid|inline|inline-block|inline-flex)\b/,
+    "solution pages must use one responsive content tree",
+  );
+  assert.doesNotMatch(
+    allSources,
+    /\btransition-all\b|\banimate-(?!none\b)|(?:hover|active|group-hover):(?:-?(?:scale|translate)|shadow|drop-shadow|brightness)-/,
+    "solution pages must retain the reviewed motion contract",
+  );
+  assert.doesNotMatch(
+    allSources,
+    /(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-\[(?:#|rgba?\(|hsla?\(|oklch\(|color:|var\()/,
+    "solution pages must use the reviewed palette tokens",
+  );
+  assert.equal(
+    (leafSources.match(/\bbg-(?:navy|charcoal|footer-bg)\b/g) || []).length,
+    1,
+    "the final CTA must be the only shared dark solution-page band",
+  );
+});
+
+test("labels examples honestly and renders optional decision guidance only when present", () => {
+  const applications = read(
+    "components/solutions/ApplicationExamples.tsx",
+  );
+  const guidance = read("components/solutions/SolutionGuidance.tsx");
+  const page = read("components/solutions/SolutionPage.tsx");
+
+  assert.match(applications, />\s*Representative applications\s*</);
+  assert.match(applications, /solution\.applications\.map\(\(application\)/);
+  assert.match(page, /\{solution\.guidance &&\s*<SolutionGuidance/);
+  assert.match(guidance, /\{guidance\.title\}/);
+  assert.match(guidance, /\{guidance\.description\}/);
+});
+
+test("uses shared calls to action, related solution links, and accessible FAQ disclosures", () => {
+  const hero = read("components/solutions/SolutionHero.tsx");
+  const finalCta = read("components/solutions/SolutionFinalCta.tsx");
+  const related = read("components/solutions/RelatedSolutions.tsx");
+  const faqs = read("components/solutions/SolutionFaqs.tsx");
+
+  assert.match(
+    hero,
+    /import \{ primaryCta \} from ["']@\/components\/content\/site["']/,
+  );
+  assert.match(
+    hero,
+    /<PrimaryLink\s+href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,
+  );
+  assert.match(
+    finalCta,
+    /import \{ primaryCta \} from ["']@\/components\/content\/site["']/,
+  );
+  assert.match(finalCta, /\{solution\.cta\.title\}/);
+  assert.match(
+    finalCta,
+    /<PrimaryLink\s+href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,
+  );
+
+  assert.match(
+    related,
+    /import \{ solutionBySlug \} from ["']@\/components\/content\/solutions["']/,
+  );
+  assert.match(related, /solution\.relatedSlugs\.map\(\(slug\) =>/);
+  assert.match(related, /href=\{relatedSolution\.href\}/);
+  assert.match(related, /\{relatedSolution\.name\}/);
+  assert.match(
+    related,
+    /<Link\b[^>]*className="[^"]*\bmin-h-11\b[^"]*"/s,
+  );
+
+  assert.match(faqs, /solution\.faqs\.map\(\(faq\)/);
+  assert.match(faqs, /<details\b/);
+  assert.match(faqs, /<summary\b[^>]*className="[^"]*\bmin-h-11\b[^"]*"/s);
+  assert.match(faqs, /\{faq\.question\}/);
+  assert.match(faqs, /\{faq\.answer\}/);
 });

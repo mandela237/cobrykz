@@ -126,7 +126,7 @@ const aiSolution = {
     description:
       "AI is not a requirement. Process redesign, conventional automation, better information architecture, or conventional software may be more reliable. Cobrykz evaluates data sensitivity, access, accuracy, human approvals, cost, latency, monitoring, and failure handling before recommending AI.",
   },
-} satisfies SolutionPageDefinition;
+} as const satisfies SolutionPageDefinition;
 
 const businessAutomationSolution = {
   slug: "business-automation",
@@ -211,7 +211,7 @@ const businessAutomationSolution = {
     description:
       "Improve and automate intake, approvals, routing, documents, reporting, and connected workflows without losing human oversight.",
   },
-} satisfies SolutionPageDefinition;
+} as const satisfies SolutionPageDefinition;
 
 const customSoftwareSolution = {
   slug: "custom-software-development",
@@ -305,7 +305,7 @@ const customSoftwareSolution = {
     description:
       "The build decision compares configuration of an existing product, integration between capable tools, focused custom development, and modernization of a limiting system. Custom ownership is recommended only when it creates a business advantage that justifies the investment.",
   },
-} satisfies SolutionPageDefinition;
+} as const satisfies SolutionPageDefinition;
 
 const digitalBusinessSystemsSolution = {
   slug: "digital-business-systems",
@@ -392,7 +392,7 @@ const digitalBusinessSystemsSolution = {
     description:
       "Connect operational tools, information, workflows, and teams in a clearer digital environment designed around how the business moves.",
   },
-} satisfies SolutionPageDefinition;
+} as const satisfies SolutionPageDefinition;
 
 const websitesWebApplicationsSolution = {
   slug: "websites-web-applications",
@@ -482,7 +482,7 @@ const websitesWebApplicationsSolution = {
     description:
       "Create accessible, high-performing websites and web applications that establish trust, enable action, and deliver digital service.",
   },
-} satisfies SolutionPageDefinition;
+} as const satisfies SolutionPageDefinition;
 
 const technologyConsultingSolution = {
   slug: "technology-consulting",
@@ -567,7 +567,7 @@ const technologyConsultingSolution = {
     description:
       "Clarify technology priorities with assessments, opportunity maps, risk analysis, target-system views, recommendations, and sequenced roadmaps.",
   },
-} satisfies SolutionPageDefinition;
+} as const satisfies SolutionPageDefinition;
 
 export const solutions = [
   aiSolution,
