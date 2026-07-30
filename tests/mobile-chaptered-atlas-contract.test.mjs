@@ -545,6 +545,15 @@ test("preserves every shared Atlas field in the mobile relationship explanation"
   );
 });
 
+test("keeps the mobile Atlas legend focus ring visible inside its clipped frame", () => {
+  const css = read("app/globals.css");
+
+  assert.match(
+    css,
+    /\.mobile-atlas__legend\s+summary:focus-visible\s*\{[^}]*outline-color:\s*var\(--focus-ring-on-light\);[^}]*outline-offset:\s*-\d+(?:\.\d+)?(?:px|rem);/s,
+  );
+});
+
 test("shares starting-point decision labels across desktop and mobile", () => {
   const matrix = read("components/solutions/SolutionSelectionMatrix.tsx");
   const mobile = read("components/solutions/MobileSolutionsHub.tsx");

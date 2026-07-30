@@ -1011,6 +1011,11 @@ button {
     font-weight: 750;
   }
 
+  .mobile-atlas__legend summary:focus-visible {
+    outline-color: var(--focus-ring-on-light);
+    outline-offset: -3px;
+  }
+
   .mobile-atlas__legend dl {
     display: grid;
     margin: 0;
