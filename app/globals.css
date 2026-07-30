@@ -730,6 +730,32 @@ button {
     text-transform: uppercase;
   }
 
+  .mobile-chapter-intro {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 1.25rem;
+  }
+
+  .mobile-chapter-intro__title {
+    max-width: 20ch;
+    font-size: 2.25rem;
+    font-weight: 740;
+    letter-spacing: -0.045em;
+    line-height: 1.02;
+  }
+
+  .mobile-chapter-intro__description {
+    max-width: 34rem;
+    color: var(--color-slate);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .mobile-chapter[data-mobile-tone="dark"]
+    .mobile-chapter-intro__description {
+    color: rgb(255 255 255 / 0.7);
+  }
+
   .mobile-disclosure-trigger {
     display: grid;
     width: 100%;

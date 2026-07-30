@@ -102,7 +102,7 @@ function assertResponsiveHomepageBoundary(
   const entry = closure.get(entryPath);
   const sources = [...closure.values()].join("\n");
   const boundaryPath = [...closure.keys()].find((path) =>
-    path.endsWith("components/home/ResponsiveHomePage.tsx"),
+    path.endsWith("components/mobile/ResponsivePageComposition.tsx"),
   );
 
   assert.ok(
@@ -694,7 +694,9 @@ test("uses one runtime-selected responsive Homepage tree and one shared shell", 
     "app/page.tsx":
       'import ResponsiveHomePage from "@/components/home/ResponsiveHomePage"; export default function Page() { return <ResponsiveHomePage mobile={<div />} desktop={<div />} />; }',
     "components/home/ResponsiveHomePage.tsx":
-      '"use client"; import { useSyncExternalStore } from "react"; export default function ResponsiveHomePage({ mobile, desktop }) { window.matchMedia("(max-width: 767px)"); const isMobile = useSyncExternalStore(() => () => {}, () => false, () => false); const duplicate = <>{mobile}{desktop}</>; return isMobile ? mobile : desktop; }',
+      'export { default } from "@/components/mobile/ResponsivePageComposition";',
+    "components/mobile/ResponsivePageComposition.tsx":
+      '"use client"; import { useSyncExternalStore } from "react"; export default function ResponsivePageComposition({ mobile, desktop }) { window.matchMedia("(max-width: 767px)"); const isMobile = useSyncExternalStore(() => () => {}, () => false, () => false); const duplicate = <>{mobile}{desktop}</>; return isMobile ? mobile : desktop; }',
   };
   assert.throws(
     () =>

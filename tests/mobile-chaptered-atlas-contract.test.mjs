@@ -293,6 +293,9 @@ test("keeps only interactive mobile regions inside focused client islands", () =
   const atlas = read("components/home/MobileHomeAtlas.tsx");
   const challenge = read("components/home/MobileChallengeRouter.tsx");
   const boundary = read("components/home/ResponsiveHomePage.tsx");
+  const sharedBoundary = read(
+    "components/mobile/ResponsivePageComposition.tsx",
+  );
   const page = read("app/page.tsx");
 
   assert.doesNotMatch(mobile, /"use client"|useState|onClick/);
@@ -310,9 +313,13 @@ test("keeps only interactive mobile regions inside focused client islands", () =
     boundary,
     /from ["'][^"']*(?:MobileHomePage|HomeHero|ProjectsEvidence)["']/,
   );
-  assert.match(boundary, /mobile: ReactNode/);
-  assert.match(boundary, /desktop: ReactNode/);
-  assert.match(boundary, /return isMobile \? mobile : desktop/);
+  assert.match(
+    boundary,
+    /from ["']@\/components\/mobile\/ResponsivePageComposition["']/,
+  );
+  assert.match(sharedBoundary, /mobile: ReactNode/);
+  assert.match(sharedBoundary, /desktop: ReactNode/);
+  assert.match(sharedBoundary, /return isMobile \? mobile : desktop/);
   assert.match(page, /mobile=\{<MobileHomePage closing=\{closing\} \/>\}/);
   assert.match(page, /desktop=\{desktop\}/);
 });
@@ -332,17 +339,27 @@ test("keeps both desktop-parity actions inside the mobile recommendation panel",
 test("renders exactly one runtime-selected Homepage composition with canonical anchors", () => {
   const page = read("app/page.tsx");
   const boundary = read("components/home/ResponsiveHomePage.tsx");
+  const sharedBoundary = read(
+    "components/mobile/ResponsivePageComposition.tsx",
+  );
   const mobile = read("components/home/MobileHomePage.tsx");
   const css = read("app/globals.css");
 
   assert.match(page, /<ResponsiveHomePage/);
   assert.doesNotMatch(page, /\bmd:hidden\b|\bhidden md:block\b/);
-  assert.match(boundary, /"use client"/);
-  assert.match(boundary, /useSyncExternalStore/);
-  assert.match(boundary, /matchMedia\("\(max-width: 767px\)"\)/);
-  assert.match(boundary, /getServerSnapshot/);
-  assert.match(boundary, /return isMobile \? mobile : desktop/);
-  assert.doesNotMatch(boundary, /\{mobile\}\s*\{desktop\}|\{desktop\}\s*\{mobile\}/);
+  assert.match(
+    boundary,
+    /from ["']@\/components\/mobile\/ResponsivePageComposition["']/,
+  );
+  assert.match(sharedBoundary, /"use client"/);
+  assert.match(sharedBoundary, /useSyncExternalStore/);
+  assert.match(sharedBoundary, /matchMedia\("\(max-width: 767px\)"\)/);
+  assert.match(sharedBoundary, /getServerSnapshot/);
+  assert.match(sharedBoundary, /return isMobile \? mobile : desktop/);
+  assert.doesNotMatch(
+    sharedBoundary,
+    /\{mobile\}\s*\{desktop\}|\{desktop\}\s*\{mobile\}/,
+  );
   assert.doesNotMatch(mobile, /ProjectsEvidence|AuthorityBand|HomeFinalCTA/);
   assert.match(mobile, /closing: ReactNode/);
 
@@ -577,18 +594,25 @@ test("shares starting-point decision labels across desktop and mobile", () => {
 test("mounts exactly one responsive Solutions presentation and preserves desktop source", () => {
   const hub = read("components/solutions/SolutionsHub.tsx");
   const boundary = read("components/solutions/ResponsiveSolutionsHub.tsx");
+  const sharedBoundary = read(
+    "components/mobile/ResponsivePageComposition.tsx",
+  );
   const css = read("app/globals.css");
 
   assert.match(hub, /<ResponsiveSolutionsHub/);
   assert.match(hub, /mobile=\{/);
   assert.match(hub, /desktop=\{/);
   assert.doesNotMatch(hub, /\bmd:hidden\b|\bhidden md:block\b/);
-  assert.match(boundary, /"use client"/);
-  assert.match(boundary, /useSyncExternalStore/);
-  assert.match(boundary, /matchMedia\("\(max-width: 767px\)"\)/);
-  assert.match(boundary, /mobile: ReactNode/);
-  assert.match(boundary, /desktop: ReactNode/);
-  assert.match(boundary, /return isMobile \? mobile : desktop/);
+  assert.match(
+    boundary,
+    /from ["']@\/components\/mobile\/ResponsivePageComposition["']/,
+  );
+  assert.match(sharedBoundary, /"use client"/);
+  assert.match(sharedBoundary, /useSyncExternalStore/);
+  assert.match(sharedBoundary, /matchMedia\("\(max-width: 767px\)"\)/);
+  assert.match(sharedBoundary, /mobile: ReactNode/);
+  assert.match(sharedBoundary, /desktop: ReactNode/);
+  assert.match(sharedBoundary, /return isMobile \? mobile : desktop/);
 
   assert.doesNotMatch(
     css,
