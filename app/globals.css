@@ -24,7 +24,7 @@
   --control-transition: 0.2s ease;
   --focus-ring-light: rgba(31, 94, 255, 0.78);
   --focus-ring-dark: rgba(31, 94, 255, 0.78);
-  --control-height-compact: 44px;
+  --section-gutter: 1.25rem;
 
   color-scheme: light;
 }
@@ -118,94 +118,13 @@ button {
   opacity: 1;
 }
 
-.dot-grid {
-  background-image: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.03) 1px,
-    transparent 1px
-  );
-  background-size: 28px 28px;
-}
-
 .section-shell {
-  width: min(100% - 2.5rem, 1200px);
+  width: min(calc(100% - (var(--section-gutter) * 2)), 1200px);
   margin-inline: auto;
 }
 
 .text-balance {
   text-wrap: balance;
-}
-
-.m-shell {
-  width: min(100% - 2rem, 430px);
-  margin-inline: auto;
-}
-
-.m-section {
-  padding-block: 4rem;
-}
-
-.m-kicker {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-.m-title {
-  font-size: 1.875rem;
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: 0;
-  text-wrap: balance;
-}
-
-.m-body {
-  font-size: 0.9375rem;
-  line-height: 1.65;
-}
-
-.m-control {
-  min-height: var(--control-height-compact);
-  border-radius: 8px;
-}
-
-.form-field {
-  border-radius: 8px;
-  transition:
-    border-color var(--control-transition),
-    background-color var(--control-transition);
-}
-
-.form-field:hover {
-  border-color: rgba(255, 255, 255, 0.24);
-}
-
-.form-field:disabled {
-  cursor: not-allowed;
-  border-color: rgba(255, 255, 255, 0.14);
-  background-color: rgba(7, 19, 33, 0.6);
-  color: rgba(255, 255, 255, 0.5);
-}
-
-@supports selector(:user-invalid) {
-  .form-field:user-invalid {
-    border-color: rgba(255, 138, 128, 0.65);
-  }
-}
-
-.form-helper {
-  font-size: 13px;
-  line-height: 20px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.form-status {
-  margin-top: 12px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #9AE4C6;
 }
 
 ::selection {
@@ -224,8 +143,8 @@ button {
 }
 
 @media (min-width: 768px) {
-  .section-shell {
-    width: min(100% - 5rem, 1200px);
+  :root {
+    --section-gutter: 2.5rem;
   }
 }
 

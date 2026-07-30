@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { solutions } from "@/components/content/solutions";
 import SectionIntro from "@/components/ui/SectionIntro";
 
@@ -39,12 +40,12 @@ export default function SolutionsOverview() {
                   <p className="text-[15px] leading-6 text-slate">
                     {solution.outcome}
                   </p>
-                  <span
+                  <ArrowRight
+                    size={20}
+                    strokeWidth={2}
                     aria-hidden="true"
                     className="action-transition text-xl text-blue group-hover:translate-x-1"
-                  >
-                    &rarr;
-                  </span>
+                  />
                 </Link>
               </li>
             );
