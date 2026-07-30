@@ -30,9 +30,9 @@ export const whyCobrykz = [
       "Strategy, design, technology, and implementation stay connected from decision to delivery.",
   },
   {
-    title: "Direct founder accountability",
+    title: "Direct accountability",
     description:
-      "Mandela Atud provides direct accountability for the thinking, decisions, and work.",
+      "Cobrykz provides direct accountability for the thinking, decisions, and work.",
   },
   {
     title: "Clear decisions and communication",

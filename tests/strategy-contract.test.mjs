@@ -29,3 +29,11 @@ test("retains the frozen homepage message hierarchy", () => {
   assert.match(source, /Modernize with confidence/);
   assert.match(source, /Where AI may not be the right answer/);
 });
+
+test("uses Cobrykz voice for direct accountability", () => {
+  const source = read("components/content/home.ts");
+  assert.match(source, /Direct accountability/);
+  assert.match(source, /Cobrykz provides direct accountability/);
+  assert.doesNotMatch(source, /Direct founder accountability/);
+  assert.doesNotMatch(source, /Mandela Atud provides direct accountability/);
+});
