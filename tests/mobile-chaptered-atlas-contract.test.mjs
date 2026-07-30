@@ -9,6 +9,41 @@ const read = (path) => {
   return existsSync(filePath) ? readFileSync(filePath, "utf8") : "";
 };
 
+const approvedHomepageLiterals = [
+  "Business technology, connected",
+  "Technology should make the business stronger.",
+  "Modern solutions for real business challenges.",
+  "One accountable partner from decision to delivery.",
+  "A practical point of view on AI.",
+  "What is holding the work back?",
+  "A focused assessment confirms the right approach.",
+  "A clear path from question to working system.",
+  "Explore our solutions",
+  "Explore the full process",
+];
+
+const assertNoMobileCopyForks = (mobile, challenge) => {
+  const mobileCopySources = `${mobile}\n${challenge}`;
+
+  for (const literal of approvedHomepageLiterals) {
+    assert.doesNotMatch(
+      mobileCopySources,
+      new RegExp(literal.replace(/[.?]/g, "\\$&")),
+    );
+  }
+};
+
+test("copy-fork audit covers the focused challenge island", () => {
+  assert.throws(
+    () =>
+      assertNoMobileCopyForks(
+        "const title = homePageCopy.hero.eyebrow;",
+        'const assessment = "A focused assessment confirms the right approach.";',
+      ),
+    /A focused assessment confirms the right approach/,
+  );
+});
+
 test("defines a semantic Chaptered Atlas mobile grammar", () => {
   const chapter = read("components/mobile/MobileChapter.tsx");
   const disclosure = read("components/mobile/MobileDisclosureGroup.tsx");
@@ -109,6 +144,7 @@ test("builds the mobile Homepage from the frozen content source", () => {
     assert.match(mobile, new RegExp(model));
   }
   assert.match(challenge, /challengeRoutes/);
+  assert.match(challenge, /homePageCopy\.challengeRouter\.assessment/);
 
   assert.match(mobile, /primaryCta/);
   assert.match(mobile, /solutionsCta/);
@@ -129,20 +165,7 @@ test("builds the mobile Homepage from the frozen content source", () => {
     mobile,
     /Turn business challenges into better systems\./,
   );
-  for (const literal of [
-    "Business technology, connected",
-    "Technology should make the business stronger.",
-    "Modern solutions for real business challenges.",
-    "One accountable partner from decision to delivery.",
-    "A practical point of view on AI.",
-    "What is holding the work back?",
-    "A focused assessment confirms the right approach.",
-    "A clear path from question to working system.",
-    "Explore our solutions",
-    "Explore the full process",
-  ]) {
-    assert.doesNotMatch(mobile, new RegExp(literal.replace(/[.?]/g, "\\$&")));
-  }
+  assertNoMobileCopyForks(mobile, challenge);
 });
 
 test("keeps the approved Homepage chapter order", () => {
