@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { contactPage } from "@/components/content/contact";
 import ContactForm from "@/components/contact/ContactForm";
+import InquiryPath from "@/components/contact/InquiryPath";
 
 export const metadata: Metadata = {
   title: contactPage.metadata.title,
@@ -51,8 +52,11 @@ export default function ContactPage() {
                 {contactPage.email}
               </a>
             </p>
+            <InquiryPath />
           </div>
-          <ContactForm />
+          <div className="border border-border p-6 sm:p-9 lg:p-10">
+            <ContactForm />
+          </div>
         </div>
       </section>
     </>

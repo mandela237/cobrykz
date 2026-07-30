@@ -83,3 +83,24 @@ test("renders an accessible low-pressure contact form and fallback", () => {
   assert.match(form, /Discuss a business challenge/);
   assert.doesNotMatch(`${page}\n${form}`, /\bbudget\b/i);
 });
+
+test("explains the beginning of a partnership without turning the form into a wizard", () => {
+  const path = read("components/contact/InquiryPath.tsx");
+  const page = read("app/contact/page.tsx");
+  const form = read("components/contact/ContactForm.tsx");
+
+  for (const step of [
+    "Business challenge received",
+    "Context reviewed",
+    "Initial fit and questions identified",
+    "Conversation arranged",
+    "Appropriate next step defined",
+  ]) {
+    assert.match(path, new RegExp(step));
+  }
+
+  assert.match(path, /contactPage\.responseExpectation/);
+  assert.match(page, /<InquiryPath\s*\/>/);
+  assert.doesNotMatch(form, /SystemAtlas|stepIndex|currentStep|nextStep/);
+  assert.doesNotMatch(form, /\bbudget\b/i);
+});
