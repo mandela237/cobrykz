@@ -803,7 +803,9 @@ test("keeps alternative Homepage trees internally unique and copy-synchronized",
 test("bounds the shared header within the 320px viewport", () => {
   const globals = read("app/globals.css");
   const header = read("components/layout/SiteHeader.tsx");
+  const mobileNavigation = read("components/layout/MobileNavigation.tsx");
   const solutionsMenu = read("components/layout/SolutionsMenu.tsx");
+  const desktopHeader = header.slice(header.indexOf("site-header-desktop"));
   const shellWidthAt320 = 320 - 2 * 20;
 
   assert.equal(shellWidthAt320, 280);
@@ -814,34 +816,45 @@ test("bounds the shared header within the 320px viewport", () => {
   );
   assert.match(
     header,
-    /className="section-shell min-w-0 flex min-h-16 flex-wrap items-center/,
+    /className="site-header-mobile section-shell md:hidden"/,
+  );
+  assert.match(
+    header,
+    /className="site-header-desktop section-shell hidden md:flex min-w-0 min-h-16 flex-wrap items-center/,
   );
   assert.doesNotMatch(
     header,
     /\b(?:sm:|md:|lg:|xl:|2xl:)?order-(?:none|first|last|\d+)\b/,
     "header visual order must match DOM and keyboard order",
   );
-  assert.match(header, /<nav\s+className="min-w-0 w-full border-t border-border/);
   assert.match(
-    header,
+    desktopHeader,
+    /<nav\s+className="min-w-0 w-full border-t border-border/,
+  );
+  assert.match(
+    desktopHeader,
     /<ul\s+className="flex max-w-full flex-wrap items-center justify-start gap-x-2 gap-y-1 py-1 lg:flex-nowrap lg:gap-0 lg:py-0"/,
   );
-  assert.doesNotMatch(header, /<ul className="[^"]*\bjustify-between\b/);
-  assert.match(header, /<li key=\{item\.href\} className="max-w-full">/);
+  assert.doesNotMatch(desktopHeader, /<ul className="[^"]*\bjustify-between\b/);
+  assert.match(desktopHeader, /<li key=\{item\.href\} className="max-w-full">/);
   assert.match(
-    header,
+    desktopHeader,
     /className="nav-underline action-transition flex min-h-11 max-w-full items-center/,
   );
   assert.match(
-    header,
+    desktopHeader,
     /className="mb-2 w-full max-w-full basis-full lg:mb-0 lg:w-auto lg:basis-auto"/,
-    "the exact primary CTA must occupy its own bounded mobile row",
+    "the desktop primary CTA must retain its existing responsive behavior",
   );
   assert.ok(
-    header.indexOf('href="/"') < header.indexOf("<nav") &&
-      header.indexOf("<nav") < header.indexOf("<PrimaryLink"),
-    "header DOM/tab order must be logo, navigation, then primary CTA",
+    desktopHeader.indexOf('href="/"') < desktopHeader.indexOf("<nav") &&
+      desktopHeader.indexOf("<nav") <
+        desktopHeader.indexOf("<PrimaryLink"),
+    "desktop header DOM/tab order must remain logo, navigation, then primary CTA",
   );
+  assert.match(mobileNavigation, /primaryNavigation\.map/);
+  assert.match(mobileNavigation, /solutions\.map/);
+  assert.match(mobileNavigation, /href=\{primaryCta\.href\}/);
 
   assert.match(
     solutionsMenu,

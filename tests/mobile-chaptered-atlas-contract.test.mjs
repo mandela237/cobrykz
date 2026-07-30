@@ -44,6 +44,43 @@ test("copy-fork audit covers the focused challenge island", () => {
   );
 });
 
+test("provides a compact accessible mobile header with complete navigation", () => {
+  const header = read("components/layout/SiteHeader.tsx");
+  const mobileNavigation = read("components/layout/MobileNavigation.tsx");
+  const css = read("app/globals.css");
+
+  assert.match(header, /<MobileNavigation\s*\/>/);
+  assert.match(header, /site-header-mobile/);
+  assert.match(header, /site-header-desktop/);
+  assert.match(header, /\bmd:hidden\b/);
+  assert.match(header, /\bhidden md:flex\b/);
+
+  assert.match(mobileNavigation, /"use client"/);
+  assert.match(mobileNavigation, /aria-expanded=\{isOpen\}/);
+  assert.match(mobileNavigation, /aria-controls=\{menuId\}/);
+  assert.match(mobileNavigation, /primaryNavigation\.map/);
+  assert.match(mobileNavigation, /solutions\.map/);
+  assert.match(mobileNavigation, /href=\{primaryCta\.href\}/);
+  assert.match(mobileNavigation, /\{primaryCta\.label\}/);
+  assert.match(mobileNavigation, /event\.key === "Escape"/);
+  assert.match(mobileNavigation, /firstLinkRef\.current\?\.focus\(\)/);
+  assert.match(mobileNavigation, /triggerRef\.current\?\.focus\(\)/);
+  assert.match(
+    mobileNavigation,
+    /document\.addEventListener\("pointerdown", handlePointerDown\)/,
+  );
+  assert.match(mobileNavigation, /onClick=\{closeMenu\}/);
+
+  assert.match(
+    css,
+    /@media \(max-width:\s*767px\)[\s\S]*?\.site-header-mobile\s*\{[^}]*min-height:\s*3\.75rem/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-navigation__trigger\s*\{[^}]*min-width:\s*2\.75rem;[^}]*min-height:\s*2\.75rem/s,
+  );
+});
+
 test("defines a semantic Chaptered Atlas mobile grammar", () => {
   const chapter = read("components/mobile/MobileChapter.tsx");
   const disclosure = read("components/mobile/MobileDisclosureGroup.tsx");
@@ -110,6 +147,48 @@ test("renders each Atlas node control once and preserves selected fan-in and fan
     "the node list must create exactly one control per logical node",
   );
   assert.doesNotMatch(mobileAtlas, /padStart\(/);
+});
+
+test("groups the mobile Atlas into definition-driven architectural planes", () => {
+  const mobileAtlas = read("components/mobile/MobileAtlasPath.tsx");
+  const css = read("app/globals.css");
+
+  assert.match(mobileAtlas, /definition\.layers\.map/);
+  assert.match(mobileAtlas, /node\.layerId === layer\.id/);
+  assert.match(mobileAtlas, /data-atlas-layer=\{layer\.id\}/);
+  assert.match(mobileAtlas, /data-atlas-depth=\{layer\.depth\}/);
+  assert.match(
+    mobileAtlas,
+    /data-atlas-connection-state=\{connectionState\}/,
+  );
+  assert.match(mobileAtlas, /\{layer\.label\}/);
+
+  assert.match(css, /\.mobile-atlas__layer\s*\{/);
+  assert.match(css, /\.mobile-atlas__layer-header\s*\{/);
+  assert.match(css, /\.mobile-atlas__nodes\s*\{/);
+  assert.match(
+    css,
+    /\.mobile-atlas__layer\[data-atlas-connection-state="active"\]/,
+  );
+});
+
+test("brings the signature Atlas into the compact first mobile viewport", () => {
+  const css = read("app/globals.css");
+
+  assert.match(
+    css,
+    /#home-opening\s+\.mobile-chapter__inner\s*\{[^}]*padding-block:\s*1\.25rem 2rem/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-home-hero\s*\{[^}]*gap:\s*1rem;[^}]*padding-top:\s*0\.75rem/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-home-atlas-plane\s*\{[^}]*margin-top:\s*1\.5rem;[^}]*padding-top:\s*1rem/s,
+  );
+  assert.match(css, /\.mobile-home-hero h1\s*\{[^}]*font-size:\s*2\.625rem/s);
+  assert.match(css, /\.mobile-home-lead\s*\{[^}]*font-size:\s*1\.0625rem/s);
 });
 
 test("represents every Atlas connection without first-match loss", () => {
@@ -315,5 +394,52 @@ test("keeps selected Atlas explanations readable on mobile", () => {
   assert.match(
     css,
     /\.mobile-atlas__detail\s*\{[^}]*font-size:\s*0\.9375rem/s,
+  );
+});
+
+test("differentiates the five dense mobile chapter compositions", () => {
+  const css = read("app/globals.css");
+
+  assert.match(
+    css,
+    /\.mobile-home-outcome-plane\s+\.mobile-disclosure-group\s*>\s*div:first-child\s*\{/,
+  );
+  assert.match(
+    css,
+    /\.mobile-home-ledger\s+\.mobile-disclosure-group\s*>\s*div\s*\{/,
+  );
+  assert.match(
+    css,
+    /\.mobile-home-trust-grid\s+\.mobile-disclosure-group\s*>\s*div:nth-child\(even\)\s*\{/,
+  );
+  assert.match(
+    css,
+    /\.mobile-home-ai-artifact\s+\.mobile-disclosure-group\s*\{/,
+  );
+  assert.match(css, /\.mobile-home-process-rail::before\s*\{/);
+});
+
+test("compacts the mobile footer into a complete two-column sitemap", () => {
+  const footer = read("components/layout/SiteFooter.tsx");
+  const css = read("app/globals.css");
+
+  assert.match(footer, /site-footer__inner/);
+  assert.match(footer, /site-footer__grid/);
+  assert.match(footer, /site-footer__brand/);
+  assert.match(footer, /site-footer__solutions/);
+  assert.match(footer, /site-footer__company/);
+  assert.match(footer, /solutions\.map/);
+  assert.match(footer, /companyLinks\.map/);
+  assert.match(footer, /href=\{primaryCta\.href\}/);
+  assert.match(footer, /href="mailto:info@cobrykz\.com"/);
+  assert.match(footer, /min-h-11/g);
+
+  assert.match(
+    css,
+    /@media \(max-width:\s*767px\)[\s\S]*?\.site-footer__grid\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/s,
+  );
+  assert.match(
+    css,
+    /\.site-footer__brand\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/s,
   );
 });

@@ -14,10 +14,10 @@ const companyLinks = primaryNavigation.filter(
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-white/10 bg-footer-bg text-white">
-      <div className="section-shell py-12">
-        <div className="grid gap-10 border-b border-white/10 pb-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_0.8fr]">
-          <div className="sm:col-span-2 lg:col-span-1">
+    <footer className="site-footer border-t border-white/10 bg-footer-bg text-white">
+      <div className="site-footer__inner section-shell py-12">
+        <div className="site-footer__grid grid gap-10 border-b border-white/10 pb-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_0.8fr]">
+          <div className="site-footer__brand sm:col-span-2 lg:col-span-1">
             <Link
               href="/"
               className="action-transition inline-flex min-h-11 items-center rounded-lg"
@@ -38,7 +38,7 @@ export default function SiteFooter() {
             </PrimaryLink>
           </div>
 
-          <div>
+          <div className="site-footer__solutions">
             <p className="text-[13px] font-bold uppercase text-white/65">
               Solutions
             </p>
@@ -56,7 +56,7 @@ export default function SiteFooter() {
             </ul>
           </div>
 
-          <div>
+          <div className="site-footer__company">
             <p className="text-[13px] font-bold uppercase text-white/65">
               Company
             </p>
@@ -81,7 +81,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <p className="pt-6 text-[13px] text-white/60">
+        <p className="site-footer__copyright pt-6 text-[13px] text-white/60">
           &copy; {new Date().getFullYear()} {siteIdentity.name}. All rights
           reserved.
         </p>

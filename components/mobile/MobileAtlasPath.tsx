@@ -56,16 +56,53 @@ export default function MobileAtlasPath({
 
   return (
     <figure className="mobile-atlas" aria-label={ariaLabel}>
-      <ol className="mobile-atlas__map" aria-label={`${ariaLabel} nodes`}>
-        {definition.nodes.map((node) => (
-          <li key={node.id} data-atlas-kind={node.kind}>
-            <MobileAtlasNodeControl
-              node={node}
-              selectedNodeId={selectedNodeId}
-              onSelectNode={onSelectNode}
-            />
-          </li>
-        ))}
+      <ol className="mobile-atlas__map" aria-label={`${ariaLabel} planes`}>
+        {definition.layers.map((layer) => {
+          const layerNodes = definition.nodes.filter(
+            (node) => node.layerId === layer.id,
+          );
+          const layerNodeIds = new Set(layerNodes.map((node) => node.id));
+          const layerConnections = definition.connections.filter(
+            (connection) =>
+              layerNodeIds.has(connection.source) ||
+              layerNodeIds.has(connection.target),
+          );
+          const connectionState = layerConnections.some(
+            (connection) => connection.state === "active",
+          )
+            ? "active"
+            : layerConnections.some(
+                  (connection) => connection.state === "verified",
+                )
+              ? "verified"
+              : "supporting";
+
+          return (
+            <li
+              key={layer.id}
+              className="mobile-atlas__layer"
+              data-atlas-layer={layer.id}
+              data-atlas-depth={layer.depth}
+              data-atlas-connection-state={connectionState}
+            >
+              <div className="mobile-atlas__layer-header">
+                <span aria-hidden="true">{layer.depth}</span>
+                <strong>{layer.label}</strong>
+              </div>
+              <ol className="mobile-atlas__nodes">
+                {layerNodes.map((node) => (
+                  <li key={node.id} data-atlas-kind={node.kind}>
+                    <MobileAtlasNodeControl
+                      node={node}
+                      selectedNodeId={selectedNodeId}
+                      onSelectNode={onSelectNode}
+                    />
+                  </li>
+                ))}
+              </ol>
+            </li>
+          );
+        })}
       </ol>
       {selectedNode ? (
         <section className="mobile-atlas__detail" aria-live="polite">
