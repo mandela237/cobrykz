@@ -390,16 +390,71 @@ function assertMinimalAuthoredMotion(source, label) {
 }
 
 function assertApprovedPresentationUtilities(source, label) {
+  const approvedColorValues = new Set([
+    "navy",
+    "blue",
+    "blue-dark",
+    "white",
+    "gray-light",
+    "gray-100",
+    "slate",
+    "slate-light",
+    "border",
+    "charcoal",
+    "footer-bg",
+    "blue-tint",
+    "navy-subtle",
+    "evergreen",
+  ]);
+  const tailwindDefaultColorRoots = new Set([
+    "inherit",
+    "current",
+    "transparent",
+    "black",
+    "white",
+    "slate",
+    "gray",
+    "zinc",
+    "neutral",
+    "stone",
+    "red",
+    "orange",
+    "amber",
+    "yellow",
+    "lime",
+    "green",
+    "emerald",
+    "teal",
+    "cyan",
+    "sky",
+    "blue",
+    "indigo",
+    "violet",
+    "purple",
+    "fuchsia",
+    "pink",
+    "rose",
+  ]);
+
   assert.doesNotMatch(
     source,
     /(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-\[(?:#|rgba?\(|hsla?\(|oklch\(|color:|var\()/,
     `${label} must use approved palette utilities instead of arbitrary colors`,
   );
-  assert.doesNotMatch(
-    source,
-    /(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|indigo|violet|purple|fuchsia|pink|rose|zinc|neutral|stone|gray-(?!light\b|100\b)|slate-\d)/,
-    `${label} must not use Tailwind color families outside the approved palette`,
-  );
+  for (const [, value] of source.matchAll(
+    /(?:^|[\s"'`])(?:(?:[\w-]+):)*(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-([a-z][a-z0-9-]*)(?:\/[0-9.]+)?(?=$|[\s"'`}])/gm,
+  )) {
+    const root = value.split("-")[0];
+    if (
+      tailwindDefaultColorRoots.has(root) ||
+      approvedColorValues.has(value)
+    ) {
+      assert.ok(
+        approvedColorValues.has(value),
+        `${label} uses ${value}, a Tailwind color outside the approved palette`,
+      );
+    }
+  }
   assert.doesNotMatch(
     source,
     /\bfont-(?:serif|mono|\[(?![1-9]\d{2}\]))/,
@@ -498,6 +553,8 @@ test("preserves the frozen palette and font tokens", () => {
   for (const fixture of [
     '<p className="text-[#9CC8FF]">Arbitrary color</p>',
     '<p className="text-red-500">Tailwind family</p>',
+    '<p className="text-blue-500">Default blue shade</p>',
+    '<p className="text-black">Default black</p>',
     '<p className="font-serif">Unapproved family</p>',
   ]) {
     assert.throws(
@@ -505,6 +562,12 @@ test("preserves the frozen palette and font tokens", () => {
       /approved palette utilities|outside the approved palette|approved sans font utility/,
     );
   }
+  assert.doesNotThrow(() =>
+    assertApprovedPresentationUtilities(
+      '<div className="bg-navy text-blue hover:text-blue-dark border-border ring-blue-tint" />',
+      "approved semantic utilities",
+    ),
+  );
 });
 
 test("keeps the dark focus token distinct on every approved dark surface", () => {
