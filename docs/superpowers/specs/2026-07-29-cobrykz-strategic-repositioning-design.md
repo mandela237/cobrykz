@@ -1,6 +1,6 @@
 # Cobrykz Strategic Repositioning
 
-**Status:** Approved strategy  
+**Status:** Approved and frozen
 **Date:** July 29, 2026  
 **Scope:** Brand position, information architecture, UX, content system, SEO, and implementation constraints
 
@@ -583,9 +583,9 @@ floating dashboards, and decorative system diagrams.
 
 ## Strategy Freeze
 
-After approval of the companion Brand Messaging Guide, this strategy,
-information architecture, UX model, and page structure are frozen for
-implementation.
+The companion Brand Messaging Guide is approved. This strategy, information
+architecture, UX model, messaging system, and page structure are now frozen
+for implementation.
 
 Do not reopen them during delivery unless a critical issue is discovered:
 
