@@ -2,13 +2,13 @@ import Link from "next/link";
 import { solutionBySlug } from "@/components/content/solutions";
 import type { SolutionSlug } from "@/components/content/solutions";
 
-type SelectionRow = {
+export type SelectionRow = {
   condition: string;
   signal: string;
   solutionSlugs: readonly SolutionSlug[];
 };
 
-const selectionRows = [
+export const selectionRows = [
   {
     condition: "Unclear AI opportunity",
     signal:

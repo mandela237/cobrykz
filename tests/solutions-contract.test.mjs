@@ -628,14 +628,16 @@ test("renders the frozen Solutions hub narrative from shared content", () => {
   assert.match(hub, /<SolutionSelectionMatrix\s*\/>/);
   assert.match(
     hub,
-    /title="Connected outcomes may combine multiple capabilities\."/,
+    /connected:\s*\{\s*title:\s*"Connected outcomes may combine multiple capabilities\."/s,
   );
+  assert.match(hub, /title=\{solutionsHubCopy\.connected\.title\}/);
   assert.match(hub, /processStages\.slice\(0,\s*3\)\.map\(\(stage,\s*index\)/);
   assert.match(hub, /whyCobrykz\.map\(\(reason/);
   assert.match(
     hub,
-    />\s*What could technology improve in your business\?\s*</,
+    /cta:\s*\{\s*title:\s*"What could technology improve in your business\?"/s,
   );
+  assert.match(hub, /\{solutionsHubCopy\.cta\.title\}/);
   assert.match(
     hub,
     /<PrimaryLink\s+href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,

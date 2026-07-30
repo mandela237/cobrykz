@@ -443,3 +443,119 @@ test("compacts the mobile footer into a complete two-column sitemap", () => {
     /\.site-footer__brand\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/s,
   );
 });
+
+test("builds the dense Solutions hub as a shared-content mobile capability explorer", () => {
+  const mobile = read("components/solutions/MobileSolutionsHub.tsx");
+  const hub = read("components/solutions/SolutionsHub.tsx");
+  const matrix = read("components/solutions/SolutionSelectionMatrix.tsx");
+
+  for (const model of [
+    "solutions",
+    "homeOutcomes",
+    "processStages",
+    "whyCobrykz",
+    "primaryCta",
+    "capabilityRelationship",
+  ]) {
+    assert.match(mobile, new RegExp(model));
+  }
+
+  assert.match(matrix, /export const selectionRows/);
+  assert.match(hub, /solutionsHubCopy/);
+  assert.match(hub, /copy=\{solutionsHubCopy\}/);
+  assert.match(hub, /selectionRows=\{selectionRows\}/);
+  assert.match(hub, /operatingContexts=\{operatingContexts\}/);
+  assert.match(hub, /outcomeStartingPoints=\{outcomeStartingPoints\}/);
+  assert.doesNotMatch(
+    mobile,
+    /Find the right way to improve your business\.|Clarity comes before a build decision\.|What could technology improve in your business\?/,
+    "approved hub copy must not be forked into the mobile presentation",
+  );
+});
+
+test("keeps the approved Solutions hub chapter order and canonical anchors", () => {
+  const mobile = read("components/solutions/MobileSolutionsHub.tsx");
+  const sequence = [
+    'id="solutions-hub-hero"',
+    'id="solutions-hub-outcomes"',
+    'id="solutions-hub-portfolio"',
+    'id="solutions-hub-selection"',
+    'id="solutions-hub-connected"',
+    'id="solutions-hub-method"',
+    'id="solutions-hub-why"',
+    'id="solutions-hub-cta"',
+  ];
+
+  for (let index = 1; index < sequence.length; index += 1) {
+    assert.ok(
+      mobile.indexOf(sequence[index - 1]) < mobile.indexOf(sequence[index]),
+      `${sequence[index - 1]} must precede ${sequence[index]}`,
+    );
+  }
+
+  assert.doesNotMatch(
+    mobile,
+    /<main\b/,
+    "the root layout already provides the page main landmark",
+  );
+  assert.match(mobile, /data-mobile-solutions-hub/);
+});
+
+test("uses compact disclosures and a focused relationship Atlas island on Solutions", () => {
+  const mobile = read("components/solutions/MobileSolutionsHub.tsx");
+  const atlas = read("components/solutions/MobileCapabilityAtlas.tsx");
+
+  assert.ok(
+    (mobile.match(/<MobileDisclosureGroup/g) || []).length >= 5,
+    "outcomes, capabilities, starting points, context, method, and trust need compact disclosure",
+  );
+  assert.match(mobile, /homeOutcomes\.map/);
+  assert.match(mobile, /solutions\.map/);
+  assert.match(mobile, /selectionRows\.map/);
+  assert.match(mobile, /processStages\.slice\(0,\s*3\)\.map/);
+  assert.match(mobile, /whyCobrykz\.map/);
+  assert.match(mobile, /<MobileCapabilityAtlas/);
+  assert.doesNotMatch(mobile, /"use client"|useState|onClick/);
+
+  assert.match(atlas, /"use client"/);
+  assert.match(atlas, /useState/);
+  assert.match(atlas, /<MobileAtlasPath/);
+  assert.match(atlas, /capabilityRelationship/);
+  assert.match(atlas, /solutionBySlug/);
+  assert.match(atlas, /aria-live="polite"/);
+});
+
+test("mounts exactly one responsive Solutions presentation and preserves desktop source", () => {
+  const hub = read("components/solutions/SolutionsHub.tsx");
+  const boundary = read("components/solutions/ResponsiveSolutionsHub.tsx");
+  const css = read("app/globals.css");
+
+  assert.match(hub, /<ResponsiveSolutionsHub/);
+  assert.match(hub, /mobile=\{/);
+  assert.match(hub, /desktop=\{/);
+  assert.doesNotMatch(hub, /\bmd:hidden\b|\bhidden md:block\b/);
+  assert.match(boundary, /"use client"/);
+  assert.match(boundary, /useSyncExternalStore/);
+  assert.match(boundary, /matchMedia\("\(max-width: 767px\)"\)/);
+  assert.match(boundary, /mobile: ReactNode/);
+  assert.match(boundary, /desktop: ReactNode/);
+  assert.match(boundary, /return isMobile \? mobile : desktop/);
+
+  assert.doesNotMatch(
+    css,
+    /\[data-mobile-solutions-hub\]\s*\{[^}]*overflow-x:\s*(?:hidden|clip)/s,
+    "the mobile Solutions hub must contain rather than conceal horizontal overflow",
+  );
+  assert.match(
+    css,
+    /\.mobile-solutions-capability-ledger\s+\.mobile-disclosure-trigger\s*\{[^}]*min-height:\s*(?:4|5|6)[^;]*rem/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-solutions-atlas-stage\s*\{[^}]*background:/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-solutions-process-rail::before\s*\{/,
+  );
+});
