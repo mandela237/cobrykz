@@ -84,6 +84,12 @@ test("defines repeatable local-Chrome mobile and desktop browser projects", () =
   assert.match(config, /trace:\s*"on-first-retry"/);
   assert.match(config, /screenshot:\s*"only-on-failure"/);
   assert.match(config, /npm run build && npm run start -- -p 3100/);
+  assert.match(config, /reuseExistingServer:\s*false/);
+  assert.doesNotMatch(
+    config,
+    /reuseExistingServer:\s*!process\.env\.CI/,
+    "the browser gate must never silently test an already-running stale server",
+  );
 
   assert.match(
     browser,
