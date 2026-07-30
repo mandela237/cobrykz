@@ -7,6 +7,7 @@ import {
 } from "@/components/content/home";
 import { primaryCta } from "@/components/content/site";
 import SolutionSelectionMatrix from "@/components/solutions/SolutionSelectionMatrix";
+import CapabilityRelationshipAtlas from "@/components/solutions/CapabilityRelationshipAtlas";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 import SectionIntro from "@/components/ui/SectionIntro";
 
@@ -155,6 +156,7 @@ export default function SolutionsHub() {
             title="Connected outcomes may combine multiple capabilities."
             description="A business challenge can cross customer experience, internal operations, and the systems between them. Cobrykz assesses that wider context before recommending the parts that belong together."
           />
+          <CapabilityRelationshipAtlas />
           <div className="mt-12 grid border-y border-border md:grid-cols-3">
             <div className="border-b border-border py-7 md:border-b-0 md:border-r md:pr-7">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-blue">

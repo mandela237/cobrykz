@@ -10,6 +10,7 @@ import SolutionFaqs from "@/components/solutions/SolutionFaqs";
 import SolutionFinalCta from "@/components/solutions/SolutionFinalCta";
 import SolutionGuidance from "@/components/solutions/SolutionGuidance";
 import SolutionHero from "@/components/solutions/SolutionHero";
+import SolutionOperatingModel from "@/components/solutions/SolutionOperatingModel";
 import { serializeJsonLd, siteUrl } from "@/lib/seo/site";
 
 type SolutionPageProps = {
@@ -43,6 +44,7 @@ export default function SolutionPage({ solution }: SolutionPageProps) {
       <ProblemRecognition solution={solution} />
       <OutcomeList solution={solution} />
       <CapabilityList solution={solution} />
+      <SolutionOperatingModel solution={solution} />
       <ApplicationExamples solution={solution} />
       {solution.artifact && <SolutionArtifact artifact={solution.artifact} />}
       {solution.guidance && <SolutionGuidance guidance={solution.guidance} />}

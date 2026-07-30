@@ -713,3 +713,44 @@ test("maps business conditions to direct solution links in a semantic matrix", (
     );
   }
 });
+
+test("defines one meaningful operating model for every approved solution", () => {
+  const visuals = read("components/content/solutionVisuals.ts");
+  const hubAtlas = read(
+    "components/solutions/CapabilityRelationshipAtlas.tsx",
+  );
+  const operatingModel = read(
+    "components/solutions/SolutionOperatingModel.tsx",
+  );
+  const page = read("components/solutions/SolutionPage.tsx");
+
+  for (const kind of [
+    "controlled-ai-loop",
+    "workflow-transformation",
+    "ownership-boundary",
+    "operating-environment",
+    "service-delivery-cutaway",
+    "decision-landscape",
+  ]) {
+    assert.match(visuals, new RegExp(`["']${kind}["']`));
+  }
+
+  for (const label of [
+    "Human review",
+    "Exceptions",
+    "Business rules",
+    "Connected environment",
+    "Customer and user experience",
+    "Roadmap",
+  ]) {
+    assert.match(visuals, new RegExp(label));
+  }
+
+  assert.match(visuals, /satisfies Record<SolutionSlug,\s*SolutionVisualDefinition>/s);
+  assert.match(hubAtlas, /<SystemAtlas\b/);
+  assert.match(hubAtlas, /solutions\.map/);
+  assert.match(hubAtlas, /href=\{solution\.href\}/);
+  assert.match(operatingModel, /solutionVisualBySlug\[solution\.slug\]/);
+  assert.match(operatingModel, /<SystemAtlas\b/);
+  assert.match(page, /<SolutionOperatingModel\s+solution=\{solution\}\s*\/>/);
+});
