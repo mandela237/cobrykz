@@ -110,3 +110,135 @@ test("adds a restrained shared chapter-intro hierarchy", () => {
     /@media \(max-width:\s*767px\)[\s\S]*?\.mobile-chapter-intro\s*\{/,
   );
 });
+
+test("builds the mobile Process page from the frozen process definition", () => {
+  const mobile = read("components/company/MobileProcessPage.tsx");
+  const route = read("app/process/page.tsx");
+
+  for (const field of [
+    "content.eyebrow",
+    "content.headline",
+    "content.introduction",
+    "content.stages",
+    "content.decisionGates",
+    "content.scaling",
+    "content.operatingModel",
+    "content.postLaunch",
+    "content.cta",
+  ]) {
+    assert.match(mobile, new RegExp(field.replace(".", "\\.")));
+  }
+
+  assert.match(mobile, /content: ProcessPageDefinition/);
+  assert.match(mobile, /data-mobile-process/);
+  assert.doesNotMatch(mobile, /"use client"|useState|onClick/);
+  assert.match(route, /<ResponsivePageComposition/);
+  assert.match(route, /mobile=\{<MobileProcessPage content=\{processPage\} \/>\}/);
+  assert.match(route, /desktop=\{<ProcessPage content=\{processPage\} \/>\}/);
+  assert.doesNotMatch(
+    mobile,
+    /Six connected stages\. Two visible decisions\./,
+    "mobile composition must not introduce a new public-facing message",
+  );
+});
+
+test("keeps the approved Process chapter order and canonical anchors", () => {
+  const mobile = read("components/company/MobileProcessPage.tsx");
+  const sequence = [
+    'id="process-hero"',
+    'id="process-stages"',
+    'id="process-scaling"',
+    'id="process-accountability"',
+    'id="process-post-launch"',
+    'id="process-cta"',
+  ];
+
+  for (let index = 1; index < sequence.length; index += 1) {
+    assert.ok(
+      mobile.indexOf(sequence[index - 1]) < mobile.indexOf(sequence[index]),
+      `${sequence[index - 1]} must precede ${sequence[index]}`,
+    );
+  }
+
+  assert.match(mobile, /<MobileDeliveryRail/);
+  assert.ok(
+    (mobile.match(/<MobileDisclosureGroup/g) || []).length >= 2,
+    "scaling and accountability require compact disclosure",
+  );
+  assert.doesNotMatch(
+    mobile,
+    /<main\b/,
+    "the root layout already provides the page main landmark",
+  );
+});
+
+test("keeps Process stage and gate sequencing inside one focused client island", () => {
+  const rail = read("components/company/MobileDeliveryRail.tsx");
+
+  assert.match(rail, /"use client"/);
+  assert.match(rail, /stages: readonly ProcessStageDefinition\[\]/);
+  assert.match(rail, /gates: readonly ProcessDecisionGate\[\]/);
+  assert.match(rail, /stages\.map\(\(stage, index\)/);
+  assert.match(rail, /candidate\.after === stage\.name/);
+  assert.match(rail, /candidate\.before === stages\[index \+ 1\]\?\.name/);
+  assert.match(rail, /id=\{`process-\$\{stage\.name\.toLowerCase\(\)\}`\}/);
+  assert.match(rail, /aria-expanded=\{isOpen\}/);
+  assert.match(rail, /aria-controls=\{panelId\}/);
+  assert.match(rail, /aria-live="polite"/);
+  assert.match(rail, /stage\.decisions\.map/);
+  assert.match(rail, /stage\.outputs\.map/);
+  assert.match(rail, /gate\.criteria\.map/);
+  assert.doesNotMatch(
+    rail,
+    /Discover|Assess|Design|Build|Deploy|Optimize/,
+    "stage labels must come from the frozen content registry",
+  );
+});
+
+test("preserves the frozen desktop Process section sequence", () => {
+  const desktop = read("components/company/ProcessPage.tsx");
+  const sequence = [
+    'id="process-hero"',
+    "<DeliveryRail",
+    'aria-labelledby="process-scaling-heading"',
+    'aria-label="How the work stays accountable"',
+    'aria-labelledby="process-post-launch-heading"',
+    'id="process-cta"',
+  ];
+
+  for (let index = 1; index < sequence.length; index += 1) {
+    assert.ok(
+      desktop.indexOf(sequence[index - 1]) <
+        desktop.indexOf(sequence[index]),
+      `${sequence[index - 1]} must precede ${sequence[index]}`,
+    );
+  }
+});
+
+test("gives the mobile Process rail touch-safe architectural progression", () => {
+  const css = read("app/globals.css");
+
+  assert.match(
+    css,
+    /@media \(max-width:\s*767px\)[\s\S]*?\[data-mobile-process\]\s*\{/,
+  );
+  assert.match(css, /\.mobile-process-rail\s*\{[^}]*position:\s*relative/s);
+  assert.match(css, /\.mobile-process-rail::before\s*\{/);
+  assert.match(
+    css,
+    /\.mobile-process-rail__trigger\s*\{[^}]*min-height:\s*4[^;]*rem/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-process-gate\s*\{[^}]*border-left:\s*3px solid var\(--color-blue\)/s,
+  );
+  assert.match(
+    css,
+    /\.mobile-process-disclosure--dark[\s\S]*?\.mobile-disclosure-trigger:focus-visible\s*\{[^}]*outline-color:\s*var\(--focus-ring-dark\)/s,
+  );
+  assert.doesNotMatch(
+    css,
+    /\[data-mobile-process\]\s*\{[^}]*overflow-x:\s*(?:hidden|clip)/s,
+    "the Process composition must contain rather than conceal overflow",
+  );
+});
