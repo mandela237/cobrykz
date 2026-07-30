@@ -11,7 +11,7 @@ import HomeFinalCTA from "@/components/home/HomeFinalCTA";
 
 export default function Home() {
   return (
-    <main>
+    <>
       <HomeHero />
       <BusinessOutcomes />
       <SolutionsOverview />
@@ -26,6 +26,6 @@ export default function Home() {
       <ProjectsEvidence />
       <AuthorityBand />
       <HomeFinalCTA />
-    </main>
+    </>
   );
 }

@@ -119,6 +119,14 @@ test("frames the reviewed challenge router within the responsive homepage shell"
   );
 });
 
+test("uses the shared layout as the only main landmark", () => {
+  const page = read("app/page.tsx");
+  const layout = read("app/layout.tsx");
+
+  assert.equal((page.match(/<main\b/g) || []).length, 0);
+  assert.equal((layout.match(/<main\b/g) || []).length, 1);
+});
+
 test("provides a semantic shared section introduction", () => {
   const path = "components/ui/SectionIntro.tsx";
   assert.equal(
@@ -150,7 +158,6 @@ test("builds semantic homepage sections from frozen shared content", () => {
     finalCta: read("components/home/HomeFinalCTA.tsx"),
   };
 
-  assert.equal((page.match(/<main\b/g) || []).length, 1);
   assert.doesNotMatch(page, /["']use client["']/);
   assert.equal(
     Object.values(sections).reduce(
