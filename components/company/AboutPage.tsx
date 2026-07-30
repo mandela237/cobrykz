@@ -1,5 +1,6 @@
-import Image from "next/image";
 import type { AboutPageDefinition } from "@/components/content/companyPages";
+import ConnectedPartnerAtlas from "@/components/company/ConnectedPartnerAtlas";
+import FounderAccountability from "@/components/company/FounderAccountability";
 import PrimaryLink from "@/components/ui/PrimaryLink";
 
 type AboutPageProps = {
@@ -104,61 +105,26 @@ export default function AboutPage({ content }: AboutPageProps) {
           <p className="max-w-2xl text-base leading-7 text-white/75 sm:text-[17px] sm:leading-8">
             {content.partnership.description}
           </p>
+          <div className="lg:col-span-2">
+            <ConnectedPartnerAtlas />
+          </div>
         </div>
       </section>
 
-      <section
-        aria-labelledby="about-leadership-heading"
-        className="border-b border-border bg-white"
-      >
-        <div className="section-shell grid gap-9 py-16 sm:py-20 md:grid-cols-[minmax(16rem,0.8fr)_minmax(0,1.2fr)] md:items-center lg:gap-20 lg:py-24">
-          <div className="relative min-h-[27rem] overflow-hidden bg-gray-100 sm:min-h-[34rem]">
-            <Image
-              src="/mandela-portrait-sharp.jpg"
-              alt={`${content.leadership.name}, ${content.leadership.role}`}
-              fill
-              sizes="(min-width: 1200px) 440px, (min-width: 768px) 42vw, calc(100vw - 2.5rem)"
-              className="object-cover object-[50%_18%]"
-            />
-          </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue">
-              {content.leadership.role}
-            </p>
-            <h2
-              id="about-leadership-heading"
-              className="text-balance mt-4 text-[2rem] font-extrabold leading-[1.08] text-navy sm:text-[2.5rem] lg:text-5xl"
-            >
-              {content.leadership.title}
-            </h2>
-            <p className="mt-6 text-2xl text-charcoal sm:text-3xl">
-              {content.leadership.name}
-            </p>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate sm:text-[17px] sm:leading-8">
-              {content.leadership.description}
-            </p>
-          </div>
-        </div>
-      </section>
+      <FounderAccountability leadership={content.leadership} />
 
       <section aria-label="Company standards" className="bg-gray-light">
         <div className="section-shell py-16 sm:py-20 lg:py-24">
-          <ol className="border-t border-border">
-            {content.standards.map((standard, index) => (
+          <ol className="grid border-l border-t border-border md:grid-cols-2">
+            {content.standards.map((standard) => (
               <li
                 key={standard.title}
-                className="grid gap-3 border-b border-border py-7 sm:grid-cols-[3rem_minmax(0,0.8fr)_minmax(0,1.2fr)] sm:items-start"
+                className="border-b border-r border-border bg-white p-7 sm:p-9"
               >
-                <span
-                  aria-hidden="true"
-                  className="text-[11px] font-bold text-blue"
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
                 <h2 className="text-xl font-bold leading-7 text-navy sm:text-2xl">
                   {standard.title}
                 </h2>
-                <p className="text-[15px] leading-7 text-slate">
+                <p className="mt-4 text-[15px] leading-7 text-slate">
                   {standard.description}
                 </p>
               </li>

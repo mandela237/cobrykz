@@ -389,6 +389,7 @@ test("renders the exact progressive process, both decision gates, and the comple
 
 test("renders the approved About narrative, founder portrait, standards, and shared CTA", () => {
   const source = read("components/company/AboutPage.tsx");
+  const founder = read("components/company/FounderAccountability.tsx");
 
   assert.doesNotMatch(
     source,
@@ -401,13 +402,13 @@ test("renders the approved About narrative, founder portrait, standards, and sha
   assert.match(source, /content\.principles\.map\(\(principle,\s*index\)/);
   assert.match(source, /\{content\.partnership\.title\}/);
   assert.match(source, /\{content\.partnership\.description\}/);
-  assert.match(source, /import Image from ["']next\/image["']/);
-  assert.match(source, /src=["']\/mandela-portrait-sharp\.jpg["']/);
-  assert.match(source, /\{content\.leadership\.title\}/);
-  assert.match(source, /\{content\.leadership\.name\}/);
-  assert.match(source, /\{content\.leadership\.role\}/);
-  assert.match(source, /\{content\.leadership\.description\}/);
-  assert.match(source, /content\.standards\.map\(\(standard,\s*index\)/);
+  assert.match(founder, /import Image from ["']next\/image["']/);
+  assert.match(founder, /src=["']\/mandela-portrait-sharp\.jpg["']/);
+  assert.match(founder, /\{leadership\.title\}/);
+  assert.match(founder, /\{leadership\.name\}/);
+  assert.match(founder, /\{leadership\.role\}/);
+  assert.match(founder, /\{leadership\.description\}/);
+  assert.match(source, /content\.standards\.map\(\(standard\)/);
 
   for (const path of [
     "components/company/ProcessPage.tsx",
@@ -444,6 +445,34 @@ test("renders one continuous, accountable delivery rail", () => {
   assert.match(rail, /stages\.map/);
   assert.match(rail, /gates\.find/);
   assert.match(page, /<DeliveryRail\s+stages=\{content\.stages\}\s+gates=\{content\.decisionGates\}\s*\/>/);
+});
+
+test("composes About around one connected partner and accountable leadership", () => {
+  const atlas = read("components/company/ConnectedPartnerAtlas.tsx");
+  const founder = read("components/company/FounderAccountability.tsx");
+  const page = read("components/company/AboutPage.tsx");
+
+  assert.equal((atlas.match(/<SystemAtlas\b/g) || []).length, 1);
+  for (const label of [
+    "Business strategy",
+    "Experience design",
+    "Engineering",
+    "AI",
+    "Automation",
+    "Integration",
+    "Deployment",
+    "Improvement",
+    "Cobrykz accountability",
+  ]) {
+    assert.match(atlas, new RegExp(label));
+  }
+
+  assert.match(founder, /src=["']\/mandela-portrait-sharp\.jpg["']/);
+  assert.match(founder, /alt=\{`\$\{leadership\.name\}, \$\{leadership\.role\}`\}/);
+  assert.doesNotMatch(founder, /SystemAtlas/);
+  assert.match(page, /<ConnectedPartnerAtlas\s*\/>/);
+  assert.match(page, /<FounderAccountability\s+leadership=\{content\.leadership\}\s*\/>/);
+  assert.doesNotMatch(page, /content\.standards\.map\(\(standard,\s*index\)/);
 });
 
 test("builds an honest noindex Projects index from published projects only", () => {
