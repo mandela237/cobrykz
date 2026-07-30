@@ -7,7 +7,10 @@ export default function SolutionsOverview() {
   return (
     <section aria-labelledby="solutions-heading" id="solutions">
       <div className="section-shell py-16 sm:py-20 lg:py-24">
-        <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
+        <div
+          data-home-composition="capability-index"
+          className="grid gap-12 lg:grid-cols-[0.68fr_1.32fr] lg:gap-24"
+        >
           <div>
             <SectionIntro
               id="solutions-heading"
@@ -24,44 +27,44 @@ export default function SolutionsOverview() {
               <span className="mt-3 block text-navy">Business outcome</span>
             </div>
           </div>
-          <ol className="border-t border-border lg:mt-1">
-          {solutions.map((solution, index) => {
-            const isWebExperience =
-              solution.slug === "websites-web-applications";
+          <ol className="capability-index border-t border-border lg:mt-1">
+            {solutions.map((solution, index) => {
+              const isWebExperience =
+                solution.slug === "websites-web-applications";
 
-            return (
-              <li
-                key={solution.slug}
-                className={`border-b border-border ${
-                  isWebExperience ? "bg-blue-tint/60" : ""
-                }`}
-              >
-                <Link
-                  href={solution.href}
-                  className="group grid min-h-24 items-center gap-3 px-3 py-6 sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)_auto] sm:px-4"
+              return (
+                <li
+                  key={solution.slug}
+                  className={`border-b border-border ${
+                    isWebExperience ? "bg-blue-tint/60" : ""
+                  }`}
                 >
-                  <span
-                    aria-hidden="true"
-                    className="text-[11px] font-bold text-blue"
+                  <Link
+                    href={solution.href}
+                    className="group grid min-h-24 items-center gap-3 px-2 py-7 sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)_auto] sm:px-4"
                   >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <h3 className="text-xl font-bold text-navy sm:text-2xl">
-                    {solution.name}
-                  </h3>
-                  <p className="text-[15px] leading-6 text-slate">
-                    {solution.outcome}
-                  </p>
-                  <ArrowRight
-                    size={20}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                    className="action-transition text-xl text-blue group-hover:text-navy"
-                  />
-                </Link>
-              </li>
-            );
-          })}
+                    <span
+                      aria-hidden="true"
+                      className="text-[11px] font-bold text-blue"
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="text-xl font-bold text-navy sm:text-2xl">
+                      {solution.name}
+                    </h3>
+                    <p className="text-[15px] leading-6 text-slate">
+                      {solution.outcome}
+                    </p>
+                    <ArrowRight
+                      size={20}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className="action-transition text-xl text-blue group-hover:text-navy"
+                    />
+                  </Link>
+                </li>
+              );
+            })}
           </ol>
         </div>
       </div>

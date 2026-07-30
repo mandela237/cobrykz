@@ -13,7 +13,8 @@ export default function AIPointOfView() {
           />
           <ul
             data-decision-artifact
-            className="grid overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2"
+            data-home-composition="decision-artifact"
+            className="home-decision-artifact grid overflow-hidden border border-border bg-border sm:grid-cols-2"
           >
             {aiPrinciples.map((principle, index) => (
               <li

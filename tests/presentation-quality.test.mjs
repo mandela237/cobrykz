@@ -799,6 +799,44 @@ test("uses responsive grids only for meaningful comparison", () => {
   assert.doesNotMatch(editorialSources, /\bshadow-(?:xl|2xl)\b/);
 });
 
+test("keeps the Architectural Editorial homepage frozen and differentiated", () => {
+  const compositions = {
+    "components/home/BusinessOutcomes.tsx": "terminal-states",
+    "components/home/SolutionsOverview.tsx": "capability-index",
+    "components/home/WhyCobrykz.tsx": "accountability",
+    "components/home/AIPointOfView.tsx": "decision-artifact",
+    "components/home/ProjectsEvidence.tsx": "evidence-frame",
+  };
+
+  for (const [path, composition] of Object.entries(compositions)) {
+    assert.match(
+      read(path),
+      new RegExp(`data-home-composition=["']${composition}["']`),
+      `${path} must retain its distinctive composition`,
+    );
+  }
+
+  const serverEditorialSources = [
+    "HomeHero.tsx",
+    "BusinessOutcomes.tsx",
+    "SolutionsOverview.tsx",
+    "WhyCobrykz.tsx",
+    "AIPointOfView.tsx",
+    "ProcessOverview.tsx",
+    "ProjectsEvidence.tsx",
+    "AuthorityBand.tsx",
+    "HomeFinalCTA.tsx",
+  ]
+    .map((name) => read(`components/home/${name}`))
+    .join("\n");
+
+  assert.doesNotMatch(serverEditorialSources, /["']use client["']/);
+  assert.doesNotMatch(
+    serverEditorialSources,
+    /\bshadow-(?:xl|2xl)\b|backdrop-blur|transition-all/,
+  );
+});
+
 test("keeps actions, focus, and reduced motion restrained", () => {
   const globals = read("app/globals.css");
   const sources = liveTsxSource();

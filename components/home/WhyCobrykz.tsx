@@ -14,13 +14,16 @@ export default function WhyCobrykz() {
           title="One accountable partner from decision to delivery."
           description="Strong systems come from keeping business context, technical judgment, and implementation responsibility connected."
         />
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-12">
+        <ul
+          data-home-composition="accountability"
+          className="home-accountability mt-14 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-12"
+        >
           {whyCobrykz.map((reason, index) => (
             <li
               key={reason.title}
               className={`p-6 ${
                 index === 0
-                  ? "bg-navy text-white sm:col-span-2 lg:col-span-4 lg:row-span-2 lg:p-9"
+                  ? "bg-navy text-white sm:col-span-2 lg:col-span-4 lg:row-span-2 lg:p-10"
                   : "bg-white sm:min-h-56 lg:col-span-4"
               }`}
             >

@@ -10,7 +10,10 @@ export default function ProjectsEvidence() {
             title="Evidence should be useful, specific, and verifiable."
             description="Cobrykz will share completed work only when the business context and results can be represented responsibly."
           />
-          <div className="relative border border-border bg-gray-light p-6 sm:p-9">
+          <div
+            data-home-composition="evidence-frame"
+            className="home-evidence-frame relative border border-border bg-gray-light p-7 sm:p-10"
+          >
             <span
               aria-hidden="true"
               className="absolute left-0 top-0 h-16 w-[2px] bg-blue"

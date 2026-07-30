@@ -36,8 +36,16 @@ export default function ChallengeRouter() {
   ];
 
   return (
-    <section aria-labelledby="challenge-router-title">
-      <h2 id="challenge-router-title">What is holding the work back?</h2>
+    <section
+      aria-labelledby="challenge-router-title"
+      className="home-challenge-router"
+    >
+      <h2
+        id="challenge-router-title"
+        className="max-w-3xl text-[2rem] font-extrabold leading-[1.08] text-navy sm:text-[2.5rem] lg:text-5xl"
+      >
+        What is holding the work back?
+      </h2>
       <div aria-label="Business challenges" className="grid gap-3 sm:grid-cols-2">
         {Object.values(challengeRoutes).map((challenge) => {
           const isSelected = challenge.solutionSlug === selectedSlug;
@@ -63,7 +71,10 @@ export default function ChallengeRouter() {
         })}
       </div>
 
-      <div aria-live="polite" className="mt-6 rounded-lg border border-border p-5 sm:p-7">
+      <div
+        aria-live="polite"
+        className="home-architectural-frame mt-7 border border-border p-5 sm:p-8"
+      >
         <p className="text-slate">{selectedChallenge.description}</p>
         <p className="mt-3 font-medium text-navy">
           A focused assessment confirms the right approach.

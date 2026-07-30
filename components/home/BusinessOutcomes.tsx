@@ -14,11 +14,14 @@ export default function BusinessOutcomes() {
           title="Technology should make the business stronger."
           description="The right system creates progress people can recognize in growth, day-to-day work, and important decisions."
         />
-        <ol className="mt-12 grid border-y border-border md:grid-cols-12">
+        <ol
+          data-home-composition="terminal-states"
+          className="home-terminal-states mt-14 grid border-y border-border md:grid-cols-12"
+        >
           {homeOutcomes.map((outcome, index) => (
             <li
               key={outcome.title}
-              className={`border-b border-border py-7 last:border-b-0 md:border-b-0 md:px-7 ${
+              className={`relative border-b border-border py-8 last:border-b-0 md:border-b-0 md:px-8 md:py-10 ${
                 index === 0
                   ? "md:col-span-5 md:border-r md:pl-0"
                   : index === 1

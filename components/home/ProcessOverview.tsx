@@ -31,7 +31,7 @@ export default function ProcessOverview() {
             Explore the full process
           </Link>
         </div>
-        <div className="mt-12 rounded-lg border border-border bg-white p-6 sm:p-8">
+        <div className="home-process-rail mt-14 border border-border bg-white p-6 sm:p-9">
           <HomeSystemThread
             ariaLabel="Cobrykz delivery process"
             items={threadItems}

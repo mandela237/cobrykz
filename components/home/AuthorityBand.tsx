@@ -5,7 +5,7 @@ export default function AuthorityBand() {
       id="authority"
       className="bg-navy text-white"
     >
-      <div className="section-shell grid gap-10 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20 lg:py-24">
+      <div className="section-shell grid gap-12 py-16 sm:py-20 lg:grid-cols-[1.18fr_0.82fr] lg:gap-24 lg:py-28">
         <div>
           <p className="text-[11px] font-bold uppercase text-blue-tint">
             Accountable leadership
@@ -25,7 +25,7 @@ export default function AuthorityBand() {
 
         <aside
           aria-labelledby="planned-insight-heading"
-          className="border-t border-white/20 pt-7 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
+          className="border-t border-white/20 pt-7 lg:mt-16 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0"
         >
           <p className="text-[11px] font-bold uppercase text-blue-tint">
             Planned insight
