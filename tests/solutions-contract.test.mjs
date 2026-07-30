@@ -321,3 +321,174 @@ test("uses shared calls to action, related solution links, and accessible FAQ di
   assert.match(faqs, /\{faq\.question\}/);
   assert.match(faqs, /\{faq\.answer\}/);
 });
+
+test("defines the Solutions hub route with unique static metadata", () => {
+  const page = read("app/solutions/page.tsx");
+  const expectedTitle = "Business Technology Solutions | Cobrykz";
+  const expectedDescription =
+    "Explore AI, automation, custom software, websites, digital business systems, and technology consulting shaped around real business challenges.";
+
+  assert.match(page, /import type \{ Metadata \} from ["']next["']/);
+  assert.match(
+    page,
+    /import SolutionsHub from ["']@\/components\/solutions\/SolutionsHub["']/,
+  );
+  assert.match(page, /export const metadata: Metadata = \{/);
+  assert.ok(page.includes(`title: "${expectedTitle}"`));
+  assert.ok(
+    page.includes(`description:\n    "${expectedDescription}"`),
+    "the hub must expose the exact approved static description",
+  );
+  assert.ok(
+    !solutions.some(({ metadata }) => metadata.title === expectedTitle),
+    "the hub title must be unique among solution routes",
+  );
+  assert.ok(
+    !solutions.some(
+      ({ metadata }) => metadata.description === expectedDescription,
+    ),
+    "the hub description must be unique among solution routes",
+  );
+  assert.match(
+    page,
+    /export default function SolutionsPage\(\) \{\s*return <SolutionsHub\s*\/>;\s*\}/,
+  );
+});
+
+test("renders the frozen Solutions hub narrative from shared content", () => {
+  const hub = read("components/solutions/SolutionsHub.tsx");
+  const matrix = read("components/solutions/SolutionSelectionMatrix.tsx");
+  const allSources = `${hub}\n${matrix}`;
+  const sectionIds = [
+    "solutions-hub-hero",
+    "solutions-hub-outcomes",
+    "solutions-hub-portfolio",
+    "solutions-hub-selection",
+    "solutions-hub-connected",
+    "solutions-hub-method",
+    "solutions-hub-why",
+    "solutions-hub-cta",
+  ];
+
+  assert.match(
+    hub,
+    /import \{ solutions \} from ["']@\/components\/content\/solutions["']/,
+  );
+  assert.match(
+    hub,
+    /import \{\s*homeOutcomes,\s*processStages,\s*whyCobrykz,\s*\} from ["']@\/components\/content\/home["']/s,
+  );
+  assert.match(
+    hub,
+    /import \{ primaryCta \} from ["']@\/components\/content\/site["']/,
+  );
+  assert.doesNotMatch(hub, /@\/components\/home\//);
+  assert.doesNotMatch(allSources, /["']use client["']/);
+  assert.equal(
+    (allSources.match(/<h1\b/g) || []).length,
+    1,
+    "the Solutions hub must render exactly one H1",
+  );
+
+  let previousSectionIndex = -1;
+  for (const sectionId of sectionIds) {
+    const sectionIndex = hub.indexOf(`id="${sectionId}"`);
+    assert.ok(sectionIndex > previousSectionIndex, `${sectionId} is in order`);
+    previousSectionIndex = sectionIndex;
+  }
+
+  assert.match(hub, /homeOutcomes\.map\(\(outcome/);
+  assert.match(hub, /solutions\.map\(\(solution,\s*index\)/);
+  assert.match(hub, /href=\{solution\.href\}/);
+  assert.match(hub, /\{solution\.name\}/);
+  assert.match(hub, /<SolutionSelectionMatrix\s*\/>/);
+  assert.match(
+    hub,
+    /title="Connected outcomes may combine multiple capabilities\."/,
+  );
+  assert.match(hub, /processStages\.slice\(0,\s*3\)\.map\(\(stage,\s*index\)/);
+  assert.match(hub, /whyCobrykz\.map\(\(reason/);
+  assert.match(
+    hub,
+    />\s*What could technology improve in your business\?\s*</,
+  );
+  assert.match(
+    hub,
+    /<PrimaryLink\s+href=\{primaryCta\.href\}[^>]*>\s*\{primaryCta\.label\}\s*<\/PrimaryLink>/s,
+  );
+
+  for (const sectionId of sectionIds) {
+    assert.match(
+      hub,
+      new RegExp(
+        `<section\\b[^>]*id="${sectionId}"[^>]*aria-labelledby="${sectionId}-heading"`,
+        "s",
+      ),
+      `${sectionId} must expose a labelled semantic section`,
+    );
+    assert.match(
+      hub,
+      new RegExp(`\\bid="${sectionId}-heading"`),
+      `${sectionId} must render the referenced heading id`,
+    );
+  }
+
+  assert.doesNotMatch(
+    allSources,
+    /(?:^|[\s"'`])(?:sm|md|lg|xl|2xl):hidden(?=$|[\s"'`])|(?:^|[\s"'`])hidden(?=$|[\s"'`])[^"\n]*\b(?:sm|md|lg|xl|2xl):(?:block|flex|grid|inline|inline-block|inline-flex)\b/,
+    "the hub must use one responsive content tree",
+  );
+  assert.doesNotMatch(
+    allSources,
+    /\btransition-all\b|\banimate-(?!none\b)|(?:hover|active|group-hover):(?:-?(?:scale|translate)|shadow|drop-shadow|brightness)-/,
+    "the hub must retain the reviewed motion contract",
+  );
+  assert.doesNotMatch(
+    allSources,
+    /(?:bg|text|border|ring|outline|decoration|fill|stroke|from|via|to)-\[(?:#|rgba?\(|hsla?\(|oklch\(|color:|var\()/,
+    "the hub must use the reviewed palette tokens",
+  );
+  assert.equal(
+    (allSources.match(/\bbg-(?:navy|charcoal|footer-bg)\b/g) || []).length,
+    1,
+    "the final CTA must be the hub's only dark band",
+  );
+});
+
+test("maps business conditions to direct solution links in a semantic matrix", () => {
+  const matrix = read("components/solutions/SolutionSelectionMatrix.tsx");
+  const expectedRows = [
+    ["Unclear AI opportunity", '"ai", "technology-consulting"'],
+    ["Repetitive work", '"business-automation"'],
+    ["Unsuitable generic tools", '"custom-software-development"'],
+    ["Disconnected operations", '"digital-business-systems"'],
+    ["Weak customer experience", '"websites-web-applications"'],
+    ["Unclear investment priorities", '"technology-consulting"'],
+  ];
+
+  assert.match(
+    matrix,
+    /import \{ solutionBySlug \} from ["']@\/components\/content\/solutions["']/,
+  );
+  assert.match(matrix, /<table\b/);
+  assert.match(matrix, /<caption\b/);
+  assert.match(matrix, /<thead\b/);
+  assert.match(matrix, /<tbody\b/);
+  assert.match(matrix, /<th\b[^>]*\bscope="row"/s);
+  assert.match(matrix, /selectionRows\.map\(\(row\)/);
+  assert.match(matrix, /row\.solutionSlugs\.map\(\(slug\)/);
+  assert.match(matrix, /const solution = solutionBySlug\[slug\]/);
+  assert.match(matrix, /<Link\s+href=\{solution\.href\}/);
+  assert.match(matrix, /\{solution\.name\}/);
+  assert.match(matrix, /\bmin-h-11\b/);
+
+  for (const [condition, solutionSlugs] of expectedRows) {
+    assert.match(
+      matrix,
+      new RegExp(
+        `condition: "${condition}",[\\s\\S]*?solutionSlugs: \\[${solutionSlugs}\\]`,
+      ),
+      `${condition} must map to the approved starting solution`,
+    );
+  }
+});
