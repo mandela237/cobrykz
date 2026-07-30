@@ -76,6 +76,33 @@ export default function SystemAtlas({
             {definition.description} {definition.readingDirection}
           </desc>
           <defs>
+            <linearGradient
+              id={`${id}-outcome-light`}
+              x1="0"
+              y1="0"
+              x2="1"
+              y2="1"
+            >
+              <stop offset="0%" stopColor="currentColor" stopOpacity="0.2" />
+              <stop offset="55%" stopColor="currentColor" stopOpacity="0.07" />
+              <stop offset="100%" stopColor="currentColor" stopOpacity="0.01" />
+            </linearGradient>
+            <filter
+              id={`${id}-plane-material`}
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="160%"
+              colorInterpolationFilters="sRGB"
+            >
+              <feDropShadow
+                dx="0"
+                dy="10"
+                stdDeviation="12"
+                floodColor="#081321"
+                floodOpacity="0.18"
+              />
+            </filter>
             <marker
               id={markerId}
               viewBox="0 0 10 10"
@@ -94,6 +121,7 @@ export default function SystemAtlas({
               <g
                 key={layer.id}
                 className="atlas-layer"
+                data-atlas-layer={layer.id}
                 data-atlas-depth={layer.depth}
               >
                 <rect
@@ -132,7 +160,10 @@ export default function SystemAtlas({
               const midY = (source.y + target.y) / 2;
 
               return (
-                <g key={connection.id}>
+                <g
+                  key={connection.id}
+                  data-atlas-connection={connection.id}
+                >
                   <path
                     d={`M ${source.x} ${source.y} C ${midX} ${source.y}, ${midX} ${target.y}, ${target.x} ${target.y}`}
                     markerEnd={`url(#${markerId})`}
@@ -157,6 +188,7 @@ export default function SystemAtlas({
               <g
                 key={node.id}
                 className="atlas-node"
+                data-atlas-node={node.id}
                 data-atlas-kind={node.kind}
                 transform={`translate(0 0)`}
               >

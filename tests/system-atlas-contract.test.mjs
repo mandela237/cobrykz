@@ -178,3 +178,30 @@ test("varies homepage composition without changing its approved content sources"
   assert.doesNotMatch(why, /lg:grid-cols-5/);
   assert.match(ai, /data-decision-artifact/);
 });
+
+test("gives the existing Atlas semantics precise material hooks", () => {
+  const atlas = read("components/atlas/SystemAtlas.tsx");
+  const cutaway = read("components/home/BusinessSystemCutaway.tsx");
+  const css = read("app/globals.css");
+
+  assert.match(atlas, /data-atlas-layer=\{layer\.id\}/);
+  assert.match(atlas, /data-atlas-node=\{node\.id\}/);
+  assert.match(atlas, /data-atlas-connection=\{connection\.id\}/);
+  assert.match(atlas, /id=\{`\$\{id\}-plane-material`\}/);
+  assert.match(atlas, /id=\{`\$\{id\}-outcome-light`\}/);
+  assert.match(cutaway, /id:\s*["']outcomes["']/);
+  assert.match(
+    css,
+    /\.business-system-cutaway \[data-atlas-layer=["']outcomes["']\]/,
+  );
+});
+
+test("refines the hero Atlas without adding information or runtime", () => {
+  const atlas = read("components/atlas/SystemAtlas.tsx");
+  const cutaway = read("components/home/BusinessSystemCutaway.tsx");
+
+  assert.doesNotMatch(atlas, /["']use client["']/);
+  assert.doesNotMatch(cutaway, /["']use client["']/);
+  assert.equal((cutaway.match(/id:\s*["'][^"']+["']/g) || []).length, 22);
+  assert.doesNotMatch(cutaway, /particle|canvas|webgl|three|video/i);
+});

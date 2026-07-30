@@ -145,7 +145,15 @@ button {
 }
 
 .business-system-cutaway {
+  --atlas-model-edge: rgb(255 255 255 / 0.16);
+  --atlas-model-joint: rgb(156 200 255 / 0.2);
   position: relative;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.045), transparent 42%),
+    rgb(8 19 33 / 0.72);
+  box-shadow:
+    0 32px 90px rgb(0 0 0 / 0.28),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
 
 .business-system-cutaway::before {
@@ -165,6 +173,53 @@ button {
 .business-system-cutaway .system-atlas__viewport {
   background:
     linear-gradient(90deg, transparent, rgba(31, 94, 255, 0.055), transparent);
+}
+
+.business-system-cutaway .atlas-layer__plane {
+  filter: url("#business-system-cutaway-plane-material");
+  stroke: var(--atlas-model-edge);
+}
+
+.business-system-cutaway [data-atlas-layer="context"] .atlas-layer__plane {
+  fill-opacity: 0.48;
+}
+
+.business-system-cutaway [data-atlas-layer="assessment"] .atlas-layer__plane {
+  fill-opacity: 0.62;
+}
+
+.business-system-cutaway [data-atlas-layer="delivery"] .atlas-layer__plane {
+  fill-opacity: 0.76;
+}
+
+.business-system-cutaway [data-atlas-layer="outcomes"] {
+  color: #9cc8ff;
+}
+
+.business-system-cutaway [data-atlas-layer="outcomes"] .atlas-layer__plane {
+  fill: url("#business-system-cutaway-outcome-light");
+  fill-opacity: 1;
+  stroke: rgb(156 200 255 / 0.46);
+  stroke-width: 1.35;
+}
+
+.business-system-cutaway .atlas-path {
+  stroke-width: 1.15;
+  opacity: 0.68;
+}
+
+.business-system-cutaway .atlas-path[data-atlas-state="active"] {
+  stroke-width: 1.7;
+  opacity: 1;
+}
+
+.business-system-cutaway .atlas-node__shape {
+  stroke-width: 1.25;
+}
+
+.business-system-cutaway [data-atlas-kind="outcome"] .atlas-node__shape {
+  fill: rgb(156 200 255 / 0.14);
+  stroke: #9cc8ff;
 }
 
 @media (max-width: 639px) {
