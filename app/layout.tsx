@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Playfair_Display } from "next/font/google";
+import SiteFooter from "@/components/layout/SiteFooter";
+import SiteHeader from "@/components/layout/SiteHeader";
 import "./globals.css";
 
 const geist = Geist({
@@ -16,36 +18,25 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "COBRYKZ — Founder-Led Websites for Local Businesses",
+  metadataBase: new URL("https://cobrykz.com"),
+  title: "Cobrykz | AI, Automation, Software & Digital Systems",
   description:
-    "COBRYKZ designs and builds high-trust websites and practical digital systems for local businesses. Work directly with founder Mandela Atud.",
-  keywords: [
-    "premium website design",
-    "web development",
-    "business website",
-    "digital solutions",
-    "COBRYKZ",
-    "Mandela Atud",
-  ],
+    "Cobrykz helps businesses grow and operate more effectively through AI, automation, custom software, websites, and connected digital systems.",
   authors: [{ name: "Mandela Atud" }],
-  creator: "COBRYKZ",
+  creator: "Cobrykz",
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "COBRYKZ — Founder-Led Websites for Local Businesses",
+    siteName: "Cobrykz",
+    title: "Cobrykz | AI, Automation, Software & Digital Systems",
     description:
-      "High-trust websites and practical digital systems, designed and built directly by Mandela Atud.",
-    siteName: "COBRYKZ",
+      "Better systems for stronger businesses—from strategy through ongoing improvement.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "COBRYKZ — Founder-Led Websites for Local Businesses",
+    title: "Cobrykz | AI, Automation, Software & Digital Systems",
     description:
-      "High-trust websites and practical digital systems for local businesses.",
-  },
-  robots: {
-    index: true,
-    follow: true,
+      "Better systems for stronger businesses—from strategy through ongoing improvement.",
   },
 };
 
@@ -56,7 +47,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geist.variable} ${playfair.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="flex min-h-screen flex-col antialiased">
+        <SiteHeader />
+        <main className="site-shell-main">{children}</main>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

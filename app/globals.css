@@ -43,6 +43,11 @@ body {
     sans-serif;
 }
 
+.site-shell-main {
+  min-width: 0;
+  flex: 1;
+}
+
 a,
 button,
 input,

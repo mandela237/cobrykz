@@ -37,3 +37,39 @@ test("uses Cobrykz voice for direct accountability", () => {
   assert.doesNotMatch(source, /Direct founder accountability/);
   assert.doesNotMatch(source, /Mandela Atud provides direct accountability/);
 });
+
+test("wraps every page in the shared Cobrykz site shell", () => {
+  const source = read("app/layout.tsx");
+
+  assert.match(
+    source,
+    /Cobrykz \| AI, Automation, Software & Digital Systems/,
+  );
+  assert.match(
+    source,
+    /import SiteHeader from ["']@\/components\/layout\/SiteHeader["']/,
+  );
+  assert.match(
+    source,
+    /import SiteFooter from ["']@\/components\/layout\/SiteFooter["']/,
+  );
+  assert.match(source, /<SiteHeader\s*\/>/);
+  assert.match(source, /<SiteFooter\s*\/>/);
+  assert.doesNotMatch(source, /Founder-Led Websites/);
+});
+
+test("provides a keyboard-operable Solutions disclosure from shared content", () => {
+  const source = read("components/layout/SolutionsMenu.tsx");
+
+  assert.match(
+    source,
+    /import \{ solutions \} from ["']@\/components\/content\/solutions["']/,
+  );
+  assert.match(source, /solutions\.map\(\(solution\) =>/);
+  assert.match(source, /href=\{solution\.href\}/);
+  assert.match(source, /\{solution\.name\}/);
+  assert.match(source, /aria-expanded=\{isOpen\}/);
+  assert.match(source, /aria-controls=\{menuId\}/);
+  assert.match(source, /event\.key === ["']Escape["']/);
+  assert.match(source, /onClick=\{closeMenu\}/);
+});
