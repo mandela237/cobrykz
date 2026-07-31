@@ -2172,6 +2172,318 @@ button {
     line-height: 1.65;
   }
 
+  /* Phone proportion pass: retain the scenes while reducing their footprint. */
+  .measured-threshold__inner {
+    padding-block: 3.25rem 0;
+  }
+
+  .measured-threshold__title {
+    max-width: 9.5ch;
+    margin-top: 1rem;
+    font-size: 2.75rem;
+    line-height: 0.96;
+  }
+
+  .measured-threshold__lead {
+    max-width: 18rem;
+    margin: 1.5rem 0 0 1.5rem;
+    padding-left: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .measured-threshold__actions {
+    margin: 1.5rem 0 0 1.5rem;
+  }
+
+  .measured-threshold__portrait {
+    width: calc(100% - 3.5rem);
+    aspect-ratio: 16 / 9;
+    margin-top: 2.5rem;
+  }
+
+  .measured-system__inner {
+    padding-block: 3.5rem 4rem;
+  }
+
+  .measured-system__heading {
+    gap: 0.75rem;
+    max-width: 18rem;
+    margin-left: 1.5rem;
+  }
+
+  .measured-system__artifact {
+    margin-top: 2rem;
+    padding-top: 0.75rem;
+  }
+
+  .measured-system__artifact .mobile-atlas__heading {
+    gap: 0.45rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .measured-system__artifact .mobile-atlas__heading h3 {
+    font-size: 1.05rem;
+  }
+
+  .measured-system__artifact .mobile-atlas__heading p,
+  .measured-system__artifact .mobile-atlas__detail {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .measured-system__artifact .mobile-atlas__map {
+    padding: 0.5rem;
+  }
+
+  .measured-system__artifact .mobile-atlas__layer {
+    margin-bottom: 0.4rem;
+    padding: 0.45rem;
+  }
+
+  .measured-system__artifact .mobile-atlas__layer-meaning {
+    margin-bottom: 0.4rem;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+  }
+
+  .measured-system__artifact .mobile-atlas__control {
+    min-height: 2.75rem;
+    padding: 0.45rem;
+  }
+
+  .measured-system__artifact .mobile-atlas__control strong {
+    font-size: 0.8125rem;
+  }
+
+  .measured-system__artifact .mobile-atlas__caption,
+  .measured-system__artifact .mobile-atlas__legend summary {
+    padding-inline: 1rem;
+    font-size: 0.6875rem;
+  }
+
+  .measured-scene-shell {
+    padding-block: 4.5rem;
+  }
+
+  .measured-scene-heading {
+    gap: 0.85rem;
+  }
+
+  .measured-scene-heading--offset {
+    width: calc(100% - 1.5rem);
+    margin-left: 1.5rem;
+  }
+
+  .measured-scene-heading h2 {
+    max-width: 13ch;
+    font-size: 2rem;
+    line-height: 1.02;
+  }
+
+  .measured-scene-heading > p:last-child {
+    max-width: 19rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .measured-outcomes__list {
+    margin: 2.75rem 0.75rem 0 0;
+  }
+
+  .measured-outcomes__list li {
+    gap: 0.75rem;
+    padding-block: 1.15rem;
+  }
+
+  .measured-outcomes__list li:nth-child(2) {
+    margin-left: 1.25rem;
+  }
+
+  .measured-outcomes__list h3 {
+    font-size: 1.05rem;
+  }
+
+  .measured-outcomes__list p {
+    margin-top: 0.45rem;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+  }
+
+  .measured-capabilities__index {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 2.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .measured-capabilities__index > li,
+  .measured-capabilities__index > li:nth-child(odd) {
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    gap: 0.45rem;
+    min-width: 0;
+    padding: 1rem 0.65rem;
+    border-right: 1px solid var(--color-border);
+  }
+
+  .measured-capabilities__index > li:nth-child(even) {
+    border-right: 0;
+  }
+
+  .measured-capabilities__index h3 {
+    font-size: 0.875rem;
+    line-height: 1.25;
+  }
+
+  .measured-capabilities__index p {
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .measured-capabilities__index .measured-text-link {
+    min-height: 2.25rem;
+    margin-top: 0.25rem;
+    font-size: 0.6875rem;
+  }
+
+  .measured-trust__principles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 3rem 0 0;
+  }
+
+  .measured-trust__principles li,
+  .measured-trust__principles li:nth-child(even) {
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    gap: 0.45rem;
+    min-width: 0;
+    margin: 0;
+    padding: 1rem 0.65rem;
+    border-right: 1px solid rgb(255 255 255 / 0.15);
+  }
+
+  .measured-trust__principles li:nth-child(even) {
+    border-right: 0;
+  }
+
+  .measured-trust__principles li:last-child {
+    grid-column: 1 / -1;
+    max-width: 72%;
+    margin-left: auto;
+  }
+
+  .measured-trust__principles h3 {
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+
+  .measured-trust__principles p {
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .measured-decision__sheet {
+    margin: 2.75rem 0.75rem 0 1rem;
+    padding: 1.1rem;
+    box-shadow: 0.5rem 0.5rem 0 var(--mobile-mineral);
+  }
+
+  .measured-decision__sheet ol {
+    margin-top: 1rem;
+  }
+
+  .measured-decision__sheet li {
+    padding-block: 1rem;
+  }
+
+  .measured-decision__sheet h3 {
+    font-size: 0.875rem;
+  }
+
+  .measured-decision__sheet li p {
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .measured-challenge .mobile-home-challenge-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 2.75rem;
+  }
+
+  .measured-challenge .mobile-home-challenge-control {
+    min-height: 3.25rem;
+    padding: 0.6rem;
+    border-right: 1px solid var(--color-border);
+    font-size: 0.75rem;
+  }
+
+  .measured-challenge .mobile-home-recommendation {
+    margin: 1.75rem 0 0 1rem;
+    padding: 1rem;
+    box-shadow: 0.5rem 0.5rem 0 var(--mobile-mineral);
+  }
+
+  .measured-challenge .mobile-home-recommendation h3 {
+    margin-top: 0.65rem;
+    font-size: 1.1rem;
+  }
+
+  .measured-challenge .mobile-home-challenge-thread {
+    margin-top: 0.75rem;
+  }
+
+  .measured-challenge .mobile-home-challenge-thread li {
+    min-height: 3.1rem;
+  }
+
+  .measured-process__sequence {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 2.75rem 0 1.25rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .measured-process__sequence::before {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+  }
+
+  .measured-process__sequence li {
+    display: block;
+    min-width: 0;
+    min-height: 0;
+    padding: 1rem 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .measured-process__sequence li:nth-child(even) > div {
+    margin-left: 0;
+  }
+
+  .measured-process__sequence span {
+    width: 1.65rem;
+    height: 1.65rem;
+  }
+
+  .measured-process__sequence h3 {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .measured-process__sequence p {
+    margin-top: 0.4rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .mobile-home-closing #projects .section-shell,
+  .mobile-home-closing #authority .section-shell,
+  .mobile-home-closing #contact .section-shell {
+    padding-block: 4.5rem;
+  }
+
   [data-mobile-solutions-hub] {
     min-width: 0;
     background: white;

@@ -69,3 +69,36 @@ test("gives the implemented Homepage varied editorial pacing without changing co
     "the art-direction layer must not fork approved Homepage copy",
   );
 });
+
+test("sizes the Measured Humanism composition for a compact 390px experience", () => {
+  const css = read("app/globals.css");
+
+  assert.match(
+    css,
+    /\.measured-threshold__title\s*\{[^}]*font-size:\s*2\.75rem[^}]*line-height:\s*0\.96/s,
+  );
+  assert.match(
+    css,
+    /\.measured-threshold__portrait\s*\{[^}]*aspect-ratio:\s*16\s*\/\s*9/s,
+  );
+  assert.match(
+    css,
+    /\.measured-scene-shell\s*\{[^}]*padding-block:\s*4\.5rem/s,
+  );
+  assert.match(
+    css,
+    /\.measured-scene-heading h2\s*\{[^}]*font-size:\s*2rem[^}]*line-height:\s*1\.02/s,
+  );
+  assert.match(
+    css,
+    /\.measured-capabilities__index\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/s,
+  );
+  assert.match(
+    css,
+    /\.measured-trust__principles\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/s,
+  );
+  assert.match(
+    css,
+    /\.measured-process__sequence\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/s,
+  );
+});
