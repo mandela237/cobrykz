@@ -6,21 +6,25 @@ import test from "node:test";
 const root = process.cwd();
 const read = (path) => readFileSync(join(root, path), "utf8");
 
-test("composes the mobile Homepage recognition frame from system and human proof", () => {
+test("builds the Homepage as Measured Humanism editorial scenes", () => {
   const mobile = read("components/home/MobileHomePage.tsx");
 
   assert.match(mobile, /import Image from ["']next\/image["']/);
-  assert.match(mobile, /data-mobile-recognition-frame="homepage"/);
-  assert.match(mobile, /data-mobile-human-proof/);
+  for (const scene of [
+    "threshold",
+    "system",
+    "outcomes",
+    "capabilities",
+    "trust",
+    "decision",
+    "challenge",
+    "process",
+  ]) {
+    assert.match(mobile, new RegExp(`data-mobile-scene="${scene}"`));
+  }
   assert.match(mobile, /src="\/mandela-portrait-sharp\.jpg"/);
-  assert.match(mobile, /className="mobile-home-human-frame__image"/);
-  assert.match(mobile, /className="mobile-home-atlas-plane"/);
-
-  assert.ok(
-    mobile.indexOf("data-mobile-human-proof") <
-      mobile.indexOf('className="mobile-home-atlas-plane"'),
-    "human accountability should soften the opening before the technical cutaway",
-  );
+  assert.doesNotMatch(mobile, /<MobileChapter\b/);
+  assert.doesNotMatch(mobile, /<MobileDisclosureGroup\b/);
 });
 
 test("uses material restraint instead of decorative mobile Homepage effects", () => {
@@ -31,19 +35,19 @@ test("uses material restraint instead of decorative mobile Homepage effects", ()
   assert.match(css, /--mobile-graphite:\s*#[0-9a-f]{6}/i);
   assert.match(
     css,
-    /\.mobile-home-human-frame\s*\{[^}]*width:\s*calc\(100%\s*-\s*3\.5rem\)[^}]*aspect-ratio:\s*4\s*\/\s*5[^}]*overflow:\s*hidden/s,
+    /\.measured-threshold\s*\{[^}]*background:\s*var\(--color-gray-light\)/s,
   );
   assert.match(
     css,
-    /\.mobile-home-human-frame__image\s*\{[^}]*object-fit:\s*cover[^}]*filter:\s*saturate\(0\.8/s,
+    /\.measured-threshold__portrait\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5[^}]*overflow:\s*hidden/s,
   );
   assert.match(
     css,
-    /\.mobile-home-atlas-plane::before\s*\{[^}]*background:\s*var\(--focus-ring-dark\)/s,
+    /\.measured-system\s*\{[^}]*background:\s*var\(--color-footer-bg\)/s,
   );
   assert.doesNotMatch(
     css,
-    /\.mobile-home-atlas-plane::before\s*\{[^}]*filter:\s*blur/s,
+    /\.measured-(?:threshold|system|outcomes|capabilities|trust|decision|process)[^{]*\{[^}]*filter:\s*blur/s,
   );
 });
 
@@ -51,11 +55,11 @@ test("gives the implemented Homepage varied editorial pacing without changing co
   const css = read("app/globals.css");
   const mobile = read("components/home/MobileHomePage.tsx");
 
-  assert.match(css, /#outcomes\.mobile-chapter\s*\{/);
-  assert.match(css, /#solutions\.mobile-chapter\s*\{/);
-  assert.match(css, /#why-cobrykz\.mobile-chapter\s*\{/);
-  assert.match(css, /#ai-point-of-view\.mobile-chapter\s*\{/);
-  assert.match(css, /#process\.mobile-chapter\s*\{/);
+  assert.match(css, /\.measured-outcomes\s*\{/);
+  assert.match(css, /\.measured-capabilities\s*\{/);
+  assert.match(css, /\.measured-trust\s*\{/);
+  assert.match(css, /\.measured-decision\s*\{/);
+  assert.match(css, /\.measured-process\s*\{/);
   assert.match(css, /\.mobile-home-closing #authority\s*\{/);
   assert.match(css, /\.mobile-home-closing #contact\s*\{/);
 

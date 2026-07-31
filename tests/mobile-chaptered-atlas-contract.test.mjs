@@ -172,23 +172,13 @@ test("groups the mobile Atlas into definition-driven architectural planes", () =
   );
 });
 
-test("brings the signature Atlas into the compact first mobile viewport", () => {
+test("separates the daylight threshold from the concentrated Atlas artifact", () => {
   const css = read("app/globals.css");
 
-  assert.match(
-    css,
-    /#home-opening\s+\.mobile-chapter__inner\s*\{[^}]*padding-block:\s*1\.25rem 2rem/s,
-  );
-  assert.match(
-    css,
-    /\.mobile-home-hero\s*\{[^}]*gap:\s*1rem;[^}]*padding-top:\s*0\.75rem/s,
-  );
-  assert.match(
-    css,
-    /\.mobile-home-atlas-plane\s*\{[^}]*margin-top:\s*1\.5rem;[^}]*padding-top:\s*1rem/s,
-  );
-  assert.match(css, /\.mobile-home-hero h1\s*\{[^}]*font-size:\s*2\.625rem/s);
-  assert.match(css, /\.mobile-home-lead\s*\{[^}]*font-size:\s*1\.0625rem/s);
+  assert.match(css, /\.measured-threshold\s*\{/);
+  assert.match(css, /\.measured-system\s*\{/);
+  assert.match(css, /\.measured-threshold__title\s*\{/);
+  assert.match(css, /\.measured-system__artifact\s*\{/);
 });
 
 test("represents every Atlas connection without first-match loss", () => {
@@ -250,13 +240,14 @@ test("builds the mobile Homepage from the frozen content source", () => {
 test("keeps the approved Homepage chapter order", () => {
   const mobile = read("components/home/MobileHomePage.tsx");
   const sequence = [
-    'eyebrow="Opening"',
-    'eyebrow="Business outcomes"',
-    'eyebrow="Solutions"',
-    'eyebrow="Why Cobrykz"',
-    'eyebrow="AI point of view"',
-    'eyebrow="Challenge router"',
-    'eyebrow="Process"',
+    'data-mobile-scene="threshold"',
+    'data-mobile-scene="system"',
+    'data-mobile-scene="outcomes"',
+    'data-mobile-scene="capabilities"',
+    'data-mobile-scene="trust"',
+    'data-mobile-scene="decision"',
+    'data-mobile-scene="challenge"',
+    'data-mobile-scene="process"',
     "{closing}",
   ];
 
@@ -268,18 +259,18 @@ test("keeps the approved Homepage chapter order", () => {
   }
 });
 
-test("uses disclosure and selection patterns for dense Homepage chapters", () => {
+test("uses visible editorial scenes and limits interaction to purposeful islands", () => {
   const mobile = read("components/home/MobileHomePage.tsx");
   const atlas = read("components/home/MobileHomeAtlas.tsx");
   const challenge = read("components/home/MobileChallengeRouter.tsx");
   const desktopAtlas = read("components/home/BusinessSystemCutaway.tsx");
 
-  assert.ok(
-    (mobile.match(/<MobileDisclosureGroup/g) || []).length >= 5,
-    "outcomes, capabilities, accountability, AI, and process require disclosure",
-  );
-  assert.match(mobile, /defaultOpenId="grow-more-effectively"/);
-  assert.match(mobile, /ariaLabel="Business outcomes"/);
+  assert.doesNotMatch(mobile, /<MobileDisclosureGroup/);
+  assert.match(mobile, /homeOutcomes\.map/);
+  assert.match(mobile, /solutions\.map/);
+  assert.match(mobile, /whyCobrykz\.map/);
+  assert.match(mobile, /aiPrinciples\.map/);
+  assert.match(mobile, /processStages\.map/);
   assert.match(challenge, /Object\.values\(challengeRoutes\)\.map/);
   assert.match(challenge, /aria-pressed=\{isSelected\}/);
   assert.match(challenge, /aria-live="polite"/);
@@ -414,26 +405,14 @@ test("keeps selected Atlas explanations readable on mobile", () => {
   );
 });
 
-test("differentiates the five dense mobile chapter compositions", () => {
+test("differentiates the Homepage editorial scene compositions", () => {
   const css = read("app/globals.css");
 
-  assert.match(
-    css,
-    /\.mobile-home-outcome-plane\s+\.mobile-disclosure-group\s*>\s*div:first-child\s*\{/,
-  );
-  assert.match(
-    css,
-    /\.mobile-home-ledger\s+\.mobile-disclosure-group\s*>\s*div\s*\{/,
-  );
-  assert.match(
-    css,
-    /\.mobile-home-trust-grid\s+\.mobile-disclosure-group\s*>\s*div:nth-child\(even\)\s*\{/,
-  );
-  assert.match(
-    css,
-    /\.mobile-home-ai-artifact\s+\.mobile-disclosure-group\s*\{/,
-  );
-  assert.match(css, /\.mobile-home-process-rail::before\s*\{/);
+  assert.match(css, /\.measured-outcomes__list\s*\{/);
+  assert.match(css, /\.measured-capabilities__index\s*\{/);
+  assert.match(css, /\.measured-trust__principles\s*\{/);
+  assert.match(css, /\.measured-decision__sheet\s*\{/);
+  assert.match(css, /\.measured-process__sequence::before\s*\{/);
 });
 
 test("compacts the mobile footer into a complete two-column sitemap", () => {

@@ -1714,6 +1714,464 @@ button {
     padding-block: 7rem;
   }
 
+  /* Measured Humanism Homepage — explicit editorial scenes, not chapter UI. */
+  [data-mobile-art-direction="measured-humanism"] {
+    color: var(--color-navy);
+    background: white;
+  }
+
+  .measured-kicker,
+  .measured-scene-label {
+    color: var(--color-blue);
+    font-size: 0.625rem;
+    font-weight: 750;
+    letter-spacing: 0.15em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .measured-threshold {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-gray-light);
+  }
+
+  .measured-threshold::after {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 0;
+    width: 1px;
+    height: 7rem;
+    content: "";
+    background: var(--color-blue);
+  }
+
+  .measured-threshold__inner {
+    position: relative;
+    padding-block: 4.75rem 0;
+  }
+
+  .measured-threshold__title {
+    max-width: 8.4ch;
+    margin-top: 1.5rem;
+    color: var(--color-navy);
+    font-size: 3.5rem;
+    font-weight: 760;
+    letter-spacing: -0.065em;
+    line-height: 0.91;
+    text-wrap: balance;
+  }
+
+  .measured-threshold__lead {
+    max-width: 18.75rem;
+    margin: 2.25rem 0 0 2.5rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--color-blue);
+    color: var(--color-slate);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  .measured-threshold__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    align-items: center;
+    margin: 2rem 0 0 2.5rem;
+  }
+
+  .measured-text-link {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    color: var(--color-blue);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: rgb(31 94 255 / 0.28);
+    text-underline-offset: 0.25rem;
+  }
+
+  .measured-threshold__portrait {
+    position: relative;
+    width: calc(100% - 3rem);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    margin: 4.5rem 0 0 auto;
+    background: var(--mobile-graphite);
+  }
+
+  .measured-threshold__portrait::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: linear-gradient(
+      180deg,
+      transparent 68%,
+      rgb(11 23 40 / 0.2)
+    );
+    pointer-events: none;
+  }
+
+  .measured-threshold__portrait-image {
+    object-fit: cover;
+    object-position: 50% 16%;
+    filter: saturate(0.78) contrast(1.03);
+  }
+
+  .measured-system {
+    color: white;
+    background: var(--color-footer-bg);
+  }
+
+  .measured-system__inner {
+    padding-block: 5rem 6rem;
+  }
+
+  .measured-system__heading {
+    display: grid;
+    gap: 1rem;
+    max-width: 17rem;
+    margin-left: 2.5rem;
+  }
+
+  .measured-system__heading p:last-child {
+    color: rgb(255 255 255 / 0.66);
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  .measured-system__artifact {
+    margin-top: 3rem;
+    border-top: 1px solid rgb(156 200 255 / 0.32);
+    padding-top: 1.25rem;
+  }
+
+  .measured-system__artifact .mobile-atlas {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .measured-system__artifact .mobile-atlas__map {
+    background: var(--color-gray-light);
+  }
+
+  .measured-scene-shell {
+    padding-block: 6.5rem;
+  }
+
+  .measured-scene-heading {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .measured-scene-heading--offset {
+    width: calc(100% - 2.5rem);
+    margin-left: 2.5rem;
+  }
+
+  .measured-scene-heading h2 {
+    max-width: 11ch;
+    color: var(--color-navy);
+    font-size: 2.75rem;
+    font-weight: 740;
+    letter-spacing: -0.055em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .measured-scene-heading > p:last-child {
+    max-width: 18.5rem;
+    color: var(--color-slate);
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+
+  .measured-outcomes {
+    background: var(--mobile-paper);
+  }
+
+  .measured-outcomes__list {
+    display: grid;
+    gap: 0;
+    margin: 4.5rem 1.75rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--mobile-graphite);
+    list-style: none;
+  }
+
+  .measured-outcomes__list li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.75rem 2rem;
+    border-bottom: 1px solid var(--mobile-mineral);
+  }
+
+  .measured-outcomes__list li:nth-child(2) {
+    margin-left: 2rem;
+  }
+
+  .measured-outcomes__list span,
+  .measured-capabilities__index > li > span,
+  .measured-trust__principles > li > span,
+  .measured-decision__sheet li > span,
+  .measured-process__sequence > li > span {
+    color: var(--color-blue);
+    font-size: 0.625rem;
+    font-weight: 750;
+    letter-spacing: 0.1em;
+  }
+
+  .measured-outcomes__list h3 {
+    color: var(--color-navy);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  .measured-outcomes__list p {
+    margin-top: 0.75rem;
+    color: var(--color-slate);
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  .measured-capabilities {
+    background: white;
+  }
+
+  .measured-capabilities__index {
+    margin: 4.5rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--color-navy);
+    list-style: none;
+  }
+
+  .measured-capabilities__index > li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .measured-capabilities__index > li:nth-child(odd) {
+    padding-left: 1.5rem;
+  }
+
+  .measured-capabilities__index h3 {
+    max-width: 14rem;
+    color: var(--color-navy);
+    font-size: 1.15rem;
+    font-weight: 720;
+    line-height: 1.25;
+  }
+
+  .measured-capabilities__index p {
+    max-width: 17rem;
+    margin-top: 0.65rem;
+    color: var(--color-slate);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+
+  .measured-capabilities__index .measured-text-link {
+    margin-top: 0.5rem;
+  }
+
+  .measured-trust {
+    color: white;
+    background: var(--color-footer-bg);
+  }
+
+  .measured-scene-heading--dark h2 {
+    color: white;
+  }
+
+  .measured-scene-heading--dark > p:last-child {
+    color: rgb(255 255 255 / 0.66);
+  }
+
+  .measured-trust__principles {
+    display: grid;
+    gap: 0;
+    margin: 5rem 0 0 1.75rem;
+    padding: 0;
+    border-top: 1px solid rgb(255 255 255 / 0.24);
+    list-style: none;
+  }
+
+  .measured-trust__principles li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.15);
+  }
+
+  .measured-trust__principles li:nth-child(even) {
+    margin-left: 1.5rem;
+  }
+
+  .measured-trust__principles span {
+    color: var(--focus-ring-dark);
+  }
+
+  .measured-trust__principles h3 {
+    color: white;
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+
+  .measured-trust__principles p {
+    margin-top: 0.65rem;
+    color: rgb(255 255 255 / 0.62);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+
+  .measured-decision {
+    background: var(--mobile-paper);
+  }
+
+  .measured-decision__sheet {
+    position: relative;
+    margin: 5rem 0.75rem 0 1.75rem;
+    padding: 1.5rem;
+    border: 1px solid var(--mobile-mineral);
+    background: #faf9f6;
+    box-shadow: 0.75rem 0.75rem 0 var(--mobile-mineral);
+  }
+
+  .measured-decision__sheet ol {
+    margin: 1.5rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--mobile-graphite);
+    list-style: none;
+  }
+
+  .measured-decision__sheet li {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--mobile-mineral);
+  }
+
+  .measured-decision__sheet h3 {
+    color: var(--color-navy);
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .measured-decision__sheet li p {
+    margin-top: 0.5rem;
+    color: var(--color-slate);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+
+  .measured-challenge {
+    background: var(--color-gray-light);
+  }
+
+  .measured-challenge .mobile-home-challenge-list {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-top: 4rem;
+    border-top: 1px solid var(--color-navy);
+  }
+
+  .measured-challenge .mobile-home-challenge-control {
+    min-height: 3.75rem;
+    padding-inline: 0;
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .measured-challenge .mobile-home-challenge-control[aria-pressed="true"] {
+    padding-inline: 1rem;
+    border-bottom-color: var(--color-navy);
+    color: white;
+    background: var(--color-navy);
+    box-shadow: none;
+  }
+
+  .measured-challenge .mobile-home-recommendation {
+    margin: 2.5rem 0 0 1.75rem;
+    border-color: var(--mobile-mineral);
+    background: white;
+    box-shadow: 0.75rem 0.75rem 0 var(--mobile-mineral);
+  }
+
+  .measured-process {
+    background: white;
+  }
+
+  .measured-process__sequence {
+    position: relative;
+    display: grid;
+    gap: 0;
+    margin: 5rem 0 2rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .measured-process__sequence::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 1rem;
+    width: 1px;
+    content: "";
+    background: var(--color-blue);
+    opacity: 0.38;
+  }
+
+  .measured-process__sequence li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 1rem;
+    min-height: 7.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .measured-process__sequence li:nth-child(even) > div {
+    margin-left: 1.5rem;
+  }
+
+  .measured-process__sequence span {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid var(--color-blue);
+    border-radius: 999px;
+    background: white;
+  }
+
+  .measured-process__sequence h3 {
+    color: var(--color-navy);
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+
+  .measured-process__sequence p {
+    max-width: 16rem;
+    margin-top: 0.65rem;
+    color: var(--color-slate);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+  }
+
   [data-mobile-solutions-hub] {
     min-width: 0;
     background: white;

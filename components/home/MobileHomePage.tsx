@@ -18,12 +18,7 @@ import { solutions } from "@/components/content/solutions";
 import { businessSystemCutaway } from "@/components/home/BusinessSystemCutaway";
 import MobileChallengeRouter from "@/components/home/MobileChallengeRouter";
 import MobileHomeAtlas from "@/components/home/MobileHomeAtlas";
-import MobileChapter from "@/components/mobile/MobileChapter";
-import MobileDisclosureGroup from "@/components/mobile/MobileDisclosureGroup";
 import PrimaryLink from "@/components/ui/PrimaryLink";
-
-const itemId = (value: string) =>
-  value.toLowerCase().replaceAll(" ", "-").replaceAll("&", "and");
 
 type MobileHomePageProps = {
   closing: ReactNode;
@@ -31,44 +26,54 @@ type MobileHomePageProps = {
 
 export default function MobileHomePage({ closing }: MobileHomePageProps) {
   return (
-    <div data-mobile-homepage>
-      <MobileChapter
+    <div data-mobile-homepage data-mobile-art-direction="measured-humanism">
+      <section
         id="home-opening"
-        index={1}
-        eyebrow="Opening"
-        tone="dark"
+        aria-labelledby="home-hero-heading"
+        className="measured-threshold"
+        data-mobile-scene="threshold"
       >
-        <div data-mobile-recognition-frame="homepage">
-          <div className="mobile-home-hero">
-            <p className="mobile-home-kicker">{homePageCopy.hero.eyebrow}</p>
-            <h1 id="home-hero-heading">{homeMessage.headline}</h1>
-            <p className="mobile-home-lead">{homeMessage.description}</p>
-            <div className="mobile-home-actions">
-              <PrimaryLink href={primaryCta.href}>{primaryCta.label}</PrimaryLink>
-              <Link
-                href={solutionsCta.href}
-                className="mobile-home-secondary-action action-transition"
-              >
-                {solutionsCta.label}
-              </Link>
-            </div>
+        <div className="section-shell measured-threshold__inner">
+          <p className="measured-kicker">{homePageCopy.hero.eyebrow}</p>
+          <h1 id="home-hero-heading" className="measured-threshold__title">
+            {homeMessage.headline}
+          </h1>
+          <p className="measured-threshold__lead">{homeMessage.description}</p>
+          <div className="measured-threshold__actions">
+            <PrimaryLink href={primaryCta.href}>{primaryCta.label}</PrimaryLink>
+            <Link
+              href={solutionsCta.href}
+              className="measured-text-link action-transition"
+            >
+              {solutionsCta.label}
+            </Link>
           </div>
-
-          <figure className="mobile-home-human-frame" data-mobile-human-proof>
+          <figure className="measured-threshold__portrait">
             <Image
               src="/mandela-portrait-sharp.jpg"
               alt=""
               fill
               priority
-              sizes="(max-width: 767px) calc(100vw - 40px), 1px"
-              className="mobile-home-human-frame__image"
+              sizes="(max-width: 767px) calc(100vw - 80px), 1px"
+              className="measured-threshold__portrait-image"
             />
           </figure>
+        </div>
+      </section>
 
-          <div className="mobile-home-atlas-plane">
-            <p className="mobile-home-artifact-label">
+      <section
+        aria-label={businessSystemCutaway.title}
+        className="measured-system"
+        data-mobile-scene="system"
+      >
+        <div className="section-shell measured-system__inner">
+          <div className="measured-system__heading">
+            <p className="measured-scene-label">
               {businessSystemCutaway.eyebrow}
             </p>
+            <p>{businessSystemCutaway.description}</p>
+          </div>
+          <div className="measured-system__artifact">
             <MobileHomeAtlas
               definition={businessSystemCutaway}
               ariaLabel={businessSystemCutaway.title}
@@ -76,183 +81,169 @@ export default function MobileHomePage({ closing }: MobileHomePageProps) {
             />
           </div>
         </div>
-      </MobileChapter>
+      </section>
 
-      <MobileChapter
+      <section
         id="outcomes"
-        index={2}
-        eyebrow="Business outcomes"
+        aria-labelledby="measured-outcomes-heading"
+        className="measured-outcomes"
+        data-mobile-scene="outcomes"
       >
-        <div className="mobile-home-chapter-intro">
-          <h2>{homePageCopy.outcomes.title}</h2>
-          <p>{homePageCopy.outcomes.description}</p>
+        <div className="section-shell measured-scene-shell">
+          <div className="measured-scene-heading measured-scene-heading--offset">
+            <p className="measured-scene-label">Business outcomes</p>
+            <h2 id="measured-outcomes-heading">
+              {homePageCopy.outcomes.title}
+            </h2>
+            <p>{homePageCopy.outcomes.description}</p>
+          </div>
+          <ol className="measured-outcomes__list">
+            {homeOutcomes.map((outcome, index) => (
+              <li key={outcome.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{outcome.title}</h3>
+                  <p>{outcome.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-        <div className="mobile-home-outcome-plane">
-          <MobileDisclosureGroup
-            items={homeOutcomes.map((outcome, index) => ({
-              id: itemId(outcome.title),
-              summary: (
-                <>
-                  <span className="mobile-home-row-index">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <strong>{outcome.title}</strong>
-                </>
-              ),
-              panel: <p>{outcome.description}</p>,
-            }))}
-            defaultOpenId="grow-more-effectively"
-            ariaLabel="Business outcomes"
-          />
-        </div>
-      </MobileChapter>
+      </section>
 
-      <MobileChapter
+      <section
         id="solutions"
-        index={3}
-        eyebrow="Solutions"
-        tone="muted"
+        aria-labelledby="measured-capabilities-heading"
+        className="measured-capabilities"
+        data-mobile-scene="capabilities"
       >
-        <div className="mobile-home-chapter-intro">
-          <h2>{homePageCopy.solutions.title}</h2>
-          <p>{homePageCopy.solutions.description}</p>
-        </div>
-        <div className="mobile-home-ledger">
-          <MobileDisclosureGroup
-            items={solutions.map((solution, index) => ({
-              id: solution.slug,
-              summary: (
-                <>
-                  <span className="mobile-home-row-index">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <strong>{solution.name}</strong>
-                </>
-              ),
-              panel: (
-                <>
+        <div className="section-shell measured-scene-shell">
+          <div className="measured-scene-heading">
+            <p className="measured-scene-label">Solutions</p>
+            <h2 id="measured-capabilities-heading">
+              {homePageCopy.solutions.title}
+            </h2>
+            <p>{homePageCopy.solutions.description}</p>
+          </div>
+          <ol className="measured-capabilities__index">
+            {solutions.map((solution, index) => (
+              <li key={solution.slug}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{solution.name}</h3>
                   <p>{solution.outcome}</p>
-                  <Link
-                    href={solution.href}
-                    className="mobile-home-text-link action-transition"
-                  >
+                  <Link href={solution.href} className="measured-text-link">
                     Explore {solution.name}
                   </Link>
-                </>
-              ),
-            }))}
-            defaultOpenId="ai"
-            ariaLabel="Cobrykz solutions"
-          />
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-      </MobileChapter>
+      </section>
 
-      <MobileChapter
+      <section
         id="why-cobrykz"
-        index={4}
-        eyebrow="Why Cobrykz"
-        tone="dark"
+        aria-labelledby="measured-trust-heading"
+        className="measured-trust"
+        data-mobile-scene="trust"
       >
-        <div className="mobile-home-chapter-intro">
-          <h2>{homePageCopy.whyCobrykz.title}</h2>
-          <p>{homePageCopy.whyCobrykz.description}</p>
+        <div className="section-shell measured-scene-shell">
+          <div className="measured-scene-heading measured-scene-heading--dark">
+            <p className="measured-scene-label">Why Cobrykz</p>
+            <h2 id="measured-trust-heading">
+              {homePageCopy.whyCobrykz.title}
+            </h2>
+            <p>{homePageCopy.whyCobrykz.description}</p>
+          </div>
+          <ol className="measured-trust__principles">
+            {whyCobrykz.map((reason, index) => (
+              <li key={reason.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{reason.title}</h3>
+                  <p>{reason.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-        <div className="mobile-home-trust-grid">
-          <MobileDisclosureGroup
-            items={whyCobrykz.map((reason, index) => ({
-              id: itemId(reason.title),
-              summary: (
-                <>
-                  <span className="mobile-home-row-index">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <strong>{reason.title}</strong>
-                </>
-              ),
-              panel: <p>{reason.description}</p>,
-            }))}
-            defaultOpenId="business-first-strategy"
-            ariaLabel="Cobrykz accountability principles"
-          />
-        </div>
-      </MobileChapter>
+      </section>
 
-      <MobileChapter
+      <section
         id="ai-point-of-view"
-        index={5}
-        eyebrow="AI point of view"
+        aria-labelledby="measured-decision-heading"
+        className="measured-decision"
+        data-mobile-scene="decision"
       >
-        <div className="mobile-home-chapter-intro">
-          <h2>{homePageCopy.ai.title}</h2>
-          <p>{homePageCopy.ai.description}</p>
+        <div className="section-shell measured-scene-shell">
+          <div className="measured-scene-heading measured-scene-heading--offset">
+            <p className="measured-scene-label">AI point of view</p>
+            <h2 id="measured-decision-heading">{homePageCopy.ai.title}</h2>
+            <p>{homePageCopy.ai.description}</p>
+          </div>
+          <div className="measured-decision__sheet" data-decision-artifact>
+            <p className="measured-scene-label">Decision model</p>
+            <ol>
+              {aiPrinciples.map((principle, index) => (
+                <li key={principle.title}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3>{principle.title}</h3>
+                    <p>{principle.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
-        <div className="mobile-home-ai-artifact" data-decision-artifact>
-          <p className="mobile-home-artifact-label">Decision model</p>
-          <MobileDisclosureGroup
-            items={aiPrinciples.map((principle, index) => ({
-              id: itemId(principle.title),
-              summary: (
-                <>
-                  <span className="mobile-home-row-index">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <strong>{principle.title}</strong>
-                </>
-              ),
-              panel: <p>{principle.description}</p>,
-            }))}
-            defaultOpenId="ai-should-improve-real-work"
-            ariaLabel="AI decision principles"
-          />
-        </div>
-      </MobileChapter>
+      </section>
 
-      <MobileChapter
+      <section
         id="challenge-router"
-        index={6}
-        eyebrow="Challenge router"
-        tone="muted"
+        aria-labelledby="measured-challenge-heading"
+        className="measured-challenge"
+        data-mobile-scene="challenge"
       >
-        <div className="mobile-home-chapter-intro">
-          <h2>{homePageCopy.challengeRouter.title}</h2>
+        <div className="section-shell measured-scene-shell">
+          <div className="measured-scene-heading">
+            <p className="measured-scene-label">Challenge router</p>
+            <h2 id="measured-challenge-heading">
+              {homePageCopy.challengeRouter.title}
+            </h2>
+          </div>
+          <MobileChallengeRouter />
         </div>
-        <MobileChallengeRouter />
-      </MobileChapter>
+      </section>
 
-      <MobileChapter
+      <section
         id="process"
-        index={7}
-        eyebrow="Process"
+        aria-labelledby="measured-process-heading"
+        className="measured-process"
+        data-mobile-scene="process"
       >
-        <div className="mobile-home-chapter-intro">
-          <h2>{homePageCopy.process.title}</h2>
-          <p>{homePageCopy.process.description}</p>
-        </div>
-        <div className="mobile-home-process-rail">
-          <MobileDisclosureGroup
-            items={processStages.map((stage, index) => ({
-              id: itemId(stage.title),
-              summary: (
-                <>
-                  <span className="mobile-home-process-node">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <strong>{stage.title}</strong>
-                </>
-              ),
-              panel: <p>{stage.description}</p>,
-            }))}
-            defaultOpenId="discover"
-            ariaLabel="Cobrykz delivery process"
-          />
-          <Link
-            href={processCta.href}
-            className="mobile-home-text-link action-transition"
-          >
+        <div className="section-shell measured-scene-shell">
+          <div className="measured-scene-heading measured-scene-heading--offset">
+            <p className="measured-scene-label">Process</p>
+            <h2 id="measured-process-heading">{homePageCopy.process.title}</h2>
+            <p>{homePageCopy.process.description}</p>
+          </div>
+          <ol className="measured-process__sequence">
+            {processStages.map((stage, index) => (
+              <li key={stage.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{stage.title}</h3>
+                  <p>{stage.description}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <Link href={processCta.href} className="measured-text-link">
             {processCta.label}
           </Link>
         </div>
-      </MobileChapter>
+      </section>
 
       <div className="mobile-home-closing">{closing}</div>
     </div>
