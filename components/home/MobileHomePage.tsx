@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
@@ -48,16 +47,6 @@ export default function MobileHomePage({ closing }: MobileHomePageProps) {
               {solutionsCta.label}
             </Link>
           </div>
-          <figure className="measured-threshold__portrait">
-            <Image
-              src="/mandela-portrait-sharp.jpg"
-              alt=""
-              fill
-              priority
-              sizes="(max-width: 767px) calc(100vw - 80px), 1px"
-              className="measured-threshold__portrait-image"
-            />
-          </figure>
         </div>
       </section>
 

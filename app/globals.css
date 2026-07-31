@@ -2174,14 +2174,14 @@ button {
 
   /* Phone proportion pass: retain the scenes while reducing their footprint. */
   .measured-threshold__inner {
-    padding-block: 3.25rem 0;
+    padding-block: 2.75rem 3.25rem;
   }
 
   .measured-threshold__title {
-    max-width: 9.5ch;
+    max-width: 10.5ch;
     margin-top: 1rem;
-    font-size: 2.75rem;
-    line-height: 0.96;
+    font-size: 2.25rem;
+    line-height: 1;
   }
 
   .measured-threshold__lead {
@@ -2196,14 +2196,8 @@ button {
     margin: 1.5rem 0 0 1.5rem;
   }
 
-  .measured-threshold__portrait {
-    width: calc(100% - 3.5rem);
-    aspect-ratio: 16 / 9;
-    margin-top: 2.5rem;
-  }
-
   .measured-system__inner {
-    padding-block: 3.5rem 4rem;
+    padding-block: 3rem 3.5rem;
   }
 
   .measured-system__heading {
@@ -2233,23 +2227,48 @@ button {
   }
 
   .measured-system__artifact .mobile-atlas__map {
-    padding: 0.5rem;
+    padding: 0;
   }
 
   .measured-system__artifact .mobile-atlas__layer {
-    margin-bottom: 0.4rem;
-    padding: 0.45rem;
+    margin: 0;
+    padding: 0.65rem 0;
+    border: 0;
+    border-bottom: 1px solid var(--atlas-frame);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .measured-system__artifact .mobile-atlas__layer[data-atlas-depth] {
+    margin-left: 0;
+  }
+
+  .measured-system__artifact .mobile-atlas__layer-header {
+    padding: 0 0.75rem 0.4rem;
   }
 
   .measured-system__artifact .mobile-atlas__layer-meaning {
-    margin-bottom: 0.4rem;
+    margin: 0 0.75rem 0.5rem;
     font-size: 0.6875rem;
     line-height: 1.4;
   }
 
+  .measured-system__artifact .mobile-atlas__nodes {
+    gap: 1px;
+    background: var(--atlas-frame);
+  }
+
   .measured-system__artifact .mobile-atlas__control {
     min-height: 2.75rem;
-    padding: 0.45rem;
+    padding: 0.55rem 0.65rem;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .measured-system__artifact .mobile-atlas__control[aria-pressed="true"] {
+    box-shadow: inset 2px 0 0 var(--color-blue);
   }
 
   .measured-system__artifact .mobile-atlas__control strong {

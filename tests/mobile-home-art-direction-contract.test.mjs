@@ -9,7 +9,6 @@ const read = (path) => readFileSync(join(root, path), "utf8");
 test("builds the Homepage as Measured Humanism editorial scenes", () => {
   const mobile = read("components/home/MobileHomePage.tsx");
 
-  assert.match(mobile, /import Image from ["']next\/image["']/);
   for (const scene of [
     "threshold",
     "system",
@@ -22,7 +21,7 @@ test("builds the Homepage as Measured Humanism editorial scenes", () => {
   ]) {
     assert.match(mobile, new RegExp(`data-mobile-scene="${scene}"`));
   }
-  assert.match(mobile, /src="\/mandela-portrait-sharp\.jpg"/);
+  assert.doesNotMatch(mobile, /measured-threshold__portrait|next\/image/);
   assert.doesNotMatch(mobile, /<MobileChapter\b/);
   assert.doesNotMatch(mobile, /<MobileDisclosureGroup\b/);
 });
@@ -75,11 +74,7 @@ test("sizes the Measured Humanism composition for a compact 390px experience", (
 
   assert.match(
     css,
-    /\.measured-threshold__title\s*\{[^}]*font-size:\s*2\.75rem[^}]*line-height:\s*0\.96/s,
-  );
-  assert.match(
-    css,
-    /\.measured-threshold__portrait\s*\{[^}]*aspect-ratio:\s*16\s*\/\s*9/s,
+    /\.measured-threshold__title\s*\{[^}]*font-size:\s*2\.25rem[^}]*line-height:\s*1/s,
   );
   assert.match(
     css,
@@ -100,5 +95,22 @@ test("sizes the Measured Humanism composition for a compact 390px experience", (
   assert.match(
     css,
     /\.measured-process__sequence\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/s,
+  );
+});
+
+test("flattens the Homepage Atlas into a compact architectural ledger", () => {
+  const css = read("app/globals.css");
+
+  assert.match(
+    css,
+    /\.measured-system__artifact \.mobile-atlas__layer\s*\{[^}]*border:\s*0[^}]*box-shadow:\s*none/s,
+  );
+  assert.match(
+    css,
+    /\.measured-system__artifact \.mobile-atlas__control\s*\{[^}]*min-height:\s*2\.75rem[^}]*border:\s*0[^}]*border-radius:\s*0[^}]*box-shadow:\s*none/s,
+  );
+  assert.match(
+    css,
+    /\.measured-system__artifact \.mobile-atlas__nodes\s*\{[^}]*gap:\s*1px/s,
   );
 });
