@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
@@ -37,29 +38,43 @@ export default function MobileHomePage({ closing }: MobileHomePageProps) {
         eyebrow="Opening"
         tone="dark"
       >
-        <div className="mobile-home-hero">
-          <p className="mobile-home-kicker">{homePageCopy.hero.eyebrow}</p>
-          <h1 id="home-hero-heading">{homeMessage.headline}</h1>
-          <p className="mobile-home-lead">{homeMessage.description}</p>
-          <div className="mobile-home-actions">
-            <PrimaryLink href={primaryCta.href}>{primaryCta.label}</PrimaryLink>
-            <Link
-              href={solutionsCta.href}
-              className="mobile-home-secondary-action action-transition"
-            >
-              {solutionsCta.label}
-            </Link>
+        <div data-mobile-recognition-frame="homepage">
+          <div className="mobile-home-hero">
+            <p className="mobile-home-kicker">{homePageCopy.hero.eyebrow}</p>
+            <h1 id="home-hero-heading">{homeMessage.headline}</h1>
+            <p className="mobile-home-lead">{homeMessage.description}</p>
+            <div className="mobile-home-actions">
+              <PrimaryLink href={primaryCta.href}>{primaryCta.label}</PrimaryLink>
+              <Link
+                href={solutionsCta.href}
+                className="mobile-home-secondary-action action-transition"
+              >
+                {solutionsCta.label}
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="mobile-home-atlas-plane">
-          <p className="mobile-home-artifact-label">
-            {businessSystemCutaway.eyebrow}
-          </p>
-          <MobileHomeAtlas
-            definition={businessSystemCutaway}
-            ariaLabel={businessSystemCutaway.title}
-            initialSelectedNodeId="challenge"
-          />
+
+          <figure className="mobile-home-human-frame" data-mobile-human-proof>
+            <Image
+              src="/mandela-portrait-sharp.jpg"
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 767px) calc(100vw - 40px), 1px"
+              className="mobile-home-human-frame__image"
+            />
+          </figure>
+
+          <div className="mobile-home-atlas-plane">
+            <p className="mobile-home-artifact-label">
+              {businessSystemCutaway.eyebrow}
+            </p>
+            <MobileHomeAtlas
+              definition={businessSystemCutaway}
+              ariaLabel={businessSystemCutaway.title}
+              initialSelectedNodeId="challenge"
+            />
+          </div>
         </div>
       </MobileChapter>
 

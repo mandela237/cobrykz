@@ -33,6 +33,9 @@
   --atlas-verified: #177b57;
   --atlas-depth-shadow: 0 28px 70px rgba(11, 23, 40, 0.12);
   --atlas-signal-shadow: 0 0 0 5px rgba(31, 94, 255, 0.1);
+  --mobile-paper: #f3f1ec;
+  --mobile-mineral: #d9d5cc;
+  --mobile-graphite: #35404d;
 
   color-scheme: light;
 }
@@ -1149,14 +1152,12 @@ button {
   .mobile-home-atlas-plane::before {
     position: absolute;
     z-index: 0;
-    top: 5rem;
-    right: -4rem;
-    width: 11rem;
-    height: 11rem;
-    border-radius: 999px;
+    top: 0;
+    right: 0;
+    width: 4.5rem;
+    height: 1px;
     content: "";
-    background: rgb(31 94 255 / 0.18);
-    filter: blur(2.5rem);
+    background: var(--focus-ring-dark);
   }
 
   .mobile-home-atlas-plane > * {
@@ -1520,6 +1521,197 @@ button {
 
   .mobile-home-closing #projects .home-evidence-frame {
     padding: 1.5rem;
+  }
+
+  /* Measured Humanism: the Homepage is composed as an editorial sequence. */
+  [data-mobile-recognition-frame="homepage"] {
+    position: relative;
+  }
+
+  .mobile-home-human-frame {
+    position: relative;
+    width: calc(100% - 3.5rem);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    margin: 2.25rem 0 0 auto;
+    border-block: 1px solid rgb(255 255 255 / 0.18);
+    background: var(--mobile-graphite);
+  }
+
+  .mobile-home-human-frame::before {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    content: "";
+    background: linear-gradient(
+      90deg,
+      rgb(11 23 40 / 0.58),
+      transparent 42%,
+      rgb(11 23 40 / 0.08)
+    );
+    pointer-events: none;
+  }
+
+  .mobile-home-human-frame__image {
+    object-fit: cover;
+    object-position: 50% 18%;
+    filter: saturate(0.8) contrast(1.04);
+  }
+
+  #outcomes.mobile-chapter {
+    background: var(--mobile-paper);
+  }
+
+  #outcomes .mobile-chapter__inner {
+    padding-block: 5rem 5.5rem;
+  }
+
+  #outcomes .mobile-home-chapter-intro {
+    max-width: 18rem;
+    margin-left: auto;
+  }
+
+  #solutions.mobile-chapter {
+    background: white;
+  }
+
+  #solutions .mobile-chapter__inner {
+    padding-block: 4.5rem 6rem;
+  }
+
+  #solutions .mobile-home-chapter-intro {
+    padding-left: 2.25rem;
+    border-left: 1px solid var(--color-blue);
+  }
+
+  #why-cobrykz.mobile-chapter {
+    background: var(--color-footer-bg);
+  }
+
+  #why-cobrykz .mobile-chapter__inner {
+    padding-block: 6rem;
+  }
+
+  #ai-point-of-view.mobile-chapter {
+    background: var(--mobile-paper);
+  }
+
+  #ai-point-of-view .mobile-chapter__inner {
+    padding-block: 5.5rem;
+  }
+
+  #challenge-router .mobile-chapter__inner {
+    padding-block: 4.5rem 6rem;
+  }
+
+  #process.mobile-chapter {
+    background: white;
+  }
+
+  #process .mobile-chapter__inner {
+    padding-block: 5.5rem 6.5rem;
+  }
+
+  .mobile-home-outcome-plane {
+    margin-right: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--color-navy);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mobile-home-outcome-plane .mobile-disclosure-group > div:first-child {
+    margin: 0;
+    padding-inline: 0;
+    border-bottom-color: var(--color-navy);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mobile-home-ledger .mobile-disclosure-group > div {
+    padding-inline: 0;
+    border-inline: 0;
+    background: white;
+  }
+
+  .mobile-home-ledger .mobile-disclosure-group > div:nth-child(odd) {
+    margin-left: 1.5rem;
+  }
+
+  .mobile-home-trust-grid {
+    margin-left: 1.25rem;
+    padding-inline: 0;
+    border: 0;
+    border-top: 1px solid rgb(255 255 255 / 0.24);
+    background: transparent;
+  }
+
+  .mobile-home-trust-grid .mobile-disclosure-group > div,
+  .mobile-home-trust-grid .mobile-disclosure-group > div:nth-child(even),
+  .mobile-home-trust-grid .mobile-disclosure-group > div:nth-child(odd) {
+    margin: 0;
+    padding-inline: 0;
+    border-inline: 0;
+  }
+
+  .mobile-home-ai-artifact {
+    position: relative;
+    margin-left: 1.5rem;
+    padding: 1.5rem 1.25rem 0;
+    border-color: var(--mobile-mineral);
+    background: #faf9f6;
+    box-shadow: 0.75rem 0.75rem 0 var(--mobile-mineral);
+  }
+
+  .mobile-home-ai-artifact .mobile-disclosure-group {
+    margin-top: 1rem;
+    padding-inline: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .mobile-home-process-rail {
+    padding: 0 0 1.25rem 1.25rem;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    background: transparent;
+  }
+
+  .mobile-home-closing #projects {
+    background: var(--mobile-paper);
+  }
+
+  .mobile-home-closing #projects .section-shell {
+    padding-block: 6rem;
+  }
+
+  .mobile-home-closing #projects .home-evidence-frame {
+    margin-left: 1.5rem;
+    border-color: var(--mobile-mineral);
+    background: #faf9f6;
+    box-shadow: 0.75rem 0.75rem 0 var(--mobile-mineral);
+  }
+
+  .mobile-home-closing #authority {
+    background: var(--color-footer-bg);
+  }
+
+  .mobile-home-closing #authority .section-shell {
+    padding-block: 6.5rem;
+  }
+
+  .mobile-home-closing #authority aside {
+    margin-left: 2rem;
+  }
+
+  .mobile-home-closing #contact {
+    border-top: 0;
+    background: var(--color-navy);
+  }
+
+  .mobile-home-closing #contact .section-shell {
+    padding-block: 7rem;
   }
 
   [data-mobile-solutions-hub] {
