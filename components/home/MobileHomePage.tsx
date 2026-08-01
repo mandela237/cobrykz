@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
@@ -32,7 +33,17 @@ export default function MobileHomePage({ closing }: MobileHomePageProps) {
         className="measured-threshold"
         data-mobile-scene="threshold"
       >
-        <div className="section-shell measured-threshold__inner">
+        <figure className="measured-threshold__media" aria-hidden="true">
+          <Image
+            src="/cobrykz-mobile-architecture-hero.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="measured-threshold__media-image"
+          />
+        </figure>
+        <div className="section-shell measured-threshold__inner measured-threshold__content">
           <p className="measured-kicker">{homePageCopy.hero.eyebrow}</p>
           <h1 id="home-hero-heading" className="measured-threshold__title">
             {homeMessage.headline}

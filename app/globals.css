@@ -602,6 +602,14 @@ button {
     padding-bottom: env(safe-area-inset-bottom);
   }
 
+  body:has([data-mobile-homepage]) > header {
+    position: absolute;
+    inset: 0 0 auto;
+    width: 100%;
+    border-color: transparent;
+    background: transparent;
+  }
+
   .site-header-mobile {
     position: relative;
     display: flex;
@@ -1732,44 +1740,60 @@ button {
 
   .measured-threshold {
     position: relative;
+    min-height: calc(100svh - 1rem);
     overflow: hidden;
-    background: var(--color-gray-light);
+    background: var(--mobile-mineral);
   }
 
-  .measured-threshold::after {
+  .measured-threshold__media {
     position: absolute;
-    right: 1.25rem;
-    bottom: 0;
-    width: 1px;
-    height: 7rem;
+    inset: 0;
+    margin: 0;
+  }
+
+  .measured-threshold__media::after {
+    position: absolute;
+    inset: 0;
     content: "";
-    background: var(--color-blue);
+    background:
+      linear-gradient(180deg, rgb(247 244 237 / 0.08), transparent 32%),
+      linear-gradient(0deg, rgb(247 244 237 / 0.94), rgb(247 244 237 / 0.74) 45%, transparent 74%);
+  }
+
+  .measured-threshold__media-image {
+    object-fit: cover;
+    object-position: 52% center;
   }
 
   .measured-threshold__inner {
     position: relative;
-    padding-block: 4.75rem 0;
+    z-index: 1;
+    display: flex;
+    min-height: inherit;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-block: 8rem 3.5rem;
   }
 
   .measured-threshold__title {
-    max-width: 8.4ch;
-    margin-top: 1.5rem;
+    max-width: 10ch;
+    margin-top: 1rem;
     color: var(--color-navy);
-    font-size: 3.5rem;
+    font-size: 2.625rem;
     font-weight: 760;
     letter-spacing: -0.065em;
-    line-height: 0.91;
+    line-height: 0.96;
     text-wrap: balance;
   }
 
   .measured-threshold__lead {
-    max-width: 18.75rem;
-    margin: 2.25rem 0 0 2.5rem;
-    padding-left: 1rem;
+    max-width: 19rem;
+    margin: 1.5rem 0 0;
+    padding-left: 0.75rem;
     border-left: 1px solid var(--color-blue);
     color: var(--color-slate);
-    font-size: 0.9375rem;
-    line-height: 1.75;
+    font-size: 0.875rem;
+    line-height: 1.6;
   }
 
   .measured-threshold__actions {
@@ -1777,7 +1801,7 @@ button {
     flex-wrap: wrap;
     gap: 0.5rem 1.25rem;
     align-items: center;
-    margin: 2rem 0 0 2.5rem;
+    margin: 1.5rem 0 0;
   }
 
   .measured-text-link {
@@ -1790,33 +1814,6 @@ button {
     text-decoration: underline;
     text-decoration-color: rgb(31 94 255 / 0.28);
     text-underline-offset: 0.25rem;
-  }
-
-  .measured-threshold__portrait {
-    position: relative;
-    width: calc(100% - 3rem);
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-    margin: 4.5rem 0 0 auto;
-    background: var(--mobile-graphite);
-  }
-
-  .measured-threshold__portrait::after {
-    position: absolute;
-    inset: 0;
-    content: "";
-    background: linear-gradient(
-      180deg,
-      transparent 68%,
-      rgb(11 23 40 / 0.2)
-    );
-    pointer-events: none;
-  }
-
-  .measured-threshold__portrait-image {
-    object-fit: cover;
-    object-position: 50% 16%;
-    filter: saturate(0.78) contrast(1.03);
   }
 
   .measured-system {
@@ -2174,26 +2171,26 @@ button {
 
   /* Phone proportion pass: retain the scenes while reducing their footprint. */
   .measured-threshold__inner {
-    padding-block: 2.75rem 3.25rem;
+    padding-block: 8rem 3.5rem;
   }
 
   .measured-threshold__title {
-    max-width: 10.5ch;
+    max-width: 10ch;
     margin-top: 1rem;
-    font-size: 2.25rem;
-    line-height: 1;
+    font-size: 2.625rem;
+    line-height: 0.96;
   }
 
   .measured-threshold__lead {
-    max-width: 18rem;
-    margin: 1.5rem 0 0 1.5rem;
+    max-width: 19rem;
+    margin: 1.5rem 0 0;
     padding-left: 0.75rem;
     font-size: 0.875rem;
     line-height: 1.6;
   }
 
   .measured-threshold__actions {
-    margin: 1.5rem 0 0 1.5rem;
+    margin: 1.5rem 0 0;
   }
 
   .measured-system__inner {

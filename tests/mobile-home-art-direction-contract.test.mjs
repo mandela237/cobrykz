@@ -21,7 +21,11 @@ test("builds the Homepage as Measured Humanism editorial scenes", () => {
   ]) {
     assert.match(mobile, new RegExp(`data-mobile-scene="${scene}"`));
   }
-  assert.doesNotMatch(mobile, /measured-threshold__portrait|next\/image/);
+  assert.match(mobile, /import Image from ["']next\/image["']/);
+  assert.match(mobile, /className="measured-threshold__media"/);
+  assert.match(mobile, /src="\/cobrykz-mobile-architecture-hero\.png"/);
+  assert.match(mobile, /className="[^"]*measured-threshold__content[^"]*"/);
+  assert.doesNotMatch(mobile, /measured-threshold__portrait/);
   assert.doesNotMatch(mobile, /<MobileChapter\b/);
   assert.doesNotMatch(mobile, /<MobileDisclosureGroup\b/);
 });
@@ -32,14 +36,8 @@ test("uses material restraint instead of decorative mobile Homepage effects", ()
   assert.match(css, /--mobile-paper:\s*#[0-9a-f]{6}/i);
   assert.match(css, /--mobile-mineral:\s*#[0-9a-f]{6}/i);
   assert.match(css, /--mobile-graphite:\s*#[0-9a-f]{6}/i);
-  assert.match(
-    css,
-    /\.measured-threshold\s*\{[^}]*background:\s*var\(--color-gray-light\)/s,
-  );
-  assert.match(
-    css,
-    /\.measured-threshold__portrait\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*5[^}]*overflow:\s*hidden/s,
-  );
+  assert.match(css, /\.measured-threshold__media\s*\{[^}]*position:\s*absolute/s);
+  assert.match(css, /\.measured-threshold__media::after\s*\{/);
   assert.match(
     css,
     /\.measured-system\s*\{[^}]*background:\s*var\(--color-footer-bg\)/s,
@@ -74,7 +72,15 @@ test("sizes the Measured Humanism composition for a compact 390px experience", (
 
   assert.match(
     css,
-    /\.measured-threshold__title\s*\{[^}]*font-size:\s*2\.25rem[^}]*line-height:\s*1/s,
+    /\.measured-threshold\s*\{[^}]*min-height:\s*calc\(100svh\s*-\s*1rem\)/s,
+  );
+  assert.match(
+    css,
+    /\.measured-threshold__title\s*\{[^}]*font-size:\s*2\.625rem[^}]*line-height:\s*0\.96/s,
+  );
+  assert.match(
+    css,
+    /body:has\(\[data-mobile-homepage\]\)\s*>\s*header\s*\{[^}]*position:\s*absolute[^}]*background:\s*transparent/s,
   );
   assert.match(
     css,
