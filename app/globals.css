@@ -5076,7 +5076,7 @@ button {
   .mobile-contact-headline {
     max-width: 13ch;
     margin-top: 1.25rem;
-    font-size: clamp(2.1rem, 9.5vw, 2.375rem);
+    font-size: 2.375rem;
     line-height: 0.98;
     letter-spacing: -0.05em;
   }

@@ -9,7 +9,7 @@ test("applies one compact opening scale across the remaining mobile page familie
   assert.match(css, /Mobile art direction completion pass/);
   assert.match(
     css,
-    /\.mobile-solutions-opening h1,[\s\S]*\.mobile-contact-headline\s*\{[^}]*font-size:\s*clamp\(2\.1rem,\s*9\.5vw,\s*2\.375rem\)[^}]*line-height:\s*0\.98/s,
+    /\.mobile-solutions-opening h1,[\s\S]*\.mobile-contact-headline\s*\{[^}]*font-size:\s*2\.375rem[^}]*line-height:\s*0\.98/s,
   );
   assert.match(
     css,
