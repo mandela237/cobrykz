@@ -5273,10 +5273,9 @@ button {
   }
 
   [data-mobile-recovery] {
-    display: grid;
+    display: block;
     min-height: calc(100svh - 3.75rem);
-    place-items: center;
-    padding: 1.5rem 0;
+    padding: 8rem 0 4rem;
     background: var(--color-footer-bg);
   }
 

@@ -26,6 +26,10 @@ test("removes oversized card staging from systemic and utility compositions", ()
     css,
     /\[data-mobile-recovery\] \.mobile-recovery-frame\s*\{[^}]*margin-top:\s*0[^}]*box-shadow:\s*none/s,
   );
+  assert.match(
+    css,
+    /\[data-mobile-recovery\]\s*\{[^}]*display:\s*block[^}]*padding:\s*8rem\s+0\s+4rem/s,
+  );
 });
 
 test("keeps page-family recognition moments materially distinct", () => {
