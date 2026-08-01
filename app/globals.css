@@ -5051,6 +5051,254 @@ button {
   }
 }
 
+/* Mobile art direction completion pass: compact editorial scenes, not stacked desktop sections. */
+@media (max-width: 767px) {
+  [data-mobile-solutions-hub] .mobile-chapter__inner,
+  [data-mobile-solution-detail] .mobile-chapter__inner,
+  [data-mobile-process] .mobile-chapter__inner,
+  [data-mobile-about-page] .mobile-chapter__inner,
+  [data-mobile-projects-index] .mobile-chapter__inner,
+  [data-mobile-project-case-study] .mobile-chapter__inner,
+  [data-mobile-insights-index] .mobile-chapter__inner,
+  [data-mobile-insight-article] .mobile-chapter__inner,
+  [data-mobile-contact] .mobile-chapter__inner {
+    padding-block: 2.75rem;
+  }
+
+  .mobile-solutions-opening h1,
+  .mobile-solution-opening h1,
+  .mobile-process-opening h1,
+  .mobile-about-opening h1,
+  .mobile-projects-opening h1,
+  .mobile-project-detail-opening h1,
+  .mobile-insights-opening h1,
+  .mobile-insight-opening h1,
+  .mobile-contact-headline {
+    max-width: 13ch;
+    margin-top: 1.25rem;
+    font-size: clamp(2.1rem, 9.5vw, 2.375rem);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+  }
+
+  .mobile-solutions-opening,
+  .mobile-solution-opening,
+  .mobile-about-opening,
+  .mobile-projects-opening,
+  .mobile-project-detail-opening,
+  .mobile-insights-opening,
+  .mobile-insight-opening {
+    padding-block: 0.25rem;
+  }
+
+  .mobile-solutions-lead,
+  .mobile-solution-opening__support,
+  .mobile-about-opening__introduction p,
+  .mobile-projects-lead,
+  .mobile-project-detail-summary,
+  .mobile-insights-opening p,
+  .mobile-insight-opening p,
+  .mobile-contact-support {
+    max-width: 31rem;
+    margin-top: 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .mobile-solutions-opening .primary-link,
+  .mobile-solution-opening .primary-link {
+    margin-top: 1.25rem;
+  }
+
+  .mobile-solutions-opening__index,
+  .mobile-solution-recognition,
+  .mobile-solution-deliverable-ledger,
+  .mobile-process-opening__sequence,
+  .mobile-about-disclosures,
+  .mobile-projects-evidence,
+  .mobile-insights-method,
+  .mobile-contact-form-frame {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .mobile-solutions-opening__index {
+    min-height: 3.5rem;
+    margin-top: 2rem;
+  }
+
+  .mobile-solutions-intro,
+  .mobile-solution-guidance,
+  .mobile-contact-form-intro {
+    margin-bottom: 1.5rem;
+  }
+
+  .mobile-solutions-intro h2,
+  .mobile-solutions-final h2,
+  .mobile-solution-guidance h2,
+  .mobile-solution-final h2,
+  .mobile-process-cta h2,
+  .mobile-about-final h2,
+  .mobile-projects-evidence h2,
+  .mobile-project-detail-section h2,
+  .mobile-insights-section h2,
+  .mobile-insight-section h2,
+  .mobile-contact-section-title,
+  .mobile-contact-form-intro h2 {
+    max-width: 15ch;
+    margin-top: 1.25rem;
+    font-size: 1.75rem;
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+  }
+
+  .mobile-solutions-outcomes,
+  .mobile-solutions-capability-ledger,
+  .mobile-solutions-condition-list,
+  .mobile-solutions-atlas-stage,
+  .mobile-solutions-context,
+  .mobile-solutions-process-rail,
+  .mobile-solutions-trust-ledger,
+  .mobile-solution-recognition,
+  .mobile-solution-outcomes,
+  .mobile-solution-applications,
+  .mobile-solution-deliverable-ledger,
+  .mobile-solution-related,
+  .mobile-solution-artifact,
+  .mobile-solution-disclosures {
+    margin-top: 1.5rem;
+  }
+
+  [data-mobile-solutions-hub] .mobile-disclosure-trigger,
+  [data-mobile-solution-detail] .mobile-disclosure-trigger,
+  [data-mobile-process] .mobile-disclosure-trigger,
+  [data-mobile-about-page] .mobile-disclosure-trigger,
+  [data-mobile-projects-index] .mobile-disclosure-trigger,
+  [data-mobile-project-case-study] .mobile-disclosure-trigger {
+    min-height: 3.5rem;
+    padding-block: 0.75rem;
+  }
+
+  [data-mobile-solutions-hub] .mobile-disclosure-panel,
+  [data-mobile-solution-detail] .mobile-disclosure-panel,
+  [data-mobile-process] .mobile-disclosure-panel,
+  [data-mobile-about-page] .mobile-disclosure-panel,
+  [data-mobile-projects-index] .mobile-disclosure-panel,
+  [data-mobile-project-case-study] .mobile-disclosure-panel {
+    padding-block: 0 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+  }
+
+  .mobile-process-opening {
+    padding-block: 0.25rem;
+    background: var(--color-footer-bg);
+  }
+
+  .mobile-process-opening__introduction {
+    margin-top: 1.25rem;
+    padding-left: 0.75rem;
+  }
+
+  .mobile-process-opening__introduction p {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .mobile-process-opening__sequence {
+    margin-top: 1.5rem;
+  }
+
+  .mobile-process-opening__sequence li {
+    min-height: 3.5rem;
+  }
+
+  .mobile-process-rail__trigger {
+    min-height: 4rem;
+  }
+
+  .mobile-process-rail__detail {
+    padding: 0 0 1.5rem 2.75rem;
+  }
+
+  .mobile-about-founding-statement,
+  .mobile-about-atlas-stage,
+  .mobile-about-leadership,
+  .mobile-about-standards {
+    margin-top: 1.75rem;
+  }
+
+  .mobile-about-leadership__portrait {
+    min-height: 22rem;
+  }
+
+  .mobile-about-leadership__statement {
+    margin-top: 0;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .mobile-projects-evidence,
+  .mobile-project-detail-ledger,
+  .mobile-insights-method,
+  .mobile-insights-state,
+  .mobile-insight-steps {
+    margin-top: 1.75rem;
+  }
+
+  .mobile-insights-opening h1 {
+    font-weight: 520;
+  }
+
+  .mobile-contact-headline {
+    max-width: 12ch;
+  }
+
+  .mobile-contact-inquiry-rail {
+    margin-top: 1.5rem;
+  }
+
+  .mobile-contact-inquiry-rail li {
+    min-height: 3.75rem;
+  }
+
+  .mobile-contact-expectation {
+    margin-top: 1.25rem;
+    padding: 1rem 0;
+    border-width: 1px 0 0;
+  }
+
+  .mobile-contact-form-frame {
+    padding: 1rem 0;
+    border-width: 1px 0 0;
+  }
+
+  [data-mobile-recovery] {
+    display: grid;
+    min-height: calc(100svh - 3.75rem);
+    place-items: center;
+    padding: 1.5rem 0;
+    background: var(--color-footer-bg);
+  }
+
+  [data-mobile-recovery] .mobile-recovery-frame {
+    margin-top: 0;
+    padding: 1.75rem 1.25rem;
+    border: 1px solid rgb(255 255 255 / 0.24);
+    background: var(--mobile-paper);
+    box-shadow: none;
+  }
+
+  [data-mobile-recovery] h1 {
+    margin-top: 1.25rem;
+    font-size: 2.125rem;
+  }
+
+  [data-mobile-recovery] h1 + p,
+  [data-mobile-recovery] .mobile-recovery-actions {
+    margin-top: 1.25rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
